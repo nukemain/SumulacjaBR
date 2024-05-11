@@ -10,7 +10,7 @@ public class SimulationTest {
         //Staty NPC do testu:
         int x = 1;
         int y = 1;
-        int HP = 69;
+        int HP = 49;
         int maxHP = 100;
         int stamina = 1;
         //Staty WPN do testu:
