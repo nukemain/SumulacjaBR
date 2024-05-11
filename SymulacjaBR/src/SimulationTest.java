@@ -118,7 +118,7 @@ public class SimulationTest {
         //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
         System.out.println("Atakuje npc z indexem: " + indexTarget);
         npc[indexTarget][2] -= DMG;
-        //TODO: remove npc from array
+        //TODO: remove npc from array with index
     }
     //main, którego używam tylko do testów i się go potem wyrzuci
     public static void main(String[] args) {
