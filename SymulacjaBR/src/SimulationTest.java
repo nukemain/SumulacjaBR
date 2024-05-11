@@ -26,6 +26,7 @@ public class SimulationTest {
         int targetX = -1; //współrzędna x celu
         int targetY = -1; //współrzędna y celu
         double targetDistance = 999; //odległość od celu
+        int targetIndex = -1; //Numer celu do strzału w tabeli npc lub linijki w pliku potem
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
         if((double) HP / maxHP < 0.5) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
@@ -104,7 +105,6 @@ public class SimulationTest {
         double distance = sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
         return  distance;
     }
-    public static
 
     public static void movement(){
         //TODO: this method should change coordinates in targets direction
