@@ -35,7 +35,7 @@ public class Logic {
         while(NPC<NPCcount){
             int posX= rand.nextInt(0, sizeX);
             int posY= rand.nextInt(0, sizeY);
-            try {      //check if the random coordinates are nort occupied and don't neighbour with any other NPC
+            try {      //check if the random coordinates are not occupied and don't neighbour with any other NPC
                 if (!Objects.equals(board[posY][posX], "[x]") &&
                         !Objects.equals(board[posY + 1][posX], "[x]") &&
                         !Objects.equals(board[posY + 1][posX + 1], "[x]") &&
@@ -93,7 +93,7 @@ public class Logic {
         }
 
         //Logic required for spawning Weapons
-        //Works almos exactly the same way as the NPC spawning logic above
+        //Works almost exactly the same way as the NPC spawning logic above
         int WPN=0;
         while(WPN<WPNcount){
             int posX= rand.nextInt(0, sizeX);

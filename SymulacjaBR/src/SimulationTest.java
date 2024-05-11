@@ -3,51 +3,54 @@ import static java.lang.Math.sqrt;
 
 //Na razie całość trzymam w osobnej klasie i jest zhardcodowana, bo tak mi wygodniej testować
 //Wszystkie outputy w konsoli tylko do testów
-//wkurza mnie, że za każdym razem jak robię szukam celu to robię nową praktycznie taką samą pętle więc kiedyś to spróbuje poprawić
+//wkurza mnie, że za każdym razem jak szukam celu to robię nową praktycznie taką samą pętle więc kiedyś to spróbuje poprawić
 public class SimulationTest {
-    public static void simulation(/*obiekt NPC*/) {
+    public static void simulation(/*NPC's object???*/) {
+        //TODO: it should be using objects
         //Staty NPC do testu:
         int x = 1;
         int y = 1;
-        int HP = 49;
-        int maxHP = 100;
+        int HP = 89;
+        int maxHP = 123;
         int stamina = 1;
         //Staty WPN do testu:
         int DMG = 20;
         int range = 2;
         int quality = 1;
         //Tablice do testu:
-        int[][] npc = {{1, 1, HP}, {6, 4, 100}, {1, 7, 54}}; //tymczasowo przechowuje tu też HP (można rozważyć czy nie chcemy tak tego zostawić w finalnej wersji?)
+        int[][] npc = {{1, 1, HP}, {2, 2, 100}, {1, 3, 54}};
+        //TODO: decide if we want to store current HP in an array with coordinates
         int[][] wpn = {{5, 9, 2}, {2, 3, 1}, {1, 6, 3}};
         int[][] heal = {{8, 3}, {3, 7}, {10, 10}};
         //Dane celu podróży (to zostaje w finalnej wersji):
-        int targetX = -1; //współrzędna x celu
-        int targetY = -1; //współrzędna y celu
-        double targetDistance = 999; //odległość od celu
-        //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
+        int targetX = -1; //x coordinate of the target
+        int targetY = -1; //y coordinate of the target
+        double targetDistance = 999; //distance from the target
+        //checking if the HP level of the NPC is lower than 50% of maximal value to decide on next action
         if((double) HP / maxHP < 0.5) {
-            //pętla szuka najbliższej apteczki
-            //TODO: zabezpieczyć to, żeby nie szukał apteczek jeśli ich nie ma
+            //the loop finding the closest aid kit if HP under 50% and saving its coordinates
+            //TODO: prevent it from looking for aid kit if there's none
             for(int i = 0; i < heal.length; i++) {
                 double distance = distanceCalc(heal[i][0], heal[i][1], x, y);
-                System.out.println(heal[i][0] + " " + heal[i][1] + " " + distance);
+                System.out.println("Sprawdzany: " + heal[i][0] + " " + heal[i][1] + " " + distance);
                 if(distance > 0 && distance < targetDistance) {
                     targetDistance = distance;
                     targetX = heal[i][0];
                     targetY = heal[i][1];
                 }
             }
-            System.out.println(targetX + " " + targetY + " " + targetDistance);
-            //wywołujemy metodę, która zmienia położenie NPC
+            System.out.println("Wybrana apteczka: " + targetX + " " + targetY + " " + targetDistance);
+            //calling the method to move the target in direction of target
             movement();
         }
-        //jeśli HP większe lub równe 50% to sprawdza czy w zasięgu ataku znajduję się inny NPC
+        //if the HP level of the NPC is higher than 50% of maximal value program check if there's an enemy in attack range
         else {
-            boolean inRange = false;
-            int targetHP = 999; //ilość punktów życia aktualnego celu
-            //pętla sprawdza czy w zasięgu ataku znajdują się inne NPC i jeśli tak to wybiera tego z najmniejszą liczbą HP
+            boolean inRange = false; //true if there is an enemy in range, otherwise false
+            int targetHP = 999; //HP points of current target
+            //loop checks if there's an enemy in range and saves the coordinates of the one with the list HP points
             for(int i = 0; i < npc.length; i++) {
                 double distance = distanceCalc(npc[i][0], npc[i][1], x, y);
+                System.out.println("Sprawdzany NPC: " + npc[i][0] + " " + npc[i][1] + " " + distance);
                 if(distance > 0 && npc[i][2] < targetHP && distance <= range) {
                     targetDistance = distance;
                     targetHP = npc[i][2];
@@ -56,29 +59,31 @@ public class SimulationTest {
                     inRange = true;
                 }
             }
-            System.out.println(targetX + " " + targetY + " " + targetDistance);
-            //jeśli znalazło cel to wywołuje motodę odpowiedzialną za zadawanie obrażeń
-            if(inRange == true) {
+            System.out.println("Wybrany NPC: " + targetX + " " + targetY + " " + targetDistance);
+            //if there's an enemy in range it calls the method to deal damege to target
+            if(inRange) {
                 damageDealer();
             }
-            //jeśli nie to szuka celu podróży (npc lub mocniejszy weapon)
+            //if there's no one in range it looks for the closest target of travel (another NPC or better weapon)
             else {
-                //petla szuka najbliższego innego NPC
+                //the loop finding the closest NPC and saving its coordinates
                 for(int i = 0; i < npc.length; i++) {
                     double distance = distanceCalc(npc[i][0], npc[i][1], x, y);
-                    System.out.println(npc[i][0] + " " + npc[i][1] + " " + distance);
+                    System.out.println("Sprawdzany: " + npc[i][0] + " " + npc[i][1] + " " + distance);
                     if(distance > 0 && distance < targetDistance) {
                         targetDistance = distance;
                         targetX = npc[i][0];
                         targetY = npc[i][1];
                     }
                 }
-                //petla szuka najbliższej broni (musi być bliżej niż znaleziony wcześniej NPC)
-                System.out.println(targetX + " " + targetY + " " + targetDistance);
+                //this loop tries to find a weapon that is better than the one wielded by NPC and is closer than the closest enemy
+                //if it finds such weapon it saves its coordinates
+                //TODO: it could also be prevent from going through the loop if there's no weapon
+                System.out.println("Wybrany NPC: " + targetX + " " + targetY + " " + targetDistance);
                 for(int i = 0; i < wpn.length; i++) {
                     if(wpn[i][2] > quality) {
                         double distance = distanceCalc(wpn[i][0], wpn[i][1], x, y);
-                        System.out.println(wpn[i][0] + " " + wpn[i][1] + " " + distance);
+                        System.out.println("Sprawdzany: " + wpn[i][0] + " " + wpn[i][1] + " " + distance);
                         if (distance > 0 && distance < targetDistance) {
                             targetDistance = distance;
                             targetX = wpn[i][0];
@@ -86,26 +91,31 @@ public class SimulationTest {
                         }
                     }
                 }
-                System.out.println(targetX + " " + targetY + " " + targetDistance);
-                //wywołujemy metodę, która zmienia położnenie NPC
+                System.out.println("Wybrana broń: " + targetX + " " + targetY + " " + targetDistance);
+                //calling the method to change the coordinates of the NPC in targets direction
                 movement();
             }
         }
     }
-    //metoda do obliczania dystansu między dwoma punktami na mapie (prawdopodobnie da się to uprościć, ale wykrzaczało mi się jak próbowałem inaczej, a tak zadziałało więc zostawiłem xd)
+    //the method to calculate the distance between to point on the map
+    //TODO: check if it can be simplified
     public static double distanceCalc(int targetX, int targetY, int x, int y) {
         double distance = sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
         return  distance;
     }
+    public static
 
     public static void movement(){
-        //TODO: zmiana pozycji NPC w kierunku celu (koordynaty targetX, targetY)
-        // proponuje, żeby NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
+        //TODO: this method should change coordinates in targets direction
+        //targets coordinates are saved as targetX, targetY
+        //proponuje, żeby NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         System.out.println("Poruszam się");
+        
     }
 
     public static void damageDealer(){
-        //TODO: zadawanie obrażeń celowi na koordynatach target X, targetY
+        //TODO: this method should deal damage to the target
+        //targets coordinates are saved as targetX, targetY
         System.out.println("Atakuje");
     }
     //main, którego używam tylko do testów i się go potem wyrzuci
