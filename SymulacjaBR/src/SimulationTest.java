@@ -10,7 +10,7 @@ public class SimulationTest {
         //Staty NPC do testu:
         int x = 1;
         int y = 1;
-        int HP = 49;
+        int HP = 69;
         int maxHP = 100;
         int stamina = 1;
         //Staty WPN do testu:
@@ -64,7 +64,7 @@ public class SimulationTest {
             System.out.println(targetX + " " + targetY + " " + targetDistance);
             //jeśli znalazło cel to wywołuje motodę odpowiedzialną za zadawanie obrażeń
             if(inRange == true) {
-                damageDealer();
+                damageDealer(DMG, npc, targetIndex);
             }
             //if there's no one in range it looks for the closest target of travel (another NPC or better weapon)
             else {
@@ -114,9 +114,11 @@ public class SimulationTest {
 
     }
 
-    public static void damageDealer(){
-        //TODO: zadawanie obrażeń celowi na koordynatach target X, targetY
-        System.out.println("Atakuje");
+    public static void damageDealer(int DMG, int[][] npc, int indexTarget){
+        //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
+        System.out.println("Atakuje npc z indexem: " + indexTarget);
+        npc[indexTarget][2] -= DMG;
+        //TODO: remove npc from array
     }
     //main, którego używam tylko do testów i się go potem wyrzuci
     public static void main(String[] args) {
