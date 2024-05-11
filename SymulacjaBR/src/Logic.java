@@ -1,10 +1,9 @@
-import java.util.Objects;
-import java.util.Scanner;
-import java.util.Random;
+import java.util.*;
+
 public class Logic {
     public static void main(String[] args)
     {
-            Symulacja(50,50,400); //tymczasowo zhardkodowane
+            Symulacja(30,30,15); //tymczasowo zhardkodowane
             //TODO: wyłapywanie czy NPCcount nie jest większy od maksymalnej możliwej ilości npc (liczb pól w planszy) - zrobić to przed odpaleniem symulacji
     }
     static void Symulacja(int sizeX,int sizeY,int NPCcount){
@@ -35,7 +34,7 @@ public class Logic {
         while(NPC<NPCcount){
             int posX= rand.nextInt(0, sizeX);
             int posY= rand.nextInt(0, sizeY);
-            try {      //check if the random coordinates are nort occupied and don't neighbour with any other NPC
+            try {      //check if the random coordinates are not occupied and don't neighbour with any other NPC
                 if (!Objects.equals(board[posY][posX], "[x]") &&
                         !Objects.equals(board[posY + 1][posX], "[x]") &&
                         !Objects.equals(board[posY + 1][posX + 1], "[x]") &&
@@ -93,8 +92,10 @@ public class Logic {
         }
 
         //Logic required for spawning Weapons
-        //Works almos exactly the same way as the NPC spawning logic above
+        //Works almost exactly the same way as the NPC spawning logic above
         int WPN=0;
+        int weaponToSpawn = -1; //0-Knife, 1-Rifle, 2-Sniper rifle
+        List<Weapon> weapons = new ArrayList<>();
         while(WPN<WPNcount){
             int posX= rand.nextInt(0, sizeX);
             int posY= rand.nextInt(0, sizeY);
@@ -108,8 +109,21 @@ public class Logic {
                         Objects.equals(board[posY - 1][posX - 1], "[ ]") &&
                         Objects.equals(board[posY][posX - 1], "[ ]") &&
                         Objects.equals(board[posY + 1][posX - 1], "[ ]")) {
-                    board[posY][posX] = "[W]";
-                    //todo: tu wywołanie konstruktora klasy NPC
+                    weaponToSpawn = (int) (Math.random() * (3));
+                    switch (weaponToSpawn){
+                        case 0:
+                            weapons.add(new Weapon("Knife", 15, 1,1, posX, posY));
+                            board[posY][posX] = "[K]";
+                            break;
+                        case 1:
+                            weapons.add(new Weapon("Rifle", 30, 2,2, posX, posY));
+                            board[posY][posX] = "[R]";
+                            break;
+                        case 2:
+                            weapons.add(new Weapon("SniperRifle", 50, 3,3, posX, posY));
+                            board[posY][posX] = "[S]";
+                            break;
+                    }
                     WPN++;
                 }
             } catch(Exception ignored){}

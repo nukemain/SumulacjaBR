@@ -9,12 +9,12 @@ public class SimulationTest {
         //Staty NPC do testu:
         int x = 1;
         int y = 1;
-        int HP = 49;
+        int HP = 100;
         int maxHP = 100;
         int stamina = 1;
         //Staty WPN do testu:
         int DMG = 20;
-        int range = 2;
+        int range = 10;
         int quality = 1;
         //Tablice do testu:
         int[][] npc = {{1, 1, HP}, {6, 4, 100}, {1, 7, 54}}; //tymczasowo przechowuje tu też HP (można rozważyć czy nie chcemy tak tego zostawić w finalnej wersji?)
@@ -24,6 +24,9 @@ public class SimulationTest {
         int targetX = -1; //współrzędna x celu
         int targetY = -1; //współrzędna y celu
         double targetDistance = 999; //odległość od celu
+        int targetIndex = -1; //Numer indexu tabeli Npc'ta, którego będzie atakował
+
+
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
         if((double) HP / maxHP < 0.5) {
             //pętla szuka najbliższej apteczki
@@ -53,13 +56,14 @@ public class SimulationTest {
                     targetHP = npc[i][2];
                     targetX = npc[i][0];
                     targetY = npc[i][1];
+                    targetIndex = i;
                     inRange = true;
                 }
             }
             System.out.println(targetX + " " + targetY + " " + targetDistance);
             //jeśli znalazło cel to wywołuje motodę odpowiedzialną za zadawanie obrażeń
             if(inRange == true) {
-                damageDealer();
+                damageDealer(targetIndex, npc[targetIndex], DMG);
             }
             //jeśli nie to szuka celu podróży (npc lub mocniejszy weapon)
             else {
@@ -104,9 +108,13 @@ public class SimulationTest {
         System.out.println("Poruszam się");
     }
 
-    public static void damageDealer(){
-        //TODO: zadawanie obrażeń celowi na koordynatach target X, targetY
-        System.out.println("Atakuje");
+    public static void damageDealer(int targetIndex, int[] targetNPC, int DMG){
+        //Potencjalnie jest zrobione, potem można to lekko lepiej przerobić i targetIndex nie jest potrzebny, jest tu tylko do testów
+        System.out.println("Atakuje npcta z indexem: " + targetIndex);
+        System.out.println("Hp przed atakiem: " + targetNPC[2]);
+        targetNPC[2] -= DMG;
+        System.out.println("Hp po ataku: " + targetNPC[2]);
+
     }
     //main, którego używam tylko do testów i się go potem wyrzuci
     public static void main(String[] args) {
