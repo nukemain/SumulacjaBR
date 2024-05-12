@@ -8,25 +8,33 @@ public class SimulationTest {
     public static void simulation(/*NPC's object???*/) {
         //TODO: it should be using objects
         //Staty NPC do testu:
-        int x = 1;
-        int y = 1;
-        int HP = 49;
+        int x = 5;
+        int y = 6;
+        int HP = 50;
         int maxHP = 100;
-        int stamina = 1;
+        int stamina = 2;
         //Staty WPN do testu:
         int DMG = 20;
-        int range = 10;
+        int range = 2;
         int quality = 1;
         //Tablice do testu:
-        int[][] npc = {{1, 1, HP}, {2, 2, 100}, {1, 3, 54}};
+        int[][] npc = {{x, y, HP}, {7, 8, 100}, {3, 7, 54}};
         //TODO: decide if we want to store current HP in an array with coordinates
-        int[][] wpn = {{5, 9, 2}, {2, 3, 1}, {1, 6, 3}};
-        int[][] heal = {{8, 3}, {3, 7}, {10, 10}};
+        int[][] wpn = {{5, 9, 2}, {2, 3, 1}, {1, 9, 3}};
+        int[][] heal = {{8, 3}, {2, 6}, {10, 10}};
         //Dane celu podróży (to zostaje w finalnej wersji):
         int targetX = -1; //współrzędna x celu
         int targetY = -1; //współrzędna y celu
         double targetDistance = 999; //odległość od celu
+        int npcIndex = -1; //Numer aktualnie sterowanego NPC w tabeli npc lub linijki w pliku potem
         int targetIndex = -1; //Numer celu do strzału w tabeli npc lub linijki w pliku potem
+        //loop to find the index of current NPC
+        for(int i = 0; i < npc.length; i++){
+            if(x == npc[i][0] && y == npc[i][1]){
+                npcIndex = i;
+                break;
+            }
+        }
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
         if((double) HP / maxHP < 0.5) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
@@ -42,7 +50,13 @@ public class SimulationTest {
             }
             System.out.println("Wybrana apteczka: " + targetX + " " + targetY + " " + targetDistance);
             //calling the method to move the target in direction of target
-            movement();
+            for(int i = 1; i <= stamina; i++) {
+                npc = movement(targetX, targetY, x, y, npc, npcIndex);
+                x = npc[npcIndex][0];
+                y = npc[npcIndex][1];
+                System.out.println(x + " " + y);
+                //TODO: checking if an item is at this coordinates and should be raised
+            }
         }
         //if the HP level of the NPC is higher than 50% of maximal value program check if there's an enemy in attack range
         else {
@@ -95,7 +109,13 @@ public class SimulationTest {
                 }
                 System.out.println("Wybrana broń: " + targetX + " " + targetY + " " + targetDistance);
                 //calling the method to change the coordinates of the NPC in targets direction
-                movement();
+                for(int i = 1; i <= stamina; i++) {
+                    npc = movement(targetX, targetY, x, y, npc, npcIndex);
+                    x = npc[npcIndex][0];
+                    y = npc[npcIndex][1];
+                    System.out.println(x + " " + y);
+                    //TODO: checking if an item is at this coordinates and should be raised
+                }
             }
         }
     }
@@ -105,13 +125,40 @@ public class SimulationTest {
         double distance = sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
         return  distance;
     }
-
-    public static void movement(){
-        //TODO: this method should change coordinates in targets direction
+    //TODO: prevent NPC from moving to the space occupied by the other NPC
+    public static int[][] movement(int targetX, int targetY, int x, int y, int[][] npc, int npcIndex) {
         //targets coordinates are saved as targetX, targetY
         //proponuje, żeby NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         System.out.println("Poruszam się");
-
+        if(targetX == x && targetY < y) {
+            npc[npcIndex][1]--;
+        }
+        else if(targetX > x && targetY < y) {
+            npc[npcIndex][0]++;
+            npc[npcIndex][1]--;
+        }
+        else if(targetX > x && targetY == y) {
+            npc[npcIndex][0]++;
+        }
+        else if(targetX > x && targetY > y) {
+            npc[npcIndex][0]++;
+            npc[npcIndex][1]++;
+        }
+        else if(targetX == x && targetY > y) {
+            npc[npcIndex][1]++;
+        }
+        else if(targetX < x && targetY > y) {
+            npc[npcIndex][0]--;
+            npc[npcIndex][1]++;
+        }
+        else if(targetX < x && targetY == y) {
+            npc[npcIndex][0]--;
+        }
+        else if(targetX < x && targetY < y) {
+            npc[npcIndex][0]--;
+            npc[npcIndex][1]--;
+        }
+        return npc;
     }
 
     public static void damageDealer(int DMG, int[][] npc, int indexTarget){
