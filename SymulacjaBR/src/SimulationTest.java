@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
@@ -8,8 +11,8 @@ public class SimulationTest {
     public static void simulation(/*NPC's object???*/) {
         //TODO: it should be using objects
         //Staty NPC do testu:
-        int x = 5;
-        int y = 6;
+        int x = 1;
+        int y = 1;
         int HP = 50;
         int maxHP = 100;
         int stamina = 2;
@@ -20,14 +23,15 @@ public class SimulationTest {
         //Tablice do testu:
         int[][] npc = {{x, y, HP}, {7, 8, 100}, {3, 7, 54}};
         //TODO: decide if we want to store current HP in an array with coordinates
-        int[][] wpn = {{5, 9, 2}, {2, 3, 1}, {1, 9, 3}};
-        int[][] heal = {{8, 3}, {2, 6}, {10, 10}};
-        //Dane celu podróży (to zostaje w finalnej wersji):
+        int[][] wpn = {{3, 3, 2}, {2, 3, 1}, {1, 9, 3}};
+        int[][] heal = {{2, 2}, {6, 9}, {10, 10}};
+        //Dane potrzebne do pracy programu:
         int targetX = -1; //współrzędna x celu
         int targetY = -1; //współrzędna y celu
         double targetDistance = 999; //odległość od celu
         int npcIndex = -1; //Numer aktualnie sterowanego NPC w tabeli npc lub linijki w pliku potem
         int targetIndex = -1; //Numer celu do strzału w tabeli npc lub linijki w pliku potem
+        boolean actionTaken = false;
         //loop to find the index of current NPC
         for(int i = 0; i < npc.length; i++){
             if(x == npc[i][0] && y == npc[i][1]){
@@ -36,7 +40,7 @@ public class SimulationTest {
             }
         }
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
-        if((double) HP / maxHP < 0.5) {
+        if((double) HP / maxHP < 0.5 && heal.length > 0) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
             //TODO: prevent it from looking for aid kit if there's none
             for(int i = 0; i < heal.length; i++) {
@@ -46,6 +50,7 @@ public class SimulationTest {
                     targetDistance = distance;
                     targetX = heal[i][0];
                     targetY = heal[i][1];
+                    targetIndex = i;
                 }
             }
             System.out.println("Wybrana apteczka: " + targetX + " " + targetY + " " + targetDistance);
@@ -55,7 +60,25 @@ public class SimulationTest {
                 x = npc[npcIndex][0];
                 y = npc[npcIndex][1];
                 System.out.println(x + " " + y);
-                //TODO: checking if an item is at this coordinates and should be raised
+                if(x == targetX && y == targetY) {
+                    heal = itemRemover(heal, targetIndex);
+                    System.out.println(Arrays.deepToString(heal));
+                    break;
+                }
+                else{
+                    for(int j = 0; i < wpn.length; i++) {
+                        System.out.println("Sprawdzany: " + wpn[j][0] + " " + wpn[j][1]);
+                        if (x == wpn[j][0] && y == wpn[j][1]) {
+                            wpn = itemRemover(wpn, j);
+                            System.out.println(Arrays.deepToString(wpn));
+                            actionTaken = true;
+                            break;
+                        }
+                    }
+                }
+                if(actionTaken) {
+                    break;
+                }
             }
         }
         //if the HP level of the NPC is higher than 50% of maximal value program check if there's an enemy in attack range
@@ -114,6 +137,30 @@ public class SimulationTest {
                     x = npc[npcIndex][0];
                     y = npc[npcIndex][1];
                     System.out.println(x + " " + y);
+                    for(int j = 0; j < wpn.length; j++) {
+                        System.out.println("Sprawdzany: " + wpn[j][0] + " " + wpn[j][1]);
+                        if (x == wpn[j][0] && y == wpn[j][1]) {
+                            wpn = itemRemover(wpn, j);
+                            System.out.println(Arrays.deepToString(wpn));
+                            actionTaken = true;
+                            break;
+                        }
+                    }
+                    if(actionTaken) {
+                        break;
+                    }
+                    for(int j = 0; j < heal.length; j++) {
+                        System.out.println("Sprawdzany: " + heal[j][0] + " " + heal[j][1]);
+                        if (x == heal[j][0] && y == heal[j][1]) {
+                            heal = itemRemover(heal, j);
+                            System.out.println(Arrays.deepToString(heal));
+                            actionTaken = true;
+                            break;
+                        }
+                    }
+                    if(actionTaken) {
+                        break;
+                    }
                     //TODO: checking if an item is at this coordinates and should be raised
                 }
             }
@@ -160,12 +207,22 @@ public class SimulationTest {
         }
         return npc;
     }
-
     public static void damageDealer(int DMG, int[][] npc, int indexTarget){
         //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
         System.out.println("Atakuje npc z indexem: " + indexTarget);
         npc[indexTarget][2] -= DMG;
         //TODO: remove npc from array with index
+    }
+    public static int[][] itemRemover(int[][] item, int indexTarget){
+        int[][] itemRemover = new int[item.length - 1][];
+        for (int i = 0, k = 0; i < item.length; i++) {
+            if (i != indexTarget) {
+                itemRemover[k] = item[i];
+                k++;
+            }
+        }
+        System.out.println(Arrays.deepToString(itemRemover));
+        return itemRemover;
     }
     //main, którego używam tylko do testów i się go potem wyrzuci
     public static void main(String[] args) {
