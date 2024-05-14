@@ -42,7 +42,6 @@ public class SimulationTest {
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
         if((double) HP / maxHP < 0.5 && heal.length > 0) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
-            //TODO: prevent it from looking for aid kit if there's none
             for(int i = 0; i < heal.length; i++) {
                 double distance = distanceCalc(heal[i][0], heal[i][1], x, y);
                 System.out.println("Sprawdzany: " + heal[i][0] + " " + heal[i][1] + " " + distance);
@@ -161,7 +160,6 @@ public class SimulationTest {
                     if(actionTaken) {
                         break;
                     }
-                    //TODO: checking if an item is at this coordinates and should be raised
                 }
             }
         }
@@ -174,36 +172,21 @@ public class SimulationTest {
     }
     //TODO: prevent NPC from moving to the space occupied by the other NPC
     public static int[][] movement(int targetX, int targetY, int x, int y, int[][] npc, int npcIndex) {
+        //TODO: popraw ifoze na trzy opcje x i trzy opcje y
         //targets coordinates are saved as targetX, targetY
         //proponuje, żeby NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         System.out.println("Poruszam się");
-        if(targetX == x && targetY < y) {
+        if(targetY < y) {
             npc[npcIndex][1]--;
         }
-        else if(targetX > x && targetY < y) {
-            npc[npcIndex][0]++;
-            npc[npcIndex][1]--;
-        }
-        else if(targetX > x && targetY == y) {
-            npc[npcIndex][0]++;
-        }
-        else if(targetX > x && targetY > y) {
-            npc[npcIndex][0]++;
+        else if(targetY > y) {
             npc[npcIndex][1]++;
         }
-        else if(targetX == x && targetY > y) {
-            npc[npcIndex][1]++;
+        if(targetX > x) {
+            npc[npcIndex][0]++;
         }
-        else if(targetX < x && targetY > y) {
+        else if(targetX < x) {
             npc[npcIndex][0]--;
-            npc[npcIndex][1]++;
-        }
-        else if(targetX < x && targetY == y) {
-            npc[npcIndex][0]--;
-        }
-        else if(targetX < x && targetY < y) {
-            npc[npcIndex][0]--;
-            npc[npcIndex][1]--;
         }
         return npc;
     }
