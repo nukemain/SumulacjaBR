@@ -36,7 +36,7 @@ public class Spawning {
                         !Objects.equals(board[posY][posX - 1], "[x]") &&
                         !Objects.equals(board[posY + 1][posX - 1], "[x]")) {
                     board[posY][posX] = "[x]";
-                    spawnRandomNPC(posX, posY, npcArray);
+                    spawnRandomNPC(NPC, posX, posY, npcArray);
                     NPC++;
                 }else{
                     //however we sometimes ignore the check above (with a 15% rate) to make the NPC placement more random todo: 15 wybrane tak o, może jakaś lepsza wartość?
@@ -44,7 +44,7 @@ public class Spawning {
                     //to spawn them at least 1 tile away from each other.
                     if( (rand.nextInt(1,101)<=15) && (!Objects.equals(board[posY][posX], "[x]")) ){
                         board[posY][posX] = "[x]";
-                        spawnRandomNPC(posX, posY, npcArray);
+                        spawnRandomNPC(NPC, posX, posY, npcArray);
                         NPC++;
                     }
                 }
@@ -54,28 +54,28 @@ public class Spawning {
     }
 
     //Moja propozycja na spawny npc, potem można je przenieść do osobnych plików jak już będą się czymś wyróżniać np. Passive Regen
-    public static List<NPC> spawnRandomNPC(int posX, int posY, List<NPC> npcArray){
+    public static List<NPC> spawnRandomNPC(int index, int posX, int posY, List<NPC> npcArray){
         int npcToSpawn = (int) (Math.random() * (5));
         switch (npcToSpawn){
             case 0:
                 //Soldier
-                npcArray.add(new NPC(posX, posY,150, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
+                npcArray.add(new NPC(index, posX, posY,150, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
                 break;
             case 1:
                 //Medic
-                npcArray.add(new NPC(posX, posY, 100, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
+                npcArray.add(new NPC(index, posX, posY, 100, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
                 break;
             case 2:
                 //Scout
-                npcArray.add(new NPC(posX, posY, 90, 3, new Weapon("Knife", 15, 1,1, posX, posY)));
+                npcArray.add(new NPC(index, posX, posY, 90, 3, new Weapon("Knife", 15, 1,1, posX, posY)));
                 break;
             case 3:
                 //Sniper
-                npcArray.add(new NPC(posX, posY, 100, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
+                npcArray.add(new NPC(index, posX, posY, 100, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
                 break;
             case 4:
                 //Spy
-                npcArray.add(new NPC(posX, posY, 80, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
+                npcArray.add(new NPC(index, posX, posY, 80, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
                 break;
         }
         return npcArray;
