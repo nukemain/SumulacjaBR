@@ -16,6 +16,27 @@ public class Spawning {
         return map;
     }
 
+    public static String[][] updateMap(int sizeX, int sizeY,List<NPC> npcList,List<Weapon> weaponsList,List<int[]> medkitList){
+        String[][] map = new String[sizeX][sizeY];
+        //loop to fill the board with empty spaces ("[ ]")
+        for(int y=0;y<sizeY;y++){
+            for(int x=0;x<sizeX;x++){
+                map[y][x] = "[ ]";
+            }
+        }
+        for(int i=0;i<npcList.size();i++){
+            map[npcList.get(i).posY][npcList.get(i).posX] = "[x]";
+        }
+        for(int i=0;i<weaponsList.size();i++){
+            map[weaponsList.get(i).posY][weaponsList.get(i).posX] = "["+weaponsList.get(i).name+"]";
+        }
+        for(int i=0;i<medkitList.size();i++){
+            map[medkitList.get(i)[1]][medkitList.get(i)[0]] = "[+]";
+        }
+        System.out.printf("refresh mapy");
+        return map;
+    }
+
     public static List<NPC> spawnNPCs(int sizeX, int sizeY, int NPCcount, String[][] board, List<NPC> npcArray){
         //Logic required for spawning NPC's
         //NOTE: this logic purposefully prevents spawns on the edges of the board
@@ -138,15 +159,15 @@ public class Spawning {
                     weaponToSpawn = (int) (Math.random() * (3));
                     switch (weaponToSpawn){
                         case 0:
-                            weaponsArray.add(new Weapon("Knife", 15, 1,1, posX, posY));
+                            weaponsArray.add(new Weapon("K", 15, 1,1, posX, posY));
                             map[posY][posX] = "[K]";
                             break;
                         case 1:
-                            weaponsArray.add(new Weapon("Rifle", 30, 2,2, posX, posY));
+                            weaponsArray.add(new Weapon("R", 30, 2,2, posX, posY));
                             map[posY][posX] = "[R]";
                             break;
                         case 2:
-                            weaponsArray.add(new Weapon("SniperRifle", 50, 3,3, posX, posY));
+                            weaponsArray.add(new Weapon("S", 50, 3,3, posX, posY));
                             map[posY][posX] = "[S]";
                             break;
                     }
@@ -156,7 +177,7 @@ public class Spawning {
         }
         return weaponsArray;
     }
-    public static List<int[]> spawnMedpacks(String[][] map, int sizeX, int sizeY, int NPCcount, List<int[]> medpackArray){
+    public static List<int[]> spawnMedkits(String[][] map, int sizeX, int sizeY, int NPCcount, List<int[]> medpackArray){
         int MDPcount=0;
         int NoNeighbours=checkNeighbours(map, sizeX, sizeY);
         Random rand = new Random();

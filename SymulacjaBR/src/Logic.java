@@ -6,53 +6,45 @@ import static java.lang.Math.sqrt;
 public class Logic {
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
-    static List<int[]> medpackList = new ArrayList<>();
+    static List<int[]> medkitList = new ArrayList<>();
     public static void main(String[] args)
     {
         //TODO: Na koniec jak już będzie śmigać dodać input od użytkownika w GUI.
-        int NPCcount = 20;
-        int sizeX=25;
-        int sizeY=25;
-        if(NPCcount>(sizeX-1)*(sizeY-1) - 1){
+        int NPCcount = 2;
+        int sizeX=5;
+        int sizeY=5;
+        if(NPCcount>(sizeX-1)*(sizeY-1)*0.25){ //mniej niż 25% planszy to npc -> czemu 25%? liczba wybrana tak o z dupy
             System.out.println("Number of NPCs can not be higher than amount of fields.");
         }
         else{
             Symulacja(sizeX,sizeY,NPCcount);
         }
-        decisionMaker(0);
-
     }
 
     static void Symulacja(int sizeX,int sizeY,int NPCcount){
-        //TODO: Wczytywanie danych z pliku? - nie trzeba by było przekazywać miliona zmiennych do funkcji
-
-
-        /*
-            sizeX = rozmiar x planszy
-            sizeY = rozmiar Y planszy
-            NPCcount = ile agentów npc ma mieć symulacja
-            WPNcount = ile sztuk broni ma zrespić symulacja
-            //todo: przerebić ten komentarz na angielski jak już nie będzie potrebny
-        */
 
         String[][] map = Spawning.createMap(sizeX,sizeY);
-        //List<NPC> npcList = new ArrayList<>();
         Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPC's
-        //<Weapon> weaponsList = new ArrayList<>();
         Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
-        Spawning.spawnMedpacks(map,sizeX,sizeY,NPCcount, medpackList);//Spawning medpacks on the map
+        Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
 
         //tymczasowa pętla do drukowania tablic
-        //while (true){
-
-        for(int y=0;y<sizeY;y++){
-            for(int x=0;x<sizeX;x++){
-                System.out.print(map[y][x]);
+        while (true){
+            for(int y=0;y<sizeY;y++){
+                for(int x=0;x<sizeX;x++){
+                    System.out.print(map[y][x]);
+                }
+                System.out.println();
             }
-            System.out.println();
+            for (int i=0;i<npcList.size();i++){
+                decisionMaker(i);
+            }
+            map = Spawning.updateMap(sizeX,sizeY,npcList,weaponsList,medkitList);
+            //to samo co system("pause")
+            System.out.println("Press Enter to continue");
+            try{System.in.read();}
+            catch(Exception e){}
         }
-        //decisionMaker(0);
-        //}
         /*
         System.out.println("---------------------------------");
         for (NPC npc : npcList) {
@@ -68,7 +60,6 @@ public class Logic {
         //TODO: it should be using objects
         //Tablice do testu:
         /*int[][] npc = {{x, y, HP}, {7, 8, 100}, {3, 7, 54}};
-        //TODO: decide if we want to store current HP in an array with coordinates
         int[][] wpn = {{3, 3, 2}, {2, 3, 1}, {1, 9, 3}};
         int[][] heal = {{2, 2}, {6, 9}, {10, 10}};*/
         //Dane potrzebne do pracy programu:
@@ -78,15 +69,15 @@ public class Logic {
         int targetIndex = -1; //Numer celu do strzału w tabeli npc lub linijki w pliku potem
         boolean actionTaken = false;
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
-        if((double) npcList.get(npcIndex).HP / npcList.get(npcIndex).maxHP < 0.5 && medpackList.size() > 0) {
+        if((( (double) npcList.get(npcIndex).HP / npcList.get(npcIndex).maxHP) < 0.5) && medkitList.size() > 0) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
-            for(int i = 0; i < medpackList.size(); i++) {
-                double distance = distanceCalc(medpackList.get(i)[0],medpackList.get(i)[1], npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
+            for(int i = 0; i < medkitList.size(); i++) {
+                double distance = distanceCalc(medkitList.get(i)[0],medkitList.get(i)[1], npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
                 //System.out.println("Sprawdzany: " + heal[i][0] + " " + heal[i][1] + " " + distance); TEMP
                 if(distance > 0 && distance < targetDistance) {
                     targetDistance = distance;
-                    targetX = medpackList.get(i)[0];
-                    targetY = medpackList.get(i)[1];
+                    targetX = medkitList.get(i)[0];
+                    targetY = medkitList.get(i)[1];
                     targetIndex = i;
                 }
             }
@@ -97,7 +88,7 @@ public class Logic {
                 //System.out.println(npcList.get(npcIndex).posX + " " + npcList.get(npcIndex).posY); TEMP
                 if(npcList.get(npcIndex).posX == targetX && npcList.get(npcIndex).posY == targetY) {
                     //heal = itemRemover(heal, targetIndex);
-                    medpackList.remove(targetIndex);
+                    medkitList.remove(targetIndex);
                     //System.out.println(Arrays.deepToString(heal)); TEMP
                     break;
                 }
@@ -135,8 +126,8 @@ public class Logic {
                 }
             }
             //System.out.println(targetX + " " + targetY + " " + targetDistance); temp
-            //jeśli znalazło cel to wywołuje motodę odpowiedzialną za zadawanie obrażeń
-            if(inRange == true) {
+            //jeśli znalazło cel to wywołuje metodę odpowiedzialną za zadawanie obrażeń
+            if(inRange) {
                 damageDealer(npcList.get(npcIndex).weapon.damage, targetIndex);
             }
             //if there's no one in range it looks for the closest target of travel (another NPC or better weapon)
@@ -153,11 +144,11 @@ public class Logic {
                 }
                 //this loop tries to find a weapon that is better than the one wielded by NPC and is closer than the closest enemy
                 //if it finds such weapon it saves its coordinates
-                //TODO: it could also be prevent from going through the loop if there's no weapon
+                //TODO: it could also be prevent from going through the loop if there's no weapon or no better weapon is present
                 //System.out.println("Wybrany NPC: " + targetX + " " + targetY + " " + targetDistance); TEMP
                 for(int i = 0; i < weaponsList.size(); i++) {
                     if(weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
-                        double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
+                        double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, weaponsList.get(npcIndex).posX, weaponsList.get(npcIndex).posY);
                         //System.out.println("Sprawdzany: " + weaponsList.get(i).posX + " " + weaponsList.get(i).posY + " " + distance); TEMP
                         if (distance > 0 && distance < targetDistance) {
                             targetDistance = distance;
@@ -183,11 +174,11 @@ public class Logic {
                     if(actionTaken) {
                         break;
                     }
-                    for(int j = 0; j < medpackList.size(); j++) {
+                    for(int j = 0; j < medkitList.size(); j++) {
                         //System.out.println("Sprawdzany: " + heal[j][0] + " " + heal[j][1]); TEMP
-                        if (npcList.get(npcIndex).posX == medpackList.get(j)[0] && npcList.get(npcIndex).posY == medpackList.get(j)[1]) {
+                        if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
                             //heal = itemRemover(heal, j);
-                            medpackList.remove(j);
+                            medkitList.remove(j);
                             //System.out.println(Arrays.deepToString(heal));
                             actionTaken = true;
                             break;
@@ -214,7 +205,7 @@ public class Logic {
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
         boolean isEmpty = true;
-        //System.out.println("Poruszam się"); TEMP
+        System.out.println("Poruszam się z"+ npcList.get(npcIndex).posX+" "+npcList.get(npcIndex).posY);
         if(targetX > x) {
             moveX++;
         }
@@ -235,12 +226,13 @@ public class Logic {
         if(isEmpty){
             npcList.get(npcIndex).posX = moveX;
             npcList.get(npcIndex).posY = moveY;
+            System.out.println("na"+ npcList.get(npcIndex).posX+" "+npcList.get(npcIndex).posY);
         }
         else{
             //Potencjalnie sprawdzimy czy ma więcej staminy, jak nie to musi go zaatakować, bo inaczej sam zostanie zaatakowany po następnym ruchu
             //Jeżeli jednak ma więcej staminy to powinien próbować uciec po przekątnej w stronę w którą się kierował
             //Bez znaczenia czy w góre po przekątnej czy w dół
-            //TODO: co chcemy robić, gdy na drodze NPC stanie przeciwnik?
+            //TODO: co chcemy robić, gdy na drodze NPC stanie przeciwnik? odp: walczyć i tyle imo
         }
     }
     public static void damageDealer(int DMG, int indexTarget){
@@ -253,7 +245,7 @@ public class Logic {
     }
     public static int[][] itemRemover(int[][] item, int indexTarget){
         //TODO: czy to jest do czegokolwiek potrzebne?
-        //TODO: (cd.) jeśli robimy wszystko na Listach (weaponList , npcList , medpackList) nie wystarczy samo ___Array.remove()?
+        //TODO: (cd.) jeśli robimy wszystko na Listach (weaponList , npcList , medkitList) nie wystarczy samo ___Array.remove()?
         int[][] itemRemover = new int[item.length - 1][];
         for (int i = 0, k = 0; i < item.length; i++) {
             if (i != indexTarget) {
