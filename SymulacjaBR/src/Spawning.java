@@ -48,7 +48,7 @@ public class Spawning {
                         NPC++;
                     }
                 }
-            } catch(Exception e){/*po prostu zrespić ziutka`gdzieś indziej*/}
+            } catch(Exception e){/*po prostu zrespić ziutka gdzieś indziej*/}
         }
         return npcArray;
     }
@@ -106,8 +106,6 @@ public class Spawning {
     }
 
     public static List<Weapon> spawnWeapons(String[][] map, int sizeX, int sizeY, int NPCcount, List<Weapon> weaponsArray){
-
-
         int WPNcount=0;
         int NoNeighbours=checkNeighbours(map, sizeX, sizeY);
         Random rand = new Random();
@@ -158,5 +156,35 @@ public class Spawning {
         }
         return weaponsArray;
     }
-
+    public static List<int[]> spawnMedpacks(String[][] map, int sizeX, int sizeY, int NPCcount, List<int[]> medpackArray){
+        int MDPcount=0;
+        int NoNeighbours=checkNeighbours(map, sizeX, sizeY);
+        Random rand = new Random();
+        if((NoNeighbours/5)<NPCcount){
+            MDPcount =(NoNeighbours/5);
+        }else{
+            MDPcount = (NPCcount);
+        }
+        int MDP=0;
+        while(MDP<MDPcount){
+            int posX= rand.nextInt(0, sizeX);
+            int posY= rand.nextInt(0, sizeY);
+            try {
+                if (Objects.equals(map[posY][posX], "[ ]") &&
+                        Objects.equals(map[posY + 1][posX], "[ ]") &&
+                        Objects.equals(map[posY + 1][posX + 1], "[ ]") &&
+                        Objects.equals(map[posY][posX + 1], "[ ]") &&
+                        Objects.equals(map[posY - 1][posX + 1], "[ ]") &&
+                        Objects.equals(map[posY - 1][posX], "[ ]") &&
+                        Objects.equals(map[posY - 1][posX - 1], "[ ]") &&
+                        Objects.equals(map[posY][posX - 1], "[ ]") &&
+                        Objects.equals(map[posY + 1][posX - 1], "[ ]")) {
+                    map[posY][posX] = "[+]";
+                    medpackArray.add(new int[]{posX, posY});
+                    MDP++;
+                }
+            } catch(Exception ignored){}
+        }
+        return medpackArray;
+    }
 }
