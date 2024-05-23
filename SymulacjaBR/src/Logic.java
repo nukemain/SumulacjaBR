@@ -10,9 +10,9 @@ public class Logic {
     public static void main(String[] args)
     {
         //TODO: Na koniec jak już będzie śmigać dodać input od użytkownika w GUI.
-        int NPCcount = 2;
-        int sizeX=5;
-        int sizeY=5;
+        int NPCcount = 5;
+        int sizeX=10;
+        int sizeY=10;
         if(NPCcount>(sizeX-1)*(sizeY-1)*0.25){ //mniej niż 25% planszy to npc -> czemu 25%? liczba wybrana tak o z dupy
             System.out.println("Number of NPCs can not be higher than amount of fields.");
         }
@@ -29,7 +29,7 @@ public class Logic {
         Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
 
         //tymczasowa pętla do drukowania tablic
-        while (true){
+        while (npcList.size() > 1){
             for(int y=0;y<sizeY;y++){
                 for(int x=0;x<sizeX;x++){
                     System.out.print(map[y][x]);
@@ -45,6 +45,7 @@ public class Logic {
             try{System.in.read();}
             catch(Exception e){}
         }
+        System.out.println("Winner is " + npcList.getFirst().index);
         /*
         System.out.println("---------------------------------");
         for (NPC npc : npcList) {
@@ -205,7 +206,7 @@ public class Logic {
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
         boolean isEmpty = true;
-        System.out.println("Poruszam się z"+ npcList.get(npcIndex).posX+" "+npcList.get(npcIndex).posY);
+        System.out.println(npcList.get(npcIndex).index + " porusza się z "+ npcList.get(npcIndex).posX+" "+npcList.get(npcIndex).posY);
         if(targetX > x) {
             moveX++;
         }
@@ -219,16 +220,17 @@ public class Logic {
             moveY++;
         }
         for(int i = 0; i < npcList.size(); i++) {
-            if(moveX == npcList.get(npcIndex).posX || moveY == npcList.get(npcIndex).posY) {
+            if(moveX == npcList.get(i).posX && moveY == npcList.get(i).posY) {
                 isEmpty = false;
             }
         }
         if(isEmpty){
             npcList.get(npcIndex).posX = moveX;
             npcList.get(npcIndex).posY = moveY;
-            System.out.println("na"+ npcList.get(npcIndex).posX+" "+npcList.get(npcIndex).posY);
+            System.out.println("na "+ npcList.get(npcIndex).posX+" "+npcList.get(npcIndex).posY);
         }
         else{
+            System.out.println("Space occupied");
             //Potencjalnie sprawdzimy czy ma więcej staminy, jak nie to musi go zaatakować, bo inaczej sam zostanie zaatakowany po następnym ruchu
             //Jeżeli jednak ma więcej staminy to powinien próbować uciec po przekątnej w stronę w którą się kierował
             //Bez znaczenia czy w góre po przekątnej czy w dół
@@ -237,15 +239,20 @@ public class Logic {
     }
     public static void damageDealer(int DMG, int indexTarget){
         //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
-        //System.out.println("Atakuje npc z indexem: " + indexTarget); TEMP
+        System.out.println("Atakuje npc z indexem: " + indexTarget);
         npcList.get(indexTarget).HP -= DMG;
-        if (npcList.get(indexTarget).HP <= 0) {npcList.remove(indexTarget);}
+        if (npcList.get(indexTarget).HP <= 0) {
+            npcList.remove(indexTarget);
+            System.out.println(indexTarget + " was killed");
+        }
         //TODO: Przerobić żeby działało z nową ArrayList NPC'ów
         //TODO: remove npc from array with index
     }
+    /*
     public static int[][] itemRemover(int[][] item, int indexTarget){
         //TODO: czy to jest do czegokolwiek potrzebne?
         //TODO: (cd.) jeśli robimy wszystko na Listach (weaponList , npcList , medkitList) nie wystarczy samo ___Array.remove()?
+        //TODO: Już nie, było potrzebne, gdy pracowaliśmy na tablicach
         int[][] itemRemover = new int[item.length - 1][];
         for (int i = 0, k = 0; i < item.length; i++) {
             if (i != indexTarget) {
@@ -256,4 +263,5 @@ public class Logic {
         //System.out.println(Arrays.deepToString(itemRemover)); TEMP
         return itemRemover;
     }
+    */
 }
