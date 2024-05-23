@@ -15,6 +15,6 @@ public class NPC {
         this.stamina = stamina;
         this.weapon = weapon;
     }
-    //todo:wszystko
+    //todo:klasy
 
 }
