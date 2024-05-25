@@ -7,27 +7,15 @@ public class Logic {
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
-    public static void main(String[] args)
-    {
-        //TODO: Na koniec jak już będzie śmigać dodać input od użytkownika w GUI.
-        int NPCcount = 5;
-        int sizeX=20;
-        int sizeY=20;
-        if(NPCcount>(sizeX-1)*(sizeY-1)*0.25){ //mniej niż 25% planszy to npc -> czemu 25%? liczba wybrana tak o z dupy
-            System.out.println("Number of NPCs can not be higher than amount of fields.");
-        }
-        else{
-            Symulacja(sizeX,sizeY,NPCcount);
-        }
-    }
 
     static void Symulacja(int sizeX,int sizeY,int NPCcount){
 
         String[][] map = Spawning.createMap(sizeX,sizeY);
-        Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPC's
-        Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
-        Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
-
+        //Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPC's
+        ///Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
+        //Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
+        npcList.add(new NPC(0, 20, 20, 100, 2, new Weapon("Knife", 15, 1,0, 5, 5)));
+        npcList.add(new NPC(1, 1, 1, 100, 2, new Weapon("Knife", 15, 1,0, 5, 5)));
         while (npcList.size() > 1){
             System.out.println(); //pusta linijka potrzebna do formatowania
 
@@ -144,10 +132,8 @@ public class Logic {
                     if(weaponsList.get(i).quality>=tempQuality) { //szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
                         tempQuality = weaponsList.get(i).quality;
                         if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
-                            //System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaa");
                             double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, weaponsList.get(npcIndex).posX, weaponsList.get(npcIndex).posY);
                             if (distance > 0 && distance < targetDistance) {
-                                //System.out.println("bbbbbbbbbbbbbbbbbbbbb");
                                 targetDistance = distance;
                                 targetX = weaponsList.get(i).posX;
                                 targetY = weaponsList.get(i).posY;
@@ -212,10 +198,10 @@ public class Logic {
         else if(targetX < x) {
             moveX--;
         }
-        if(targetY < y) {
+        if(targetY < y){
             moveY--;
         }
-        else if(targetY > y) {
+        else if(targetY > y){
             moveY++;
         }
         for(int i = 0; i < npcList.size(); i++) {
