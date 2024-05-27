@@ -1,12 +1,14 @@
+package WeaponClasses;
+
 import static java.lang.Math.sqrt;
 
-public class Weapon {
-    String name;
-    int damage;
-    double range;
-    int quality;
-    int posX;
-    int posY;
+public abstract class Weapon {
+    public String name;
+    public int damage;
+    public double range;
+    public int quality;
+    public int posX;
+    public int posY;
     Weapon(String name, int damage, int range, int quality, int posX, int posY) {
         this.name = name;
         this.damage = damage;

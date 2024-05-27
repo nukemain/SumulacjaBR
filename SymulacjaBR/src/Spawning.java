@@ -1,4 +1,6 @@
-import java.util.ArrayList;
+import NPCClasses.*;
+import WeaponClasses.*;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -16,7 +18,7 @@ public class Spawning {
         return map;
     }
 
-    public static String[][] updateMap(int sizeX, int sizeY,List<NPC> npcList,List<Weapon> weaponsList,List<int[]> medkitList){
+    public static String[][] updateMap(int sizeX, int sizeY, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
         String[][] map = new String[sizeX][sizeY];
         //loop to fill the board with empty spaces ("[ ]")
         for(int y=0;y<sizeY;y++){
@@ -25,7 +27,7 @@ public class Spawning {
             }
         }
         for(int i=0;i<npcList.size();i++){
-            map[npcList.get(i).posY][npcList.get(i).posX] = "[x]";
+            map[npcList.get(i).posY][npcList.get(i).posX] = "[" + npcList.get(i).symbol + "]"; //symbol NPC'ta w przyszłości będzie to ikonka w gui
         }
         for(int i=0;i<weaponsList.size();i++){
             map[weaponsList.get(i).posY][weaponsList.get(i).posX] = "["+weaponsList.get(i).name.charAt(0)+"]"; //pierwszy znak z nzwy itemu
@@ -37,29 +39,29 @@ public class Spawning {
     }
 
     public static List<NPC> spawnNPCs(int sizeX, int sizeY, int NPCcount, String[][] board, List<NPC> npcArray){
-        //Logic required for spawning NPC's
+        //Logic required for spawning NPCClasses.NPC's
         //NOTE: this logic purposefully prevents spawns on the edges of the board
         Random rand = new Random();
 
-        int NPC=0; //counter for how many NPC have been spawned
+        int NPC=0; //counter for how many NPCClasses.NPC have been spawned
         while(NPC<NPCcount){
             int posX= rand.nextInt(0, sizeX);
             int posY= rand.nextInt(0, sizeY);
-            try {      //check if the random coordinates are not occupied and don't neighbour with any other NPC
-                if (!Objects.equals(board[posY][posX], "[x]") &&
-                        !Objects.equals(board[posY + 1][posX], "[x]") &&
-                        !Objects.equals(board[posY + 1][posX + 1], "[x]") &&
-                        !Objects.equals(board[posY][posX + 1], "[x]") &&
-                        !Objects.equals(board[posY - 1][posX + 1], "[x]") &&
-                        !Objects.equals(board[posY - 1][posX], "[x]") &&
-                        !Objects.equals(board[posY - 1][posX - 1], "[x]") &&
-                        !Objects.equals(board[posY][posX - 1], "[x]") &&
-                        !Objects.equals(board[posY + 1][posX - 1], "[x]")) {
+            try {      //check if the random coordinates are not occupied and don't neighbour with any other NPCClasses.NPC
+                if (Objects.equals(board[posY][posX], "[ ]") &&
+                        Objects.equals(board[posY + 1][posX], "[ ]") &&
+                        Objects.equals(board[posY + 1][posX + 1], "[ ]") &&
+                        Objects.equals(board[posY][posX + 1], "[ ]") &&
+                        Objects.equals(board[posY - 1][posX + 1], "[ ]") &&
+                        Objects.equals(board[posY - 1][posX], "[ ]") &&
+                        Objects.equals(board[posY - 1][posX - 1], "[ ]") &&
+                        Objects.equals(board[posY][posX - 1], "[ ]") &&
+                        Objects.equals(board[posY + 1][posX - 1], "[ ]")) {
                     board[posY][posX] = "[x]";
                     spawnRandomNPC(NPC, posX, posY, npcArray);
                     NPC++;
                 }else{
-                    //however we sometimes ignore the check above (with a 15% rate) to make the NPC placement more random todo: 15 wybrane tak o, może jakaś lepsza wartość?
+                    //however we sometimes ignore the check above (with a 15% rate) to make the NPCClasses.NPC placement more random todo: 15 wybrane tak o, może jakaś lepsza wartość?
                     //This also prevents a situation where the amount of NPCs that we need to spawn would make it impossible
                     //to spawn them at least 1 tile away from each other.
                     if( (rand.nextInt(1,101)<=15) && (!Objects.equals(board[posY][posX], "[x]")) ){
@@ -79,30 +81,30 @@ public class Spawning {
         switch (npcToSpawn){
             case 0:
                 //Soldier
-                npcArray.add(new NPC(index, posX, posY,150, 2, new Weapon("Knife", 15, 1,1, posX, posY)));
+                npcArray.add(new Soldier(index, posX, posY,150, 2, new Knife("Knife", 15, 1,1, posX, posY), "Σ"));
                 break;
             case 1:
                 //Medic
-                npcArray.add(new NPC(index, posX, posY, 100, 2, new Weapon("Knife", 15, 1,0, posX, posY)));
+                npcArray.add(new Medic(index, posX, posY, 100, 2, new Knife("Knife", 15, 1,0, posX, posY), "μ"));
                 break;
             case 2:
-                //Scout
-                npcArray.add(new NPC(index, posX, posY, 90, 3, new Weapon("Knife", 15, 1,0, posX, posY)));
+                //NPCClasses.Scout
+                npcArray.add(new Scout(index, posX, posY, 90, 3, new Knife("Knife", 15, 1,0, posX, posY), "Λ"));
                 break;
             case 3:
-                //Sniper
-                npcArray.add(new NPC(index, posX, posY, 100, 2, new Weapon("Knife", 15, 1,0, posX, posY)));
+                //NPCClasses.Sniper
+                npcArray.add(new Sniper(index, posX, posY, 100, 2, new Knife("Knife", 15, 1,0, posX, posY), "Θ"));
                 break;
             case 4:
-                //Spy
-                npcArray.add(new NPC(index, posX, posY, 80, 2, new Weapon("Knife", 15, 1,0, posX, posY)));
+                //NPCClasses.Spy
+                npcArray.add(new Spy(index, posX, posY, 80, 2, new Knife("Knife", 15, 1,0, posX, posY), "Ω"));
                 break;
         }
         return npcArray;
     }
 
     public static int checkNeighbours(String[][] map, int sizeX, int sizeY){
-        //Loop below counts how many non NPC neighbouring tiles are on the board.
+        //Loop below counts how many non NPCClasses.NPC neighbouring tiles are on the board.
         //The found value is then used to decide the amount of weapons and medkits to spawn
         int NoNeighbours=0;
         for (int Y = 0; Y < sizeY; Y++) {
@@ -131,16 +133,16 @@ public class Spawning {
         Random rand = new Random();
         //Logic deciding how many weapons should we spawn
         //numerical values chosen through trial and error
-        if((NoNeighbours/5)<((int)(NPCcount*1.5))){ // check if we can spawn 1.5 weapon per NPC -> if not, use a smaller number
+        if((NoNeighbours/5)<((int)(NPCcount*1.5))){ // check if we can spawn 1.5 weapon per NPCClasses.NPC -> if not, use a smaller number
             WPNcount =(NoNeighbours/5);
         }else{
             WPNcount = ((int) (NPCcount * 1.5));
         }
 
         //Logic required for spawning Weapons
-        //Works almost exactly the same way as the NPC spawning logic above
+        //Works almost exactly the same way as the NPCClasses.NPC spawning logic above
         int WPN=0;
-        int weaponToSpawn = -1; //0-Knife, 1-Rifle, 2-Sniper rifle
+        int weaponToSpawn = -1; //0-Knife, 1-Rifle, 2-NPCClasses.Sniper rifle
 
         while(WPN<WPNcount){
             int posX= rand.nextInt(0, sizeX);
@@ -158,15 +160,15 @@ public class Spawning {
                     weaponToSpawn = (int) (Math.random() * (3));
                     switch (weaponToSpawn){
                         case 0:
-                            weaponsArray.add(new Weapon("Pistol", 25, 1,1, posX, posY));
+                            weaponsArray.add(new Handgun("Handgun", 25, 1,1, posX, posY));
                             map[posY][posX] = "[P]";
                             break;
                         case 1:
-                            weaponsArray.add(new Weapon("Rifle", 35, 2,2, posX, posY));
+                            weaponsArray.add(new Rifle("Rifle", 35, 2,2, posX, posY));
                             map[posY][posX] = "[R]";
                             break;
                         case 2:
-                            weaponsArray.add(new Weapon("SniperRifle", 40, 3,3, posX, posY));
+                            weaponsArray.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
                             map[posY][posX] = "[S]";
                             break;
                     }

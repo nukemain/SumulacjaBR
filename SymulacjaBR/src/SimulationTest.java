@@ -8,9 +8,9 @@ import static java.lang.Math.sqrt;
 //Wszystkie outputy w konsoli tylko do testów
 //wkurza mnie, że za każdym razem jak szukam celu to robię nową praktycznie taką samą pętle więc kiedyś to spróbuje poprawić
 public class SimulationTest {
-    public static void simulation(/*NPC's object???*/) {
+    public static void simulation(/*NPCClasses.NPC's object???*/) {
         //TODO: it should be using objects
-        //Staty NPC do testu:
+        //Staty NPCClasses.NPC do testu:
         int x = 1;
         int y = 1;
         int HP = 50;
@@ -29,10 +29,10 @@ public class SimulationTest {
         int targetX = -1; //współrzędna x celu
         int targetY = -1; //współrzędna y celu
         double targetDistance = 999; //odległość od celu
-        int npcIndex = -1; //Numer aktualnie sterowanego NPC w tabeli npc lub linijki w pliku potem
+        int npcIndex = -1; //Numer aktualnie sterowanego NPCClasses.NPC w tabeli npc lub linijki w pliku potem
         int targetIndex = -1; //Numer celu do strzału w tabeli npc lub linijki w pliku potem
         boolean actionTaken = false;
-        //loop to find the index of current NPC
+        //loop to find the index of current NPCClasses.NPC
         for(int i = 0; i < npc.length; i++){
             if(x == npc[i][0] && y == npc[i][1]){
                 npcIndex = i;
@@ -80,14 +80,14 @@ public class SimulationTest {
                 }
             }
         }
-        //if the HP level of the NPC is higher than 50% of maximal value program check if there's an enemy in attack range
+        //if the HP level of the NPCClasses.NPC is higher than 50% of maximal value program check if there's an enemy in attack range
         else {
             boolean inRange = false; //true if there is an enemy in range, otherwise false
             int targetHP = 999; //HP points of current target
             //loop checks if there's an enemy in range and saves the coordinates of the one with the list HP points
             for(int i = 0; i < npc.length; i++) {
                 double distance = distanceCalc(npc[i][0], npc[i][1], x, y);
-                System.out.println("Sprawdzany NPC: " + npc[i][0] + " " + npc[i][1] + " " + distance);
+                System.out.println("Sprawdzany NPCClasses.NPC: " + npc[i][0] + " " + npc[i][1] + " " + distance);
                 if(distance > 0 && npc[i][2] < targetHP && distance <= range) {
                     targetDistance = distance;
                     targetHP = npc[i][2];
@@ -102,9 +102,9 @@ public class SimulationTest {
             if(inRange == true) {
                 damageDealer(DMG, npc, targetIndex);
             }
-            //if there's no one in range it looks for the closest target of travel (another NPC or better weapon)
+            //if there's no one in range it looks for the closest target of travel (another NPCClasses.NPC or better weapon)
             else {
-                //the loop finding the closest NPC and saving its coordinates
+                //the loop finding the closest NPCClasses.NPC and saving its coordinates
                 for(int i = 0; i < npc.length; i++) {
                     double distance = distanceCalc(npc[i][0], npc[i][1], x, y);
                     System.out.println("Sprawdzany: " + npc[i][0] + " " + npc[i][1] + " " + distance);
@@ -114,10 +114,10 @@ public class SimulationTest {
                         targetY = npc[i][1];
                     }
                 }
-                //this loop tries to find a weapon that is better than the one wielded by NPC and is closer than the closest enemy
+                //this loop tries to find a weapon that is better than the one wielded by NPCClasses.NPC and is closer than the closest enemy
                 //if it finds such weapon it saves its coordinates
                 //TODO: it could also be prevent from going through the loop if there's no weapon
-                System.out.println("Wybrany NPC: " + targetX + " " + targetY + " " + targetDistance);
+                System.out.println("Wybrany NPCClasses.NPC: " + targetX + " " + targetY + " " + targetDistance);
                 for(int i = 0; i < wpn.length; i++) {
                     if(wpn[i][2] > quality) {
                         double distance = distanceCalc(wpn[i][0], wpn[i][1], x, y);
@@ -130,7 +130,7 @@ public class SimulationTest {
                     }
                 }
                 System.out.println("Wybrana broń: " + targetX + " " + targetY + " " + targetDistance);
-                //calling the method to change the coordinates of the NPC in targets direction
+                //calling the method to change the coordinates of the NPCClasses.NPC in targets direction
                 for(int i = 1; i <= stamina; i++) {
                     npc = movement(targetX, targetY, x, y, npc, npcIndex);
                     x = npc[npcIndex][0];
@@ -170,11 +170,11 @@ public class SimulationTest {
         double distance = sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
         return  distance;
     }
-    //TODO: prevent NPC from moving to the space occupied by the other NPC
+    //TODO: prevent NPCClasses.NPC from moving to the space occupied by the other NPCClasses.NPC
     public static int[][] movement(int targetX, int targetY, int x, int y, int[][] npc, int npcIndex) {
         //TODO: popraw ifoze na trzy opcje x i trzy opcje y
         //targets coordinates are saved as targetX, targetY
-        //proponuje, żeby NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
+        //proponuje, żeby NPCClasses.NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         System.out.println("Poruszam się");
         if(targetY < y) {
             npc[npcIndex][1]--;
