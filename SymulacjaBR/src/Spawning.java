@@ -81,7 +81,7 @@ public class Spawning {
         switch (npcToSpawn){
             case 0:
                 //Soldier
-                npcArray.add(new Soldier(index, posX, posY,150, 2, new Knife("Knife", 15, 1,1, posX, posY), "Σ"));
+                npcArray.add(new Soldier(index, posX, posY,150, 2, new Knife("Knife", 15, 1,0, posX, posY), "Σ"));
                 break;
             case 1:
                 //Medic

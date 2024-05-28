@@ -131,17 +131,21 @@ public class Logic {
                 //this loop tries to find a weapon that is better than the one wielded by NPCClasses.NPC and is closer than the closest enemy
                 //if it finds such weapon it saves its coordinates
                 //TODO: it could also be prevent from going through the loop if there's no weapon or no better weapon is present
-                int tempQuality=0;
-                for(int i = 0; i < weaponsList.size(); i++) {
-                    if(weaponsList.get(i).quality>=tempQuality) { //szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
-                        tempQuality = weaponsList.get(i).quality;
-                        if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
-                            double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, weaponsList.get(npcIndex).posX, weaponsList.get(npcIndex).posY);
-                            if (distance > 0 && distance < targetDistance) {
-                                targetDistance = distance;
-                                targetX = weaponsList.get(i).posX;
-                                targetY = weaponsList.get(i).posY;
-                            }
+                int tempQuality = 0;
+                for(int i = 0; i < weaponsList.size(); i++) {//szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
+                    if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
+                        double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
+                        if (distance > 0 && distance < targetDistance) {
+                            targetDistance = distance;
+                            targetX = weaponsList.get(i).posX;
+                            targetY = weaponsList.get(i).posY;
+                            tempQuality = weaponsList.get(i).quality;
+                        }
+                        else if (distance == targetDistance && weaponsList.get(i).quality > tempQuality) {
+                            targetDistance = distance;
+                            targetX = weaponsList.get(i).posX;
+                            targetY = weaponsList.get(i).posY;
+                            tempQuality = weaponsList.get(i).quality;
                         }
                     }
                 }
@@ -248,16 +252,4 @@ public class Logic {
         }
         //TODO: Przerobić żeby działało z nową ArrayList NPCClasses.NPC'ów
     }
-    /*
-    public static int[][] itemRemover(int[][] item, int indexTarget){
-        int[][] itemRemover = new int[item.length - 1][];
-        for (int i = 0, k = 0; i < item.length; i++) {
-            if (i != indexTarget) {
-                itemRemover[k] = item[i];
-                k++;
-            }
-        }
-        return itemRemover;
-    }
-    */
 }
