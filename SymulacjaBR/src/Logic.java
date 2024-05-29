@@ -1,34 +1,78 @@
 import NPCClasses.*;
-import WeaponClasses.Knife;
+import javax.swing.*;
+import java.awt.*;
+
 import WeaponClasses.Weapon;
 
 import java.util.*;
+import java.util.List;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
+
+
 public class Logic {
+    //Lists required for logic to function
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
 
-    static void Symulacja(int sizeX,int sizeY,int NPCcount){
 
+
+    static void Symulacja(int sizeX,int sizeY,int NPCcount){
+        //required for gui
+        JFrame frame = new JFrame();
+        JPanel panel = new JPanel();
+        JLabel[][] labelGrid = new JLabel[sizeX][sizeY];
+        //okienko
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500, 500);
+        frame.setTitle("https://open.spotify.com/track/49X0LAl6faAusYq02PRAY6?si=79bb6030809d4eda");
+        frame.setResizable(false);
+        ImageIcon logo = new ImageIcon("logo.png");
+        panel= new JPanel(new GridLayout(sizeX,sizeY));
+        frame.setIconImage(logo.getImage());
+
+        for(int y=0;y<sizeY;y++){
+            for(int x=0;x<sizeX;x++){
+                JLabel label = new JLabel();
+                label.setOpaque(true);
+                //label.setText("[("+x+","+y+")]");
+                labelGrid[x][y] = label;
+                panel.add(label);
+            }
+        }
+
+        //ok
         String[][] map = Spawning.createMap(sizeX,sizeY);
         Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPCClasses.NPC's
         Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
         Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
-        //npcList.add(new Medic(0, 20, 20, 100, 2, new Knife("Knife", 15, 1,0, 5, 5), "μ"));
-        //npcList.add(new Medic(1, 1, 1, 100, 2, new Knife("Knife", 15, 1,0, 5, 5), "μ"));
+
+        frame.add(panel);
+        frame.setVisible(true);
+
         while (npcList.size() > 1){
+
             System.out.println(); //pusta linijka potrzebna do formatowania
 
             for(int y=0;y<sizeY;y++){
                 for(int x=0;x<sizeX;x++){
                     System.out.print(map[y][x]);
+                    labelGrid[x][y].setText(map[y][x]);
+                    if(map[y][x].equals("[ ]")){
+                       labelGrid[x][y].setBackground(Color.gray);
+                    }
+                    else if(map[y][x].equals("[H]")||map[y][x].equals("[R]")||map[y][x].equals("[S]")||map[y][x].equals("[+]")){
+                        labelGrid[x][y].setBackground(Color.BLACK);
+                    }
+                    else{labelGrid[x][y].setBackground(Color.white);}
                 }
                 System.out.println();
             }
+
+
             System.out.println("Press any key to continue...");
             try{System.in.read();}
             catch(Exception e){}
@@ -113,7 +157,6 @@ public class Logic {
                     inRange = true;
                 }
             }
-            //jeśli znalazło cel to wywołuje metodę odpowiedzialną za zadawanie obrażeń
             if(inRange) {
                 damageDealer(npcIndex, targetIndex);
             }
@@ -186,8 +229,7 @@ public class Logic {
             }
         }
     }
-    //the method to calculate the distance between to point on the map
-    //TODO: check if it can be simplified - not really
+   //method used to calculate the distance between points on the map
     public static double distanceCalc(int targetX, int targetY, int x, int y) {
         return sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
     }
@@ -234,10 +276,6 @@ public class Logic {
     }
     public static void damageDealer(int indexAttacker, int indexTarget){
         //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
-
-        //lekka przeróbka funkcji - zamiast przekazywać sam damage przekazuję index atakującego npc
-        //wykorzystuje to by drukować więcej info
-
         System.out.print("\nNPCClasses.NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPCClasses.NPC "
                 +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage+")"+
@@ -250,6 +288,5 @@ public class Logic {
             npcList.remove(indexTarget);
             System.out.print(" NPCClasses.NPC "+indexTarget + " został zabity!");
         }
-        //TODO: Przerobić żeby działało z nową ArrayList NPCClasses.NPC'ów
     }
 }

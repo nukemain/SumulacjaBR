@@ -161,7 +161,7 @@ public class Spawning {
                     switch (weaponToSpawn){
                         case 0:
                             weaponsArray.add(new Handgun("Handgun", 25, 1,1, posX, posY));
-                            map[posY][posX] = "[P]";
+                            map[posY][posX] = "[H]";
                             break;
                         case 1:
                             weaponsArray.add(new Rifle("Rifle", 35, 2,2, posX, posY));
