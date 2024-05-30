@@ -1,5 +1,6 @@
 import NPCClasses.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 import WeaponClasses.Weapon;
@@ -17,6 +18,8 @@ public class Logic {
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
+    static JLabel labelTop = new JLabel();
+    static List<String > labelTopText = new ArrayList<>();
 
 
 
@@ -24,21 +27,28 @@ public class Logic {
         //required for gui
         JFrame frame = new JFrame();
         JPanel panel = new JPanel();
+        ImageIcon medkit = new ImageIcon("medpack.png");
+        Border border = BorderFactory.createLineBorder(Color.black, 1);
+        int cellSize = 30;//zmiana tej wartości zmienia rozmiar okienka,ikonek,skalowania obrazów - ogólnie z tego co widzę to 30 to idealna liczba
+        // todo inna wartość? chyba nie ale można robić testy, jest 3:30 w nocy i nie chce mi sie teraz tego szukać
+
         JLabel[][] labelGrid = new JLabel[sizeX][sizeY];
-        //okienko
+
+        //main window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 500);
+        frame.setSize(cellSize*sizeX, 100+cellSize*sizeY);
         frame.setTitle("https://open.spotify.com/track/49X0LAl6faAusYq02PRAY6?si=79bb6030809d4eda");
         frame.setResizable(false);
         ImageIcon logo = new ImageIcon("logo.png");
         panel= new JPanel(new GridLayout(sizeX,sizeY));
         frame.setIconImage(logo.getImage());
 
+        //grid of labels
         for(int y=0;y<sizeY;y++){
             for(int x=0;x<sizeX;x++){
                 JLabel label = new JLabel();
                 label.setOpaque(true);
-                //label.setText("[("+x+","+y+")]");
+                label.setBorder(border);
                 labelGrid[x][y] = label;
                 panel.add(label);
             }
@@ -49,27 +59,41 @@ public class Logic {
         Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPCClasses.NPC's
         Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
         Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
-
-        frame.add(panel);
+        labelTop.setText("test aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa https://open.spotify.com/track/55kxZu707uyu0n1DND2pl7?si=ecca10c47a5348f9\n");
+        labelTop.setOpaque(true);
+        //labelTop.setVerticalAlignment(JLabel.CENTER);
+        labelTop.setPreferredSize(new Dimension(frame.getWidth(), 100));
+        //frame.add(labelTop);
+        //frame.add(panel);
+        frame.setLayout(new BorderLayout());
+        frame.add(labelTop, BorderLayout.NORTH);
+        frame.add(panel, BorderLayout.CENTER);
         frame.setVisible(true);
 
         while (npcList.size() > 1){
+            labelTopText.clear();
 
-            System.out.println(); //pusta linijka potrzebna do formatowania
+            //System.out.println(); //pusta linijka potrzebna do formatowania
 
             for(int y=0;y<sizeY;y++){
                 for(int x=0;x<sizeX;x++){
-                    System.out.print(map[y][x]);
-                    labelGrid[x][y].setText(map[y][x]);
-                    if(map[y][x].equals("[ ]")){
-                       labelGrid[x][y].setBackground(Color.gray);
-                    }
-                    else if(map[y][x].equals("[H]")||map[y][x].equals("[R]")||map[y][x].equals("[S]")||map[y][x].equals("[+]")){
-                        labelGrid[x][y].setBackground(Color.BLACK);
-                    }
-                    else{labelGrid[x][y].setBackground(Color.white);}
+                    //System.out.print(map[y][x]);
+                    //labelGrid[x][y].setText(map[y][x]);
+                    labelGrid[x][y].setIcon(null);
+                    labelGrid[x][y].setBackground(Color.gray);
                 }
-                System.out.println();
+                //System.out.println();
+            }
+
+
+            for(int i=0;i<npcList.size();i++){
+                labelGrid[npcList.get(i).posX][npcList.get(i).posY].setIcon(resizeImg(npcList.get(i).icon,cellSize,cellSize));
+            }
+            for(int i=0;i<weaponsList.size();i++){
+                labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setIcon(resizeImg(weaponsList.get(i).icon,cellSize,cellSize));
+            }
+            for(int i=0;i<medkitList.size();i++){
+                labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setIcon(resizeImg(medkit,cellSize,cellSize));
             }
 
 
@@ -80,10 +104,21 @@ public class Logic {
                 decisionMaker(i);
             }
             map = Spawning.updateMap(sizeX,sizeY,npcList,weaponsList,medkitList);
-            //to samo co system("pause")
+            labelTop.setText("");
+            String out = "<html>";
+            for (int i = 0; i < labelTopText.size(); i++) { //czarna magia związana z zawijaniem tekstu - o więcej info pytać Piotra
+                out = out + labelTopText.get(i) + "<br>";
+            }
+            out = out + "</html>";
+            labelTop.setText(out);
         }
         System.out.println("Winner is " + npcList.getFirst().index);
     }
+
+
+
+
+
     public static void decisionMaker(int npcIndex) {
 
         //Dane potrzebne do pracy programu:
@@ -274,8 +309,9 @@ public class Logic {
             // odp: stoi w miejscu, w następnej "turze" będą sie napierdalać
         }
     }
-    public static void damageDealer(int indexAttacker, int indexTarget){
+    public static void damageDealer(int indexAttacker, int indexTarget) {
         //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
+        /*
         System.out.print("\nNPCClasses.NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPCClasses.NPC "
                 +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage+")"+
@@ -287,6 +323,24 @@ public class Logic {
         if (npcList.get(indexTarget).HP <= 0) {
             npcList.remove(indexTarget);
             System.out.print(" NPCClasses.NPC "+indexTarget + " został zabity!");
+        }*/
+        String text = "\nNPCClasses.NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPCClasses.NPC "
+                +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage+")"+
+                "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
+        npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage;
+        text = text + npcList.get(indexTarget).HP;
+        if (npcList.get(indexTarget).HP <= 0) {
+            npcList.remove(indexTarget);
+            text = text + " NPCClasses.NPC "+indexTarget + " został zabity!";
         }
+        labelTopText.add(text);
+    }
+
+
+
+    public static ImageIcon resizeImg(ImageIcon img, int width, int height) {
+        Image newImg = img.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(newImg);
     }
 }

@@ -78,6 +78,7 @@ public class Spawning {
     //Moja propozycja na spawny npc, potem można je przenieść do osobnych plików jak już będą się czymś wyróżniać np. Passive Regen
     public static List<NPC> spawnRandomNPC(int index, int posX, int posY, List<NPC> npcArray){
         int npcToSpawn = (int) (Math.random() * (5));
+        //int npcToSpawn = 0;
         switch (npcToSpawn){
             case 0:
                 //Soldier
@@ -157,7 +158,7 @@ public class Spawning {
                         Objects.equals(map[posY - 1][posX - 1], "[ ]") &&
                         Objects.equals(map[posY][posX - 1], "[ ]") &&
                         Objects.equals(map[posY + 1][posX - 1], "[ ]")) {
-                    weaponToSpawn = (int) (Math.random() * (3));
+                    weaponToSpawn = (int) (Math.random() * (4));
                     switch (weaponToSpawn){
                         case 0:
                             weaponsArray.add(new Handgun("Handgun", 25, 1,1, posX, posY));
@@ -170,6 +171,10 @@ public class Spawning {
                         case 2:
                             weaponsArray.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
                             map[posY][posX] = "[S]";
+                            break;
+                        case 3:
+                            weaponsArray.add(new Shotgun("Shotgun", 50, 1,2, posX, posY));
+                            map[posY][posX] = "[B]";
                             break;
                     }
                     WPN++;

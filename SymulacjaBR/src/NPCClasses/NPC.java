@@ -1,6 +1,8 @@
 package NPCClasses;
 import WeaponClasses.*;
 
+import javax.swing.*;
+
 public abstract class NPC {
     public int index;
     public int posX;
@@ -10,6 +12,7 @@ public abstract class NPC {
     public int stamina;
     public Weapon weapon;
     public String symbol;
+    public ImageIcon icon;
     NPC(int index, int posX,int posY, int maxHP, int stamina, Weapon weapon, String symbol){
         this.index = index;
         this.posX = posX;
@@ -19,7 +22,6 @@ public abstract class NPC {
         this.stamina = stamina;
         this.weapon = weapon;
         this.symbol = symbol;
+        this.icon = new ImageIcon("default.png");
     }
-    //todo:klasy
-
 }
