@@ -14,8 +14,7 @@ public class FileReader {
     public static int npcCount;
     public static int size;
     public static void fileReader() throws FileNotFoundException {
-        String controllerData = null;
-        String npcData = null;
+        String dataString = null;
         int index = -1;
         int posX = -1;
         int posY = -1;
@@ -23,7 +22,8 @@ public class FileReader {
         String wpnName = null;
         String symbol = null;
         Weapon wpn = null;
-        try {
+        int itemCount = -1;
+        /*try {
             File testFile = new File("Test_File.txt");
             if (testFile.createNewFile()) {
                 System.out.println("File created: " + testFile.getName());
@@ -43,23 +43,29 @@ public class FileReader {
             myWriter.write("2 14 14 85 Rifle Λ\n");
             myWriter.write("3 9 16 30 SniperRifle Θ\n");
             myWriter.write("4 19 3 60 Shotgun Ω\n");
+            myWriter.write("2\n");
+            myWriter.write("Handgun 1 13\n");
+            myWriter.write("Shotgun 12 12\n");
+            myWriter.write("2\n");
+            myWriter.write("10 10\n");
+            myWriter.write("5 17\n");
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
-        }
-        /*Scanner fileNameReader = new Scanner(System.in);
+        }*/
+        Scanner fileNameReader = new Scanner(System.in);
         System.out.println("Enter the name of the file to read: ");
-        String fileName = fileNameReader.nextLine();*/
+        String fileName = fileNameReader.nextLine();
         try {
-            File dataFile = new File("Test_File.txt");
+            File dataFile = new File(fileName);
             Scanner dataReader = new Scanner(dataFile);
             if (dataReader.hasNextLine()) {
-                controllerData = dataReader.nextLine();
-                System.out.println(controllerData);
+                dataString = dataReader.nextLine();
+                System.out.println(dataString);
             }
-            String[] dataArray = controllerData.split(" ", 2);
+            String[] dataArray = dataString.split(" ", 2);
             try {
                 npcCount = Integer.valueOf(dataArray[0]);
                 System.out.println("Converted integer: " + npcCount);
@@ -68,13 +74,14 @@ public class FileReader {
             } catch (NumberFormatException e) {
                 System.out.println("Invalid integer input");
             }
-            System.out.println(controllerData);
+            System.out.println(dataString);
+            Logic.map = Spawning.createMap(size, size);
             for(int i = 0; i < npcCount; i++) {
                 if (dataReader.hasNextLine()) {
-                    npcData = dataReader.nextLine();
-                    System.out.println(npcData);
+                    dataString = dataReader.nextLine();
+                    System.out.println(dataString);
                 }
-                String[] npcDataArray = npcData.split(" ", 6);
+                String[] npcDataArray = dataString.split(" ", 6);
                 try {
                     index = Integer.valueOf(npcDataArray[0]);
                     posX = Integer.valueOf(npcDataArray[1]);
@@ -121,6 +128,72 @@ public class FileReader {
                     default -> System.out.println("Wrong symbol");
                 }
                 Logic.npcList.get(i).HP = HP;
+            }
+            if (dataReader.hasNextLine()) {
+                dataString = dataReader.nextLine();
+                System.out.println(dataString);
+            }
+            try {
+                itemCount = Integer.valueOf(dataString);
+                System.out.println("Converted integer: " + itemCount);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid integer input");
+            }
+            for(int i = 0; i < itemCount; i++) {
+                if (dataReader.hasNextLine()) {
+                    dataString = dataReader.nextLine();
+                    System.out.println(dataString);
+                }
+                String[] wpnDataArray = dataString.split(" ", 3);
+                try {
+                    wpnName = wpnDataArray[0];
+                    posX = Integer.valueOf(wpnDataArray[1]);
+                    posY = Integer.valueOf(wpnDataArray[2]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid integer input");
+                }
+                switch (wpnName){
+                    case "Handgun":
+                        Logic.weaponsList.add(new Handgun("Handgun", 25, 1,1, posX, posY));
+                        Logic.map[posY][posX] = "[H]";
+                        break;
+                    case "Rifle":
+                        Logic.weaponsList.add(new Rifle("Rifle", 35, 2,2, posX, posY));
+                        Logic.map[posY][posX] = "[R]";
+                        break;
+                    case "SniperRifle":
+                        Logic.weaponsList.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
+                        Logic.map[posY][posX] = "[S]";
+                        break;
+                    case "Shotgun":
+                        Logic.weaponsList.add(new Shotgun("Shotgun", 50, 1,2, posX, posY));
+                        Logic.map[posY][posX] = "[B]";
+                }
+            }
+            if (dataReader.hasNextLine()) {
+                dataString = dataReader.nextLine();
+                System.out.println(dataString);
+            }
+            try {
+                itemCount = Integer.valueOf(dataString);
+                System.out.println("Converted integer: " + itemCount);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid integer input");
+            }
+            for(int i = 0; i < itemCount; i++) {
+                if (dataReader.hasNextLine()) {
+                    dataString = dataReader.nextLine();
+                    System.out.println(dataString);
+                }
+                String[] medDataArray = dataString.split(" ", 2);
+                try {
+                    posX = Integer.valueOf(medDataArray[0]);
+                    posY = Integer.valueOf(medDataArray[1]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid integer input");
+                }
+                Logic.map[posY][posX] = "[+]";
+                Logic.medkitList.add(new int[]{posX, posY});
             }
             dataReader.close();
         } catch (FileNotFoundException e) {
