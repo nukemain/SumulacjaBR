@@ -56,9 +56,11 @@ public class Logic {
 
         //ok
         String[][] map = Spawning.createMap(sizeX,sizeY);
-        Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPCClasses.NPC's
-        Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
-        Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
+        if (npcList.isEmpty()) {
+            Spawning.spawnNPCs(sizeX, sizeY, NPCcount, map, npcList);//Logic required for spawning NPCClasses.NPC's
+        }
+        Spawning.spawnWeapons(map, sizeX, sizeY, NPCcount, weaponsList);//Spawning weapons on the map
+        Spawning.spawnMedkits(map, sizeX, sizeY, NPCcount, medkitList);//Spawning medkits on the map
         labelTop.setText("test aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa https://open.spotify.com/track/55kxZu707uyu0n1DND2pl7?si=ecca10c47a5348f9\n");
         labelTop.setOpaque(true);
         //labelTop.setVerticalAlignment(JLabel.CENTER);
