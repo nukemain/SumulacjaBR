@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.List;
 
@@ -101,7 +102,11 @@ public class Logic {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("wczyt");
-                //todo:
+                try {
+                    FileReader.fileReader();
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
         //================================================
@@ -111,7 +116,7 @@ public class Logic {
         //main window
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(200+cellSize*size, 150+cellSize*size);
-        frame.setTitle("Symulacja bttle royale");
+        frame.setTitle("Symulacja battle royale");
         frame.setResizable(false);
         ImageIcon logo = new ImageIcon("logo.png");
         panel= new JPanel(new GridLayout(size,size));
@@ -190,24 +195,11 @@ public class Logic {
 
         //================================================
         //code responsible for spawning NPC's,Medkits and weapons if we are not loading data from a saved file
-        if(map == null) {
-            map = Spawning.createMap(size);
-        }
-        if (npcList.isEmpty()) {
-            Spawning.spawnNPCs(size, NPCcount, map, npcList);//Logic required for spawning NPCClasses.NPC's
-        }
-        if (weaponsList.isEmpty()) {
-            Spawning.spawnWeapons(map,size,NPCcount, weaponsList);//Spawning weapons on the map //todo remake methods to only use one size variable
-        }
-        if (weaponsList.isEmpty()) {
-            Spawning.spawnMedkits(map,size, NPCcount, medkitList);//Spawning medkits on the map
-        }
+        map = Spawning.createMap(size);
+        Spawning.spawnNPCs(size, NPCcount, map, npcList);//Logic required for spawning NPCClasses.NPC's
+        Spawning.spawnWeapons(map,size,NPCcount, weaponsList);//Spawning weapons on the map //todo remake methods to only use one size variable
+        Spawning.spawnMedkits(map,size, NPCcount, medkitList);//Spawning medkits on the map
         //================================================
-
-        String[][] map = Spawning.createMap(size);
-        Spawning.spawnNPCs(size,NPCcount,map, npcList);//Logic required for spawning NPCClasses.NPC's
-        Spawning.spawnWeapons(map,size,NPCcount, weaponsList);//Spawning weapons on the map
-        Spawning.spawnMedkits(map,size,NPCcount, medkitList);//Spawning medkits on the map
         //labels
         labelInfo.setMinimumSize(new Dimension(buttonTop.getWidth(), buttonTop.getWidth()));
         labelInfo.setPreferredSize(new Dimension(buttonTop.getWidth(), buttonTop.getWidth()));

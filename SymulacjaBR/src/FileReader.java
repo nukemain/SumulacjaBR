@@ -76,6 +76,7 @@ public class FileReader {
             }
             System.out.println(dataString);
             Logic.map = Spawning.createMap(size);
+            Logic.npcList.clear();
             for(int i = 0; i < npcCount; i++) {
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
@@ -139,6 +140,7 @@ public class FileReader {
             } catch (NumberFormatException e) {
                 System.out.println("Invalid integer input");
             }
+            Logic.weaponsList.clear();
             for(int i = 0; i < itemCount; i++) {
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
@@ -180,6 +182,7 @@ public class FileReader {
             } catch (NumberFormatException e) {
                 System.out.println("Invalid integer input");
             }
+            Logic.medkitList.clear();
             for(int i = 0; i < itemCount; i++) {
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
