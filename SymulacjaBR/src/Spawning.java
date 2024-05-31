@@ -7,11 +7,11 @@ import java.util.Random;
 
 public class Spawning {
 
-    public static String[][] createMap(int sizeX, int sizeY){
-        String[][] map = new String[sizeX][sizeY];
+    public static String[][] createMap(int size){
+        String[][] map = new String[size][size];
         //loop to fill the board with empty spaces ("[ ]")
-        for(int y=0;y<sizeY;y++){
-            for(int x=0;x<sizeX;x++){
+        for(int y=0;y<size;y++){
+            for(int x=0;x<size;x++){
                 map[y][x] = "[ ]";
             }
         }
@@ -38,15 +38,15 @@ public class Spawning {
         return map;
     }
 
-    public static List<NPC> spawnNPCs(int sizeX, int sizeY, int NPCcount, String[][] board, List<NPC> npcArray){
+    public static List<NPC> spawnNPCs(int size, int NPCcount, String[][] board, List<NPC> npcArray){
         //Logic required for spawning NPCClasses.NPC's
         //NOTE: this logic purposefully prevents spawns on the edges of the board
         Random rand = new Random();
 
         int NPC=0; //counter for how many NPCClasses.NPC have been spawned
         while(NPC<NPCcount){
-            int posX= rand.nextInt(0, sizeX);
-            int posY= rand.nextInt(0, sizeY);
+            int posX= rand.nextInt(0, size);
+            int posY= rand.nextInt(0, size);
             try {      //check if the random coordinates are not occupied and don't neighbour with any other NPCClasses.NPC
                 if (Objects.equals(board[posY][posX], "[ ]") &&
                         Objects.equals(board[posY + 1][posX], "[ ]") &&
@@ -89,27 +89,27 @@ public class Spawning {
                 npcArray.add(new Medic(index, posX, posY, 100, 2, new Knife("Knife", 15, 1,0, posX, posY), "μ"));
                 break;
             case 2:
-                //NPCClasses.Scout
+                //Scout
                 npcArray.add(new Scout(index, posX, posY, 90, 3, new Knife("Knife", 15, 1,0, posX, posY), "Λ"));
                 break;
             case 3:
-                //NPCClasses.Sniper
+                //Sniper
                 npcArray.add(new Sniper(index, posX, posY, 100, 2, new Knife("Knife", 15, 1,0, posX, posY), "Θ"));
                 break;
             case 4:
-                //NPCClasses.Spy
+                //Spy
                 npcArray.add(new Spy(index, posX, posY, 80, 2, new Knife("Knife", 15, 1,0, posX, posY), "Ω"));
                 break;
         }
         return npcArray;
     }
 
-    public static int checkNeighbours(String[][] map, int sizeX, int sizeY){
+    public static int checkNeighbours(String[][] map, int size){
         //Loop below counts how many non NPCClasses.NPC neighbouring tiles are on the board.
         //The found value is then used to decide the amount of weapons and medkits to spawn
         int NoNeighbours=0;
-        for (int Y = 0; Y < sizeY; Y++) {
-            for (int X = 0; X < sizeX; X++){
+        for (int Y = 0; Y < size; Y++) {
+            for (int X = 0; X < size; X++){
                 try {
                     if (Objects.equals(map[Y][X], "[ ]") &&
                             Objects.equals(map[Y + 1][X], "[ ]") &&
@@ -128,9 +128,9 @@ public class Spawning {
         return NoNeighbours;
     }
 
-    public static List<Weapon> spawnWeapons(String[][] map, int sizeX, int sizeY, int NPCcount, List<Weapon> weaponsArray){
+    public static List<Weapon> spawnWeapons(String[][] map, int size, int NPCcount, List<Weapon> weaponsArray){
         int WPNcount=0;
-        int NoNeighbours=checkNeighbours(map, sizeX, sizeY);
+        int NoNeighbours=checkNeighbours(map, size);
         Random rand = new Random();
         //Logic deciding how many weapons should we spawn
         //numerical values chosen through trial and error
@@ -146,8 +146,8 @@ public class Spawning {
         int weaponToSpawn = -1; //0-Knife, 1-Rifle, 2-NPCClasses.Sniper rifle
 
         while(WPN<WPNcount){
-            int posX= rand.nextInt(0, sizeX);
-            int posY= rand.nextInt(0, sizeY);
+            int posX= rand.nextInt(0, size);
+            int posY= rand.nextInt(0, size);
             try {
                 if (Objects.equals(map[posY][posX], "[ ]") &&
                         Objects.equals(map[posY + 1][posX], "[ ]") &&
@@ -158,7 +158,7 @@ public class Spawning {
                         Objects.equals(map[posY - 1][posX - 1], "[ ]") &&
                         Objects.equals(map[posY][posX - 1], "[ ]") &&
                         Objects.equals(map[posY + 1][posX - 1], "[ ]")) {
-                    weaponToSpawn = (int) (Math.random() * (4));
+                    weaponToSpawn = (int) (Math.random() * (5));
                     switch (weaponToSpawn){
                         case 0:
                             weaponsArray.add(new Handgun("Handgun", 25, 1,1, posX, posY));
@@ -169,12 +169,16 @@ public class Spawning {
                             map[posY][posX] = "[R]";
                             break;
                         case 2:
-                            weaponsArray.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
-                            map[posY][posX] = "[S]";
+                            weaponsArray.add(new SMG("SMG", 50, 1,2, posX, posY));
+                            map[posY][posX] = "[U]";
                             break;
                         case 3:
                             weaponsArray.add(new Shotgun("Shotgun", 50, 1,2, posX, posY));
                             map[posY][posX] = "[B]";
+                            break;
+                        case 4:
+                            weaponsArray.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
+                            map[posY][posX] = "[S]";
                             break;
                     }
                     WPN++;
@@ -183,9 +187,9 @@ public class Spawning {
         }
         return weaponsArray;
     }
-    public static List<int[]> spawnMedkits(String[][] map, int sizeX, int sizeY, int NPCcount, List<int[]> medpackArray){
+    public static List<int[]> spawnMedkits(String[][] map, int size, int NPCcount, List<int[]> medpackArray){
         int MDPcount=0;
-        int NoNeighbours=checkNeighbours(map, sizeX, sizeY);
+        int NoNeighbours=checkNeighbours(map, size);
         Random rand = new Random();
         if((NoNeighbours/5)<NPCcount){
             MDPcount =(NoNeighbours/5);
@@ -194,8 +198,8 @@ public class Spawning {
         }
         int MDP=0;
         while(MDP<MDPcount){
-            int posX= rand.nextInt(0, sizeX);
-            int posY= rand.nextInt(0, sizeY);
+            int posX= rand.nextInt(0, size);
+            int posY= rand.nextInt(0, size);
             try {
                 if (Objects.equals(map[posY][posX], "[ ]") &&
                         Objects.equals(map[posY + 1][posX], "[ ]") &&

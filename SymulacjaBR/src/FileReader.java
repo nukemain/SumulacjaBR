@@ -75,7 +75,7 @@ public class FileReader {
                 System.out.println("Invalid integer input");
             }
             System.out.println(dataString);
-            Logic.map = Spawning.createMap(size, size);
+            Logic.map = Spawning.createMap(size);
             for(int i = 0; i < npcCount; i++) {
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
