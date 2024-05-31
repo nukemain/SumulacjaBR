@@ -58,8 +58,9 @@ public class FileReader {
         Scanner fileNameReader = new Scanner(System.in);
         System.out.println("Enter the name of the file to read: ");
         String fileName = fileNameReader.nextLine();
+        String realFileName = "SBR_Save_" + fileName + ".txt";
         try {
-            File dataFile = new File(fileName);
+            File dataFile = new File(realFileName);
             Scanner dataReader = new Scanner(dataFile);
             if (dataReader.hasNextLine()) {
                 dataString = dataReader.nextLine();
@@ -75,6 +76,7 @@ public class FileReader {
                 System.out.println("Invalid integer input");
             }
             System.out.println(dataString);
+            Logic.map.clear();
             Logic.map = Spawning.createMap(size);
             Logic.npcList.clear();
             for(int i = 0; i < npcCount; i++) {
@@ -113,6 +115,10 @@ public class FileReader {
                     case "Shotgun" -> {
                         System.out.println(wpnName);
                         wpn = new Shotgun(wpnName, 50, 1, 2, posX, posY);
+                    }
+                    case "SMG" -> {
+                        System.out.println(wpnName);
+                        wpn = new SMG(wpnName, 50, 1,2, posX, posY);
                     }
                 }
                 switch (symbol) {
@@ -157,19 +163,24 @@ public class FileReader {
                 switch (wpnName){
                     case "Handgun":
                         Logic.weaponsList.add(new Handgun("Handgun", 25, 1,1, posX, posY));
-                        Logic.map[posY][posX] = "[H]";
+                        Logic.map.get(posY).set(posX, "[H]");
                         break;
                     case "Rifle":
                         Logic.weaponsList.add(new Rifle("Rifle", 35, 2,2, posX, posY));
-                        Logic.map[posY][posX] = "[R]";
+                        Logic.map.get(posY).set(posX, "[R]");
                         break;
                     case "SniperRifle":
                         Logic.weaponsList.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
-                        Logic.map[posY][posX] = "[S]";
+                        Logic.map.get(posY).set(posX, "[S]");
                         break;
                     case "Shotgun":
                         Logic.weaponsList.add(new Shotgun("Shotgun", 50, 1,2, posX, posY));
-                        Logic.map[posY][posX] = "[B]";
+                        Logic.map.get(posY).set(posX, "[B]");
+                        break;
+                    case "SMG":
+                        Logic.weaponsList.add(new SMG("SMG", 50, 1,2, posX, posY));
+                        Logic.map.get(posY).set(posX, "[U]");
+                        break;
                 }
             }
             if (dataReader.hasNextLine()) {
@@ -195,7 +206,7 @@ public class FileReader {
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid integer input");
                 }
-                Logic.map[posY][posX] = "[+]";
+                Logic.map.get(posY).set(posX, "[+]");
                 Logic.medkitList.add(new int[]{posX, posY});
             }
             dataReader.close();

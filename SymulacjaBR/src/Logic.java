@@ -34,7 +34,8 @@ public class Logic {
     static boolean buttonHeld = false;
     static final Object lock = new Object();
 
-    static String[][] map;
+    //static String[][] map;
+    static List<List<String>> map = new ArrayList<>();
 
     static void Symulacja(int size, int NPCcount){
         //required for gui
@@ -91,6 +92,7 @@ public class Logic {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("zapis");
                 //todo
+                FileSaver.fileSaver(size);
             }
         });
         //================================================

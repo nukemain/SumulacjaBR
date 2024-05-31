@@ -1,18 +1,20 @@
 import NPCClasses.*;
 import WeaponClasses.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 public class Spawning {
 
-    public static String[][] createMap(int size){
-        String[][] map = new String[size][size];
+    public static List<List<String>> createMap(int size){
+        List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
         for(int y=0;y<size;y++){
+            map.add(new ArrayList<>());
             for(int x=0;x<size;x++){
-                map[y][x] = "[ ]";
+                map.get(y).add("[ ]");
             }
         }
         return map;
@@ -38,7 +40,7 @@ public class Spawning {
         return map;
     }
 
-    public static List<NPC> spawnNPCs(int size, int NPCcount, String[][] board, List<NPC> npcArray){
+    public static List<NPC> spawnNPCs(int size, int NPCcount, List<List<String>> board, List<NPC> npcArray){
         //Logic required for spawning NPCClasses.NPC's
         //NOTE: this logic purposefully prevents spawns on the edges of the board
         Random rand = new Random();
@@ -48,24 +50,24 @@ public class Spawning {
             int posX= rand.nextInt(0, size);
             int posY= rand.nextInt(0, size);
             try {      //check if the random coordinates are not occupied and don't neighbour with any other NPCClasses.NPC
-                if (Objects.equals(board[posY][posX], "[ ]") &&
-                        Objects.equals(board[posY + 1][posX], "[ ]") &&
-                        Objects.equals(board[posY + 1][posX + 1], "[ ]") &&
-                        Objects.equals(board[posY][posX + 1], "[ ]") &&
-                        Objects.equals(board[posY - 1][posX + 1], "[ ]") &&
-                        Objects.equals(board[posY - 1][posX], "[ ]") &&
-                        Objects.equals(board[posY - 1][posX - 1], "[ ]") &&
-                        Objects.equals(board[posY][posX - 1], "[ ]") &&
-                        Objects.equals(board[posY + 1][posX - 1], "[ ]")) {
-                    board[posY][posX] = "[x]";
+                if (Objects.equals(board.get(posY).get(posX), "[ ]") &&
+                        Objects.equals(board.get(posY + 1).get(posX), "[ ]") &&
+                        Objects.equals(board.get(posY + 1).get(posX + 1), "[ ]") &&
+                        Objects.equals(board.get(posY).get(posX + 1), "[ ]") &&
+                        Objects.equals(board.get(posY - 1).get(posX + 1), "[ ]") &&
+                        Objects.equals(board.get(posY - 1).get(posX), "[ ]") &&
+                        Objects.equals(board.get(posY - 1).get(posX - 1), "[ ]") &&
+                        Objects.equals(board.get(posY).get(posX - 1), "[ ]") &&
+                        Objects.equals(board.get(posY + 1).get(posX - 1), "[ ]")) {
+                    board.get(posY).set(posX, "[x]");
                     spawnRandomNPC(NPC, posX, posY, npcArray);
                     NPC++;
                 }else{
                     //however we sometimes ignore the check above (with a 15% rate) to make the NPCClasses.NPC placement more random todo: 15 wybrane tak o, może jakaś lepsza wartość?
                     //This also prevents a situation where the amount of NPCs that we need to spawn would make it impossible
                     //to spawn them at least 1 tile away from each other.
-                    if( (rand.nextInt(1,101)<=15) && (!Objects.equals(board[posY][posX], "[x]")) ){
-                        board[posY][posX] = "[x]";
+                    if( (rand.nextInt(1,101)<=15) && (!Objects.equals(board.get(posY).get(posX), "[x]")) ){
+                        board.get(posY).set(posX, "[x]");
                         spawnRandomNPC(NPC, posX, posY, npcArray);
                         NPC++;
                     }
@@ -104,22 +106,22 @@ public class Spawning {
         return npcArray;
     }
 
-    public static int checkNeighbours(String[][] map, int size){
+    public static int checkNeighbours(List<List<String>> map, int size){
         //Loop below counts how many non NPCClasses.NPC neighbouring tiles are on the board.
         //The found value is then used to decide the amount of weapons and medkits to spawn
         int NoNeighbours=0;
         for (int Y = 0; Y < size; Y++) {
             for (int X = 0; X < size; X++){
                 try {
-                    if (Objects.equals(map[Y][X], "[ ]") &&
-                            Objects.equals(map[Y + 1][X], "[ ]") &&
-                            Objects.equals(map[Y + 1][X + 1], "[ ]") &&
-                            Objects.equals(map[Y][X + 1], "[ ]") &&
-                            Objects.equals(map[Y - 1][X + 1], "[ ]") &&
-                            Objects.equals(map[Y - 1][X], "[ ]") &&
-                            Objects.equals(map[Y - 1][X - 1], "[ ]") &&
-                            Objects.equals(map[Y][X - 1], "[ ]") &&
-                            Objects.equals(map[Y + 1][X - 1], "[ ]")) {
+                    if (Objects.equals(map.get(Y).get(X), "[ ]") &&
+                            Objects.equals(map.get(Y + 1).get(X), "[ ]") &&
+                            Objects.equals(map.get(Y + 1).get(X + 1), "[ ]") &&
+                            Objects.equals(map.get(Y).get(X + 1), "[ ]") &&
+                            Objects.equals(map.get(Y - 1).get(X + 1), "[ ]") &&
+                            Objects.equals(map.get(Y - 1).get(X), "[ ]") &&
+                            Objects.equals(map.get(Y - 1).get(X - 1), "[ ]") &&
+                            Objects.equals(map.get(Y).get(X - 1), "[ ]") &&
+                            Objects.equals(map.get(Y + 1).get(X - 1), "[ ]")) {
                         NoNeighbours++;
                     }
                 }catch (Exception e){}
@@ -128,7 +130,7 @@ public class Spawning {
         return NoNeighbours;
     }
 
-    public static List<Weapon> spawnWeapons(String[][] map, int size, int NPCcount, List<Weapon> weaponsArray){
+    public static List<Weapon> spawnWeapons(List<List<String>> map, int size, int NPCcount, List<Weapon> weaponsArray){
         int WPNcount=0;
         int NoNeighbours=checkNeighbours(map, size);
         Random rand = new Random();
@@ -149,36 +151,36 @@ public class Spawning {
             int posX= rand.nextInt(0, size);
             int posY= rand.nextInt(0, size);
             try {
-                if (Objects.equals(map[posY][posX], "[ ]") &&
-                        Objects.equals(map[posY + 1][posX], "[ ]") &&
-                        Objects.equals(map[posY + 1][posX + 1], "[ ]") &&
-                        Objects.equals(map[posY][posX + 1], "[ ]") &&
-                        Objects.equals(map[posY - 1][posX + 1], "[ ]") &&
-                        Objects.equals(map[posY - 1][posX], "[ ]") &&
-                        Objects.equals(map[posY - 1][posX - 1], "[ ]") &&
-                        Objects.equals(map[posY][posX - 1], "[ ]") &&
-                        Objects.equals(map[posY + 1][posX - 1], "[ ]")) {
+                if (Objects.equals(map.get(posY).get(posX), "[ ]") &&
+                        Objects.equals(map.get(posY + 1).get(posX), "[ ]") &&
+                        Objects.equals(map.get(posY + 1).get(posX + 1), "[ ]") &&
+                        Objects.equals(map.get(posY).get(posX + 1), "[ ]") &&
+                        Objects.equals(map.get(posY - 1).get(posX + 1), "[ ]") &&
+                        Objects.equals(map.get(posY - 1).get(posX), "[ ]") &&
+                        Objects.equals(map.get(posY - 1).get(posX - 1), "[ ]") &&
+                        Objects.equals(map.get(posY).get(posX - 1), "[ ]") &&
+                        Objects.equals(map.get(posY + 1).get(posX - 1), "[ ]")) {
                     weaponToSpawn = (int) (Math.random() * (5));
                     switch (weaponToSpawn){
                         case 0:
                             weaponsArray.add(new Handgun("Handgun", 25, 1,1, posX, posY));
-                            map[posY][posX] = "[H]";
+                            map.get(posY).set(posX, "[H]");
                             break;
                         case 1:
                             weaponsArray.add(new Rifle("Rifle", 35, 2,2, posX, posY));
-                            map[posY][posX] = "[R]";
+                            map.get(posY).set(posX, "[R]");
                             break;
                         case 2:
                             weaponsArray.add(new SMG("SMG", 50, 1,2, posX, posY));
-                            map[posY][posX] = "[U]";
+                            map.get(posY).set(posX, "[U]");
                             break;
                         case 3:
                             weaponsArray.add(new Shotgun("Shotgun", 50, 1,2, posX, posY));
-                            map[posY][posX] = "[B]";
+                            map.get(posY).set(posX, "[B]");
                             break;
                         case 4:
                             weaponsArray.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
-                            map[posY][posX] = "[S]";
+                            map.get(posY).set(posX, "[S]");
                             break;
                     }
                     WPN++;
@@ -187,7 +189,7 @@ public class Spawning {
         }
         return weaponsArray;
     }
-    public static List<int[]> spawnMedkits(String[][] map, int size, int NPCcount, List<int[]> medpackArray){
+    public static List<int[]> spawnMedkits(List<List<String>> map, int size, int NPCcount, List<int[]> medpackArray){
         int MDPcount=0;
         int NoNeighbours=checkNeighbours(map, size);
         Random rand = new Random();
@@ -201,16 +203,16 @@ public class Spawning {
             int posX= rand.nextInt(0, size);
             int posY= rand.nextInt(0, size);
             try {
-                if (Objects.equals(map[posY][posX], "[ ]") &&
-                        Objects.equals(map[posY + 1][posX], "[ ]") &&
-                        Objects.equals(map[posY + 1][posX + 1], "[ ]") &&
-                        Objects.equals(map[posY][posX + 1], "[ ]") &&
-                        Objects.equals(map[posY - 1][posX + 1], "[ ]") &&
-                        Objects.equals(map[posY - 1][posX], "[ ]") &&
-                        Objects.equals(map[posY - 1][posX - 1], "[ ]") &&
-                        Objects.equals(map[posY][posX - 1], "[ ]") &&
-                        Objects.equals(map[posY + 1][posX - 1], "[ ]")) {
-                    map[posY][posX] = "[+]";
+                if (Objects.equals(map.get(posY).get(posX), "[ ]") &&
+                        Objects.equals(map.get(posY + 1).get(posX), "[ ]") &&
+                        Objects.equals(map.get(posY + 1).get(posX + 1), "[ ]") &&
+                        Objects.equals(map.get(posY).get(posX + 1), "[ ]") &&
+                        Objects.equals(map.get(posY - 1).get(posX + 1), "[ ]") &&
+                        Objects.equals(map.get(posY - 1).get(posX), "[ ]") &&
+                        Objects.equals(map.get(posY - 1).get(posX - 1), "[ ]") &&
+                        Objects.equals(map.get(posY).get(posX - 1), "[ ]") &&
+                        Objects.equals(map.get(posY + 1).get(posX - 1), "[ ]")) {
+                    map.get(posY).set(posX, "[+]");
                     medpackArray.add(new int[]{posX, posY});
                     MDP++;
                 }
