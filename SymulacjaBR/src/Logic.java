@@ -25,9 +25,15 @@ public class Logic {
     static List<int[]> medkitList = new ArrayList<>();
 
     //required for gui
+    static int cellSize = 30;
     static JLabel labelInfo = new JLabel();
-
     static List<String> labelInfoText = new ArrayList<>();
+    static JLabel[][] labelGrid = new JLabel[Controller.size][Controller.size];
+    static Border borderDefault = BorderFactory.createLineBorder(Color.black, 1);
+    static Border borderNPC = BorderFactory.createLineBorder(Color.red, 1);
+    static Border borderWeapon = BorderFactory.createLineBorder(Color.yellow, 1);
+    static Border borderMedkit = BorderFactory.createLineBorder(Color.green , 1);
+    static ImageIcon medkit = new ImageIcon("medpack.png");
     static JTextArea display = new JTextArea ( 16, 58 );
     //required for pausing
     static boolean buttonPressed = false;
@@ -41,18 +47,8 @@ public class Logic {
         //required for gui
         JFrame frame = new JFrame();
         JPanel panel = new JPanel();
-
-        ImageIcon medkit = new ImageIcon("medpack.png");
-
-        Border borderDefault = BorderFactory.createLineBorder(Color.black, 1);
-        Border borderNPC = BorderFactory.createLineBorder(Color.red, 1);
-        Border borderWeapon = BorderFactory.createLineBorder(Color.yellow, 1);
-        Border borderMedkit = BorderFactory.createLineBorder(Color.green , 1);
-        int cellSize = 30;//zmiana tej wartości zmienia rozmiar okienka,ikonek,skalowania obrazów - ogólnie z tego co widzę to 30 to idealna liczba
-        // todo inna wartość? chyba nie ale można robić testy, jest 3:30 w nocy i nie chce mi sie teraz tego szukać
-
-        JLabel[][] labelGrid = new JLabel[size][size];
         JButton buttonTop = new JButton("Następna tura");
+        int tura=0;
         //================================================
         //code needed to make the "Następna tura" button work
         //code below is responsible for pressing AND holding down the button - user can hold down the button to continue the simulation
@@ -60,7 +56,6 @@ public class Logic {
             @Override
             public void mousePressed(MouseEvent e) {
                 buttonHeld = true;
-                //czarna magia ze stack overflow, nie do końca rozumiem ale działa //todo
                 new Thread(new Runnable() {
                     public void run() {
                         while (buttonHeld) {
@@ -77,8 +72,7 @@ public class Logic {
             }
 
             @Override
-            public void mouseReleased(MouseEvent e) {
-                buttonHeld = false; //reset the buttonHeld state
+            public void mouseReleased(MouseEvent e) {buttonHeld = false; //reset the buttonHeld state
             }
         });
         //================================================
@@ -90,9 +84,11 @@ public class Logic {
         buttonMid.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("zapis");
-                //todo
-                FileSaver.fileSaver(size);
+                try{
+                FileSaver.fileSaver(size);}
+                catch (FileNotFoundException ex){
+                    throw new RuntimeException(ex);
+                }
             }
         });
         //================================================
@@ -103,11 +99,22 @@ public class Logic {
         buttonBot.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("wczyt");
-                try {
+                String[] buttons = { "Kontynuuj", "Anuluj"};
+                int returnValue = JOptionPane.showOptionDialog(null, "Wczytanie pliku symulacji zakończy obecna symulację!", "Uwaga!",
+                        JOptionPane.OK_CANCEL_OPTION, 1, null, buttons, buttons[0]);
+                if(returnValue == JOptionPane.OK_OPTION){
+                    try{
                     FileReader.fileReader();
-                } catch (FileNotFoundException ex) {
+                    Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
+                    display.setText("");
+                    display.append("Poprawnie wczytano stan symulacji z pliku.\nWznawiam wybraną symulację.\n");
+                    refreshGUIMap();
+                    //wtf
+                    }catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
+                }
+                }else{
+                    display.append("Anulowano proces zapisu pliku.\n");
                 }
             }
         });
@@ -213,14 +220,17 @@ public class Logic {
         //add buttons to the right panel
         panelRight.add(buttonTop);
         panelRight.add(buttonMid);
+        buttonTop.setBorder(borderDefault);
+        buttonMid.setBorder(borderDefault);
         panelRight.add(buttonBot);
         panelRight.add(labelInfo);
+        labelInfo.setBorder(borderDefault);
         display.setEditable (false);
+        panel.setBorder(borderDefault);
 
         JScrollPane bottomScrollPane = new JScrollPane(display);
         bottomScrollPane.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         bottomScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        //bottomScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 
 
@@ -232,7 +242,7 @@ public class Logic {
         //display the frame
         frame.setVisible(true);
 
-        int tura=0;
+
         display.append("Wciśnij i przytrzymaj przycisk \"Nastepna tura\" aby aktywować automatyczne wykonywanie ruchów!\n");
         while (npcList.size() > 1){
             tura++;
@@ -241,33 +251,7 @@ public class Logic {
             Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
             //================================================
 
-
-            //================================================
-            //clear the panel, clear
-            for(int y=0;y<size;y++){
-                for(int x=0;x<size;x++){
-                    labelGrid[x][y].setIcon(null);
-                    labelGrid[x][y].setBackground(Color.gray);
-                    labelGrid[x][y].setBorder(borderDefault);
-                }
-            }
-            //================================================
-
-            //================================================
-            //"print" data to the labels
-            for(int i=0;i<npcList.size();i++){
-                labelGrid[npcList.get(i).posX][npcList.get(i).posY].setIcon(resizeImg(npcList.get(i).icon,cellSize,cellSize));
-                labelGrid[npcList.get(i).posX][npcList.get(i).posY].setBorder(borderNPC);
-            }
-            for(int i=0;i<weaponsList.size();i++){
-                labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setIcon(resizeImg(weaponsList.get(i).icon,cellSize,cellSize));
-                labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setBorder(borderWeapon);
-            }
-            for(int i=0;i<medkitList.size();i++){
-                labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setIcon(resizeImg(medkit,cellSize,cellSize));
-                labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setBorder(borderMedkit);
-            }
-            //================================================
+            refreshGUIMap();
 
             //================================================
             //locking the loop's execution until the "Następna tura" buttonTop is pressed
@@ -520,5 +504,32 @@ public class Logic {
             out = out + text.get(i) + "<br>";
         }
         return out + "</html>";
+    }
+    //refreshes
+    static void refreshGUIMap(){
+        //clear the panel, clear label background
+        for(int y=0;y<Controller.size;y++){
+            for(int x=0;x<Controller.size;x++){
+                labelGrid[x][y].setIcon(null);
+                labelGrid[x][y].setBackground(Color.gray);
+                labelGrid[x][y].setBorder(borderDefault);
+            }
+        }
+
+        //================================================
+        //"print" data to the labels
+        for(int i=0;i<npcList.size();i++){
+            labelGrid[npcList.get(i).posX][npcList.get(i).posY].setIcon(resizeImg(npcList.get(i).icon,cellSize,cellSize));
+            labelGrid[npcList.get(i).posX][npcList.get(i).posY].setBorder(borderNPC);
+        }
+        for(int i=0;i<weaponsList.size();i++){
+            labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setIcon(resizeImg(weaponsList.get(i).icon,cellSize,cellSize));
+            labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setBorder(borderWeapon);
+        }
+        for(int i=0;i<medkitList.size();i++){
+            labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setIcon(resizeImg(medkit,cellSize,cellSize));
+            labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setBorder(borderMedkit);
+        }
+
     }
 }
