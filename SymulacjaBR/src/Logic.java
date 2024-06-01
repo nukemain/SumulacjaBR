@@ -1,15 +1,9 @@
 import NPCClasses.*;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 
 import WeaponClasses.Weapon;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.List;
 
@@ -24,17 +18,7 @@ public class Logic {
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
 
-    //required for gui
-    static int cellSize = 30;
-    static JLabel labelInfo = new JLabel();
-    static List<String> labelInfoText = new ArrayList<>();
-    static JLabel[][] labelGrid = new JLabel[Controller.size][Controller.size];
-    static Border borderDefault = BorderFactory.createLineBorder(Color.black, 1);
-    static Border borderNPC = BorderFactory.createLineBorder(Color.red, 1);
-    static Border borderWeapon = BorderFactory.createLineBorder(Color.yellow, 1);
-    static Border borderMedkit = BorderFactory.createLineBorder(Color.green , 1);
-    static ImageIcon medkit = new ImageIcon("medpack.png");
-    static JTextArea display = new JTextArea ( 16, 58 );
+
     //required for pausing
     static boolean buttonPressed = false;
     static boolean buttonHeld = false;
@@ -46,212 +30,24 @@ public class Logic {
     static void Symulacja(int size, int NPCcount){
         //required for gui
         JFrame frame = new JFrame();
-        JPanel panel = new JPanel();
-        JButton buttonTop = new JButton("Następna tura");
         int tura=0;
-        //================================================
-        //code needed to make the "Następna tura" button work
-        //code below is responsible for pressing AND holding down the button - user can hold down the button to continue the simulation
-        buttonTop.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                buttonHeld = true;
-                new Thread(new Runnable() {
-                    public void run() {
-                        while (buttonHeld) {
-                            synchronized (lock) {
-                                buttonPressed = true;
-                                lock.notify();
-                            }
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException ignored) {}
-                        }
-                    }
-                }).start();
-            }
 
-            @Override
-            public void mouseReleased(MouseEvent e) {buttonHeld = false; //reset the buttonHeld state
-            }
-        });
-        //================================================
-
-
-        //================================================
-        //code needed to make the "Zapisz stan planszy" button work
-        JButton buttonMid = new JButton("Zapisz stan planszy");
-        buttonMid.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try{
-                FileSaver.fileSaver(size);}
-                catch (FileNotFoundException ex){
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
-        //================================================
-
-        //================================================
-        //code needed to make the "Wczytaj stan planszy" button work
-        JButton buttonBot= new JButton("Wczytaj stan planszy");
-        buttonBot.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String[] buttons = { "Kontynuuj", "Anuluj"};
-                int returnValue = JOptionPane.showOptionDialog(null, "Wczytanie pliku symulacji zakończy obecna symulację!", "Uwaga!",
-                        JOptionPane.OK_CANCEL_OPTION, 1, null, buttons, buttons[0]);
-                if(returnValue == JOptionPane.OK_OPTION){
-                    try{
-                    FileReader.fileReader();
-                    Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
-                    display.setText("");
-                    display.append("Poprawnie wczytano stan symulacji z pliku.\nWznawiam wybraną symulację.\n");
-                    refreshGUIMap();
-                    //wtf
-                    }catch (FileNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
-                }else{
-                    display.append("Anulowano proces zapisu pliku.\n");
-                }
-            }
-        });
-        //================================================
-
-
-        //================================================
-        //main window
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(200+cellSize*size, 150+cellSize*size);
-        frame.setTitle("Symulacja battle royale");
-        frame.setResizable(false);
-        ImageIcon logo = new ImageIcon("logo.png");
-        panel= new JPanel(new GridLayout(size,size));
-        frame.setIconImage(logo.getImage());
-        //================================================
-
-        //================================================
-        //main grid of labels
-        for(int y=0;y<size;y++){
-            for(int x=0;x<size;x++){
-                JLabel label = new JLabel();
-                label.setOpaque(true);
-                label.setBorder(borderDefault);
-                labelGrid[x][y] = label;
-                panel.add(label);
-                //================================================
-                //code responsible for changing the text in labelInfo when hovering mouse over a tile on the labelGrid
-                label.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseEntered(MouseEvent e) {
-                        //getting the X and Y coordinates of the label on the grid -> coordinates correspond to values being used in the rest of the simulation's logic
-                        int labelPosX=-1;
-                        int labelPosY=-1;
-                        for (int i = 0; i < size; i++) {
-                            for (int j = 0; j < size; j++) {
-                                if (labelGrid[i][j] == label) {
-                                    labelPosX = i;
-                                    labelPosY = j;
-                                    break;
-                                }
-                            }
-                        }
-                        labelInfoText.add("Puste pole planszy.");
-                        for (int i = 0; i < npcList.size(); i++) {
-                            if(npcList.get(i).posX==labelPosX && npcList.get(i).posY==labelPosY){
-                                labelInfoText.clear();
-                                labelInfoText.add("NPC ID: "+npcList.get(i).index);
-                                labelInfoText.add("Max. HP: "+npcList.get(i).maxHP);
-                                labelInfoText.add("Obecne HP: "+npcList.get(i).HP);
-                                labelInfoText.add("Broń: "+npcList.get(i).weapon.name);
-                                labelInfoText.add("Zadawane obrażenia: "+npcList.get(i).weapon.damage);
-                                labelInfoText.add("Zasięg ataku: "+(npcList.get(i).weapon.range/sqrt(2)));
-                                break;
-                            }
-                        }
-                        for (int i = 0; i < weaponsList.size(); i++) {
-                            if(weaponsList.get(i).posX==labelPosX && weaponsList.get(i).posY==labelPosY){
-                                labelInfoText.clear();
-                                labelInfoText.add("Broń: "+weaponsList.get(i).name);
-                                labelInfoText.add("Zadawane obrażenia: "+weaponsList.get(i).damage);
-                                labelInfoText.add("Zasięg Broni: "+(weaponsList.get(i).range/sqrt(2)));
-                                break;
-                            }
-                        }
-                        for (int i = 0; i < medkitList.size(); i++) {
-                            if(medkitList.get(i)[0]==labelPosX && medkitList.get(i)[1]==labelPosY){
-                                labelInfoText.clear();
-                                labelInfoText.add("Medkit: +30HP");
-                                break;
-                            }
-                        }
-
-                        labelInfo.setText(labelTextWrapper(labelInfoText));
-                    }
-
-                    @Override
-                    public void mouseExited(MouseEvent e) {
-                        labelInfoText.clear();
-                        labelInfo.setText("<html>Nie zaznaczono<br>pola planszy.</html>");
-                    }
-                });
-                //================================================
-            }
-        }
-        //================================================
-
-        //================================================
         //code responsible for spawning NPC's,Medkits and weapons if we are not loading data from a saved file
         map = Spawning.createMap(size);
         Spawning.spawnNPCs(size, NPCcount, map, npcList);//Logic required for spawning NPCClasses.NPC's
-        Spawning.spawnWeapons(map,size,NPCcount, weaponsList);//Spawning weapons on the map //todo remake methods to only use one size variable
+        Spawning.spawnWeapons(map,size,NPCcount, weaponsList);//Spawning weapons on the map
         Spawning.spawnMedkits(map,size, NPCcount, medkitList);//Spawning medkits on the map
-        //================================================
-        //labels
-        labelInfo.setMinimumSize(new Dimension(buttonTop.getWidth(), buttonTop.getWidth()));
-        labelInfo.setPreferredSize(new Dimension(buttonTop.getWidth(), buttonTop.getWidth()));
-        labelInfo.setMaximumSize(new Dimension(buttonTop.getWidth(), buttonTop.getWidth()));
 
-
-        //right panel
-        JPanel panelRight =  new JPanel(new GridLayout(4,1));
-        //add buttons to the right panel
-        panelRight.add(buttonTop);
-        panelRight.add(buttonMid);
-        buttonTop.setBorder(borderDefault);
-        buttonMid.setBorder(borderDefault);
-        panelRight.add(buttonBot);
-        panelRight.add(labelInfo);
-        labelInfo.setBorder(borderDefault);
-        display.setEditable (false);
-        panel.setBorder(borderDefault);
-
-        JScrollPane bottomScrollPane = new JScrollPane(display);
-        bottomScrollPane.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
-        bottomScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-
-
-        bottomScrollPane.setPreferredSize(new Dimension(frame.getWidth(), 150));
-        //add everything to the main window frame
-        frame.add(bottomScrollPane, BorderLayout.PAGE_END);
-        frame.add(panel, BorderLayout.CENTER);
-        frame.add(panelRight, BorderLayout.EAST);
-        //display the frame
+        GUI.SimulationGUI(frame);
         frame.setVisible(true);
 
 
-        display.append("Wciśnij i przytrzymaj przycisk \"Nastepna tura\" aby aktywować automatyczne wykonywanie ruchów!\n");
         while (npcList.size() > 1){
             tura++;
-            //================================================
+
             //update the map
             Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
-            //================================================
-
-            refreshGUIMap();
+            GUI.refreshGUIMap();
 
             //================================================
             //locking the loop's execution until the "Następna tura" buttonTop is pressed
@@ -264,21 +60,19 @@ public class Logic {
                 buttonPressed = false;
             }
             //================================================
-            display.append("================================================================================================================================================================================================\n");
-            display.append("[Tura nr"+ tura +"]\n");
+            GUI.display.append("================================================================================================================================================================================================\n");
+            GUI.display.append("[Tura nr"+ tura +"]\n");
 
-            //================================================
             // do "logic" for each npc in npcList
             for (int i=0;i<npcList.size();i++){
                 decisionMaker(i);
             }
-            //================================================
 
         }
         Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
-        display.append("Wygrywa NPC o ID: "+ npcList.getFirst().index+"\n");
-        display.append("Zamknij okienko aby zakończyc symulację!\n");
-        labelGrid[npcList.getFirst().posX][npcList.getFirst().posY].setBackground(Color.yellow);
+        GUI.display.append("Wygrywa NPC o ID: "+ npcList.getFirst().index+"\n");
+        GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
+        GUI.labelGrid[npcList.getFirst().posX][npcList.getFirst().posY].setBackground(Color.yellow);
 
     }
 
@@ -316,7 +110,7 @@ public class Logic {
                                 npcList.get(npcIndex).HP += 30; //todo: zwiększyć wartość 30 ustawione tak o narazie
                             }
                             text = text + npcList.get(npcIndex).HP;
-                            display.append(text+"\n");
+                            GUI.display.append(text+"\n");
                             medkitList.remove(j);
                             actionTaken = true;
                             break;
@@ -329,7 +123,7 @@ public class Logic {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
                             String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
-                            display.append(text+"\n");
+                            GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
                             break;
@@ -400,7 +194,7 @@ public class Logic {
                             //podniesienie broni
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
                             String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
-                            display.append(text+"\n");
+                            GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
                             break;
@@ -418,7 +212,7 @@ public class Logic {
                                 npcList.get(npcIndex).HP += 30; //todo: zwiększyć wartość 30 ustawione tak o narazie
                             }
                             text = text + npcList.get(npcIndex).HP;
-                            display.append(text+"\n");
+                            GUI.display.append(text+"\n");
                             medkitList.remove(j);
                             actionTaken = true;
                             break;
@@ -487,49 +281,6 @@ public class Logic {
             npcList.remove(indexTarget);
             text = text + " NPC "+indexTarget + " został zabity!\n";
         }else{text = text + "\n";}
-        display.append(text);
-    }
-
-
-    //self-explanatory method name, takes in ImageIcon
-    public static ImageIcon resizeImg(ImageIcon img, int width, int height) {
-        Image newImg = img.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH); //object "ImageIcon" can't be resized, but object "Image" can -  so convert to that and resize
-        return new ImageIcon(newImg);
-    }
-    //convert a list of strings into a single string ready to be "printed" in a label
-    //labels have no built-in text wrapping but use standard HTMl tags to break text into lines
-    public static String labelTextWrapper(List<String> text){
-        String out = "<html>";
-        for (int i = 0; i < text.size(); i++) {
-            out = out + text.get(i) + "<br>";
-        }
-        return out + "</html>";
-    }
-    //refreshes
-    static void refreshGUIMap(){
-        //clear the panel, clear label background
-        for(int y=0;y<Controller.size;y++){
-            for(int x=0;x<Controller.size;x++){
-                labelGrid[x][y].setIcon(null);
-                labelGrid[x][y].setBackground(Color.gray);
-                labelGrid[x][y].setBorder(borderDefault);
-            }
-        }
-
-        //================================================
-        //"print" data to the labels
-        for(int i=0;i<npcList.size();i++){
-            labelGrid[npcList.get(i).posX][npcList.get(i).posY].setIcon(resizeImg(npcList.get(i).icon,cellSize,cellSize));
-            labelGrid[npcList.get(i).posX][npcList.get(i).posY].setBorder(borderNPC);
-        }
-        for(int i=0;i<weaponsList.size();i++){
-            labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setIcon(resizeImg(weaponsList.get(i).icon,cellSize,cellSize));
-            labelGrid[weaponsList.get(i).posX][weaponsList.get(i).posY].setBorder(borderWeapon);
-        }
-        for(int i=0;i<medkitList.size();i++){
-            labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setIcon(resizeImg(medkit,cellSize,cellSize));
-            labelGrid[medkitList.get(i)[0]][medkitList.get(i)[1]].setBorder(borderMedkit);
-        }
-
+        GUI.display.append(text);
     }
 }

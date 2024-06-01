@@ -69,7 +69,7 @@ public class FileSaver {
                 e.printStackTrace();
             }
         } else {
-            Logic.display.append("Anulowano proces zapisu pliku.\n");
+            GUI.display.append("Anulowano proces zapisu pliku.\n");
         }
     }
 }

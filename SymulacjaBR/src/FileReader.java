@@ -207,7 +207,7 @@ public class FileReader {
             System.out.println("Failed to delete the file.");
         }*/
         }else{
-            Logic.display.append("Anulowano proces wczytu pliku.\n");
+            GUI.display.append("Anulowano proces wczytu pliku.\n");
         }
     }
     public static void main(String[] args) throws FileNotFoundException {

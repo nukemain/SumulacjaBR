@@ -63,7 +63,7 @@ public class Spawning {
                     spawnRandomNPC(NPC, posX, posY, npcArray);
                     NPC++;
                 }else{
-                    //however we sometimes ignore the check above (with a 15% rate) to make the NPCClasses.NPC placement more random todo: 15 wybrane tak o, może jakaś lepsza wartość?
+                    //however we sometimes ignore the check above (with a 15% rate) to make the NPCClasses.NPC placement more random
                     //This also prevents a situation where the amount of NPCs that we need to spawn would make it impossible
                     //to spawn them at least 1 tile away from each other.
                     if( (rand.nextInt(1,101)<=15) && (!Objects.equals(board.get(posY).get(posX), "[x]")) ){

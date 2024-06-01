@@ -21,7 +21,7 @@ public class Controller {
 //done:zapisywanie do plików
 //todo:główne okienko symulacji (obecne jest secondary) - zostawcie to mi
 //todo:zmniejszanie sie strefy
-//todo:gui do innej klasy
+//done :gui do innej klasy
 //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
 
 
