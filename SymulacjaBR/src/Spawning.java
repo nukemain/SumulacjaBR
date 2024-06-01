@@ -20,22 +20,23 @@ public class Spawning {
         return map;
     }
 
-    public static String[][] updateMap(int sizeX, int sizeY, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
-        String[][] map = new String[sizeX][sizeY];
+    public static List<List<String>> updateMap(int size, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
+        List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
-        for(int y=0;y<sizeY;y++){
-            for(int x=0;x<sizeX;x++){
-                map[y][x] = "[ ]";
+        for(int y=0;y<Controller.size;y++){
+            map.add(new ArrayList<>());
+            for(int x=0;x<Controller.size;x++){
+                map.get(y).add("[ ]");
             }
         }
         for(int i=0;i<npcList.size();i++){
-            map[npcList.get(i).posY][npcList.get(i).posX] = "[" + npcList.get(i).symbol + "]"; //symbol NPC'ta w przyszłości będzie to ikonka w gui
+            map.get(npcList.get(i).posY).set(npcList.get(i).posX, "[" + npcList.get(i).symbol + "]"); //symbol NPC'ta w przyszłości będzie to ikonka w gui
         }
         for(int i=0;i<weaponsList.size();i++){
-            map[weaponsList.get(i).posY][weaponsList.get(i).posX] = "["+weaponsList.get(i).name.charAt(0)+"]"; //pierwszy znak z nzwy itemu
+            map.get(weaponsList.get(i).posY).set(weaponsList.get(i).posX, "[" + weaponsList.get(i).name.charAt(0) + "]"); //pierwszy znak z nzwy itemu
         }
         for(int i=0;i<medkitList.size();i++){
-            map[medkitList.get(i)[1]][medkitList.get(i)[0]] = "[+]";
+            map.get(medkitList.get(i)[1]).set(medkitList.get(i)[0], "[+]");
         }
         return map;
     }

@@ -18,7 +18,7 @@ public class Logic {
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
 
-
+    static JFrame frame = new JFrame();
     //required for pausing
     static boolean buttonPressed = false;
     static boolean buttonHeld = false;
@@ -29,7 +29,7 @@ public class Logic {
 
     static void Symulacja(int size, int NPCcount){
         //required for gui
-        JFrame frame = new JFrame();
+        //JFrame frame = new JFrame();
         int tura=0;
 
         //code responsible for spawning NPC's,Medkits and weapons if we are not loading data from a saved file
@@ -46,7 +46,7 @@ public class Logic {
             tura++;
 
             //update the map
-            Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
+            Spawning.updateMap(size,npcList,weaponsList,medkitList);
             GUI.refreshGUIMap();
 
             //================================================
@@ -69,10 +69,13 @@ public class Logic {
             }
 
         }
-        Spawning.updateMap(size,size,npcList,weaponsList,medkitList);
+        Spawning.updateMap(size,npcList,weaponsList,medkitList);
         GUI.display.append("Wygrywa NPC o ID: "+ npcList.getFirst().index+"\n");
         GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
-        GUI.labelGrid[npcList.getFirst().posX][npcList.getFirst().posY].setBackground(Color.yellow);
+        GUI.buttonTop.setVisible(false);
+        GUI.buttonBot.setVisible(false);
+        GUI.buttonMid.setVisible(false); //todo: "zakończ"
+        GUI.labelGrid.get(npcList.getFirst().posX).get(npcList.getFirst().posY).setBackground(Color.yellow);
 
     }
 

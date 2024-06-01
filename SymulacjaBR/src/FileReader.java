@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class FileReader {
     public static int npcCount;
-    public static int size;
+    //public static int size;
     public static void fileReader() throws FileNotFoundException {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
@@ -59,16 +59,20 @@ public class FileReader {
                 }
                 String[] dataArray = dataString.split(" ", 2);
                 try {
+                    if(Controller.size !=Integer.valueOf(dataArray[1])){
+                        Controller.size = Integer.valueOf(dataArray[1]);
+                        GUI.mainPanel = GUI.resetLabelGrid(GUI.mainPanel);
+                    }
                     npcCount = Integer.valueOf(dataArray[0]);
                     //System.out.println("Converted integer: " + npcCount);
-                    size = Integer.valueOf(dataArray[1]);
+                    //size = Integer.valueOf(dataArray[1]);
                     //System.out.println("Converted integer: " + size);
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid integer input");
                 }
                 //System.out.println(dataString);
                 Logic.map.clear();
-                Logic.map = Spawning.createMap(size);
+                Logic.map = Spawning.createMap(Controller.size);
                 Logic.npcList.clear();
                 for (int i = 0; i < npcCount; i++) {
                     if (dataReader.hasNextLine()) {
