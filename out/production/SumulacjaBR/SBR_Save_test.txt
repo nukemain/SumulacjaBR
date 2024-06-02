@@ -1,0 +1,35 @@
+10 30
+0 24 11 100 Knife Θ
+1 12 23 150 Knife Σ
+2 11 24 150 Knife Σ
+3 6 21 80 Shotgun Ω
+4 6 22 150 Knife Σ
+5 17 11 150 SniperRifle Σ
+6 8 14 150 Knife Σ
+7 24 6 75 Knife Λ
+8 6 6 90 Shotgun Λ
+9 23 5 85 Knife Θ
+12
+SniperRifle 11 23
+SMG 1 16
+SniperRifle 12 18
+Shotgun 17 7
+SMG 8 13
+Handgun 4 14
+SniperRifle 23 28
+SMG 25 28
+Shotgun 23 23
+Shotgun 4 4
+Shotgun 15 4
+SMG 21 19
+10
+14 7
+9 11
+24 16
+19 8
+23 25
+26 11
+4 6
+20 12
+14 19
+2 13

@@ -1,53 +1,123 @@
 import NPCClasses.*;
+import javax.swing.*;
+import java.awt.*;
+
 import WeaponClasses.Knife;
 import WeaponClasses.Weapon;
 
 import java.util.*;
+import java.util.List;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
+
+
 public class Logic {
+    //Lists required for logic to function
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
 
-    static void Symulacja(int sizeX,int sizeY,int NPCcount){
 
-        String[][] map = Spawning.createMap(sizeX,sizeY);
-        Spawning.spawnNPCs(sizeX,sizeY,NPCcount,map, npcList);//Logic required for spawning NPCClasses.NPC's
-        Spawning.spawnWeapons(map,sizeX,sizeY,NPCcount, weaponsList);//Spawning weapons on the map
-        Spawning.spawnMedkits(map,sizeX,sizeY,NPCcount, medkitList);//Spawning medkits on the map
-        //npcList.add(new Medic(0, 20, 20, 100, 2, new Knife("Knife", 15, 1,0, 5, 5), "μ"));
-        //npcList.add(new Medic(1, 1, 1, 100, 2, new Knife("Knife", 15, 1,0, 5, 5), "μ"));
-        while (npcList.size() > 1){
-            System.out.println(); //pusta linijka potrzebna do formatowania
+    //required for pausing
+    static boolean buttonPressed = false;
+    static boolean buttonHeld = false;
+    static final Object lock = new Object();
 
-            for(int y=0;y<sizeY;y++){
-                for(int x=0;x<sizeX;x++){
-                    System.out.print(map[y][x]);
-                }
-                System.out.println();
+    //static String[][] map;
+    static List<List<String>> map = new ArrayList<>();
+
+    static void Symulacja(){
+        GUI.SimulationGUI(Controller.SimulationFrame);
+        Controller.SimulationFrame.setVisible(true);
+
+        int tura=0;
+
+        //po co te dwa npc? bo bez nic program się wywali - dlaczego? nie wiem
+        //jeśli umiessz je usunąć tak żeby program nadal działał, to to zrób
+        //życze powodzenia - xd update po 4h rozwiązałem problem
+        //npcList.add(new Scout(-1, 10, 10, 90, 3, new Knife("Knife", 15, 1,0, 10, 10), "Λ"));
+        //npcList.add(new Scout(-2, 11, 11, 90, 3, new Knife("Knife", 15, 1,0, 10, 10), "Λ"));
+
+        synchronized (lock) {
+            while (!buttonPressed) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException ignored) {}
             }
-            System.out.println("Press any key to continue...");
-            try{System.in.read();}
-            catch(Exception e){}
+            buttonPressed = false;
+        }
+        /*
+        //pod żadnym pozorem nie ussuwac tego sleepa ani nie zmniejszać jego wartości
+        //grozi wypierdoleniem programu
+        //jak chcesz wiedzieć co robi to pytaj Piotra
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException ignored) {}*/
+
+        while (npcList.size() > 1){
+            tura++;
+
+            //update the map
+            Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
+            GUI.refreshGUIMap();
+
+            //================================================
+            //locking the loop's execution until the "Następna tura" buttonTop is pressed
+            synchronized (lock) {
+                while (!buttonPressed) {
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException ignored) {}
+                }
+                buttonPressed = false;
+            }
+            //================================================
+            GUI.display.append("================================================================================================================================================================================================\n");
+            GUI.display.append("[Tura nr"+ tura +"]\n");
+
+            // do "logic" for each npc in npcList
             for (int i=0;i<npcList.size();i++){
                 decisionMaker(i);
             }
-            map = Spawning.updateMap(sizeX,sizeY,npcList,weaponsList,medkitList);
-            //to samo co system("pause")
+
         }
-        System.out.println("Winner is " + npcList.getFirst().index);
+        Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
+        GUI.refreshGUIMap();
+        GUI.SimulationGUIEnd(Controller.SimulationFrame);
     }
+
+
     public static void decisionMaker(int npcIndex) {
 
-        //Dane potrzebne do pracy programu:
-        int targetX = -1;               //współrzędna x celu
-        int targetY = -1;               //współrzędna y celu
-        double targetDistance = 999;    //odległość od celu
-        int targetIndex = -1;           //Numer celu do strzału w tabeli npc lub linijki w pliku potem
+        int targetX = -1;
+        int targetY = -1;
+        double targetDistance = 999;
+        int targetIndex = -1;
         boolean actionTaken = false;
+        int currentTerrain = TerrainGenerator.terrainMap.get(npcList.get(npcIndex).posY).get(npcList.get(npcIndex).posX);
+        double currentRange = npcList.get(npcIndex).weapon.range;
+        int currentStamina = npcList.get(npcIndex).stamina;
+
+        switch(currentTerrain) {
+            case 1:
+                if(currentStamina > 1) {
+                    currentStamina -= 1;
+                    //System.out.println(npcIndex + " ma zmniejszoną staminę");
+                }
+                break;
+            case 2:
+                currentRange = 1;
+                //System.out.println(npcIndex + " ma zmniejszony zasięg");
+                break;
+            case 3:
+                if(!npcList.get(npcIndex).weapon.name.equals("Knife")) {
+                    currentRange += 1;
+                    //System.out.println(npcIndex + " ma zwiększony zasięg");
+                }
+                break;
+        }
 
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
         if((( (double) npcList.get(npcIndex).HP / npcList.get(npcIndex).maxHP) < 0.5) && !medkitList.isEmpty()) {
@@ -62,18 +132,19 @@ public class Logic {
                 }
             }
             //calling the method to move the target in direction of target
-            for(int i = 1; i <= npcList.get(npcIndex).stamina; i++) {
+            for(int i = 1; i <= currentStamina; i++) {
                 movement(targetX, targetY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY, npcIndex);
                 if(npcList.get(npcIndex).posX == targetX && npcList.get(npcIndex).posY == targetY) {//if on target...
                     for(int j = 0; j < medkitList.size(); j++) {//...pick up the medkit
                         if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
-                            System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->");
+                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
                                 npcList.get(npcIndex).HP += 30; //todo: zwiększyć wartość 30 ustawione tak o narazie
                             }
-                            System.out.print(npcList.get(npcIndex).HP);
+                            text = text + npcList.get(npcIndex).HP;
+                            GUI.display.append(text+"\n");
                             medkitList.remove(j);
                             actionTaken = true;
                             break;
@@ -85,7 +156,8 @@ public class Logic {
                     for(int j = 0; j < weaponsList.size(); j++) {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
-                            System.out.println("NPCClasses.NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").");
+                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
+                            GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
                             break;
@@ -104,7 +176,7 @@ public class Logic {
             //loop checks if there's an enemy in range and saves the coordinates of the one with the list HP points
             for(int i = 0; i < npcList.size(); i++) {
                 double distance = distanceCalc(npcList.get(i).posX, npcList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
-                if(distance > 0 && npcList.get(i).HP < targetHP && distance <= npcList.get(npcIndex).weapon.range) {
+                if(distance > 0 && npcList.get(i).HP < targetHP && distance <= currentRange) {
                     targetDistance = distance;
                     targetHP = npcList.get(i).HP;
                     targetX = npcList.get(i).posX;
@@ -113,7 +185,6 @@ public class Logic {
                     inRange = true;
                 }
             }
-            //jeśli znalazło cel to wywołuje metodę odpowiedzialną za zadawanie obrażeń
             if(inRange) {
                 damageDealer(npcIndex, targetIndex);
             }
@@ -131,28 +202,33 @@ public class Logic {
                 //this loop tries to find a weapon that is better than the one wielded by NPCClasses.NPC and is closer than the closest enemy
                 //if it finds such weapon it saves its coordinates
                 //TODO: it could also be prevent from going through the loop if there's no weapon or no better weapon is present
-                int tempQuality=0;
-                for(int i = 0; i < weaponsList.size(); i++) {
-                    if(weaponsList.get(i).quality>=tempQuality) { //szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
-                        tempQuality = weaponsList.get(i).quality;
-                        if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
-                            double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, weaponsList.get(npcIndex).posX, weaponsList.get(npcIndex).posY);
-                            if (distance > 0 && distance < targetDistance) {
-                                targetDistance = distance;
-                                targetX = weaponsList.get(i).posX;
-                                targetY = weaponsList.get(i).posY;
-                            }
+                int tempQuality = 0;
+                for(int i = 0; i < weaponsList.size(); i++) {//szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
+                    if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
+                        double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
+                        if (distance > 0 && distance < targetDistance) {
+                            targetDistance = distance;
+                            targetX = weaponsList.get(i).posX;
+                            targetY = weaponsList.get(i).posY;
+                            tempQuality = weaponsList.get(i).quality;
+                        }
+                        else if (distance == targetDistance && weaponsList.get(i).quality > tempQuality) {
+                            targetDistance = distance;
+                            targetX = weaponsList.get(i).posX;
+                            targetY = weaponsList.get(i).posY;
+                            tempQuality = weaponsList.get(i).quality;
                         }
                     }
                 }
                 //calling the method to move the NPCClasses.NPC in targets direction
-                for(int i = 1; i <= npcList.get(npcIndex).stamina; i++) {
+                for(int i = 1; i <= currentStamina; i++) {
                     movement(targetX, targetY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY, npcIndex);
                     for(int j = 0; j < weaponsList.size(); j++) {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             //podniesienie broni
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
-                            System.out.println("NPCClasses.NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").");
+                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
+                            GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
                             break;
@@ -163,13 +239,14 @@ public class Logic {
                     }
                     for(int j = 0; j < medkitList.size(); j++) {
                         if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
-                            System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->");
+                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
                                 npcList.get(npcIndex).HP += 30; //todo: zwiększyć wartość 30 ustawione tak o narazie
                             }
-                            System.out.print(npcList.get(npcIndex).HP);
+                            text = text + npcList.get(npcIndex).HP;
+                            GUI.display.append(text+"\n");
                             medkitList.remove(j);
                             actionTaken = true;
                             break;
@@ -182,12 +259,10 @@ public class Logic {
             }
         }
     }
-    //the method to calculate the distance between to point on the map
-    //TODO: check if it can be simplified - not really
+    //method used to calculate the distance between points on the map
     public static double distanceCalc(int targetX, int targetY, int x, int y) {
         return sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
     }
-    //TODO: prevent NPCClasses.NPC from moving to the space occupied by the other NPCClasses.NPC
     public static void movement(int targetX, int targetY, int x, int y, int npcIndex) {
         //TODO: zabezpieczyć przed wchodzeniem na NPCClasses.NPC
         //targets coordinates are saved as targetX, targetY
@@ -195,7 +270,7 @@ public class Logic {
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
         boolean isEmpty = true;
-        System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index + " porusza się z ("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+") na ");
+        //System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index + " porusza się z ("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+") na ");
         if(targetX > x) {
             moveX++;
         }
@@ -216,10 +291,10 @@ public class Logic {
         if(isEmpty){
             npcList.get(npcIndex).posX = moveX;
             npcList.get(npcIndex).posY = moveY;
-            System.out.print("("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+")");
+            //System.out.print("("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+")");
         }
         else{
-            System.out.print("do nikąd -> docelowe pole ruchu jest już zajęte!");
+            //System.out.print("do nikąd -> docelowe pole ruchu jest już zajęte!");
             //System.out.println("Space occupied");
             //Potencjalnie sprawdzimy czy ma więcej staminy, jak nie to musi go zaatakować, bo inaczej sam zostanie zaatakowany po następnym ruchu
             //Jeżeli jednak ma więcej staminy to powinien próbować uciec po przekątnej w stronę w którą się kierował
@@ -228,36 +303,17 @@ public class Logic {
             // odp: stoi w miejscu, w następnej "turze" będą sie napierdalać
         }
     }
-    public static void damageDealer(int indexAttacker, int indexTarget){
-        //zamiast koordynatów jest targetIndex jako index w tabeli/linijka w pliku
-
-        //lekka przeróbka funkcji - zamiast przekazywać sam damage przekazuję index atakującego npc
-        //wykorzystuje to by drukować więcej info
-
-        System.out.print("\nNPCClasses.NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPCClasses.NPC "
+    public static void damageDealer(int indexAttacker, int indexTarget) {
+        String text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
                 +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage+")"+
-                "HP celu spada z "+npcList.get(indexTarget).HP+" na: ");
-
-        //^długaśny print do debugowania
+                "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
         npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage;
-        System.out.print(npcList.get(indexTarget).HP);
+        text = text + npcList.get(indexTarget).HP;
         if (npcList.get(indexTarget).HP <= 0) {
             npcList.remove(indexTarget);
-            System.out.print(" NPCClasses.NPC "+indexTarget + " został zabity!");
-        }
-        //TODO: Przerobić żeby działało z nową ArrayList NPCClasses.NPC'ów
+            text = text + " NPC "+indexTarget + " został zabity!\n";
+        }else{text = text + "\n";}
+        GUI.display.append(text);
     }
-    /*
-    public static int[][] itemRemover(int[][] item, int indexTarget){
-        int[][] itemRemover = new int[item.length - 1][];
-        for (int i = 0, k = 0; i < item.length; i++) {
-            if (i != indexTarget) {
-                itemRemover[k] = item[i];
-                k++;
-            }
-        }
-        return itemRemover;
-    }
-    */
 }
