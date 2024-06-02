@@ -71,7 +71,7 @@ public class FileReader {
                     System.out.println("Invalid integer input");
                 }
                 //System.out.println(dataString);
-                Logic.map.clear();
+                Logic.npcList.clear();
                 Logic.map = Spawning.createMap(Controller.size);
                 Logic.npcList.clear();
                 for (int i = 0; i < npcCount; i++) {

@@ -1,16 +1,20 @@
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Controller {
-    static int size =0;
-    public static void main(String[] args) throws FileNotFoundException {
+    static int size = 0;
+    static int NPCcount = 10;
+    static JFrame SimulationFrame = new JFrame();
+
+    public static void main(String[] args){
+        //GUI.MenuGUI(MenuFrame);
+
         //TODO: Na koniec jak już będzie śmigać dodać input od użytkownika w GUI.
-        int NPCcount = 10;
+        NPCcount = 10;
         size=30;
-
         //Scanner menu = new Scanner(System.in);
-
-        Logic.Symulacja(size,NPCcount);//todo: kontrola ilości npc
+        Logic.Symulacja();//todo: kontrola ilości npc
     }
 }
 //WIELKA LISTA RZECZY DO ZROBIENIA
@@ -20,12 +24,13 @@ public class Controller {
 //done:wczytywanie plików
 //done:zapisywanie do plików
 //todo:główne okienko symulacji (obecne jest secondary) - zostawcie to mi
-//todo:zmniejszanie sie strefy
-//done :gui do innej klasy
+//todo:zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
+//done:gui do innej klasy
 //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
 
 
 //rzeczy niżej nie są konieczne do zrobienia ale fajnie by było jak by były
+//todo: rewrite spawningu (większa kontrola nad ilością respionej broni i medkitów - zamiast "losowa" liczba jak jest teraz)
 //todo: ładniejsze GUI - ja sie tym zajmę
 //todo: airdropy? -> wymagało by to jakiejś bonusowej nowej broni (minigun? rpg? obydwa?)
 //todo: mechanika resizu okna (program działa bez, ale lekko ucina)

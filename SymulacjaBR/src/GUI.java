@@ -1,8 +1,7 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ public class GUI {
     static int cellSize = 30;
     static JLabel labelInfo = new JLabel();
     static List<String> labelInfoText = new ArrayList<>();
-    //static JLabel[][] labelGrid = new JLabel[Controller.size][Controller.size];
     static List<List<JLabel>> labelGrid = new ArrayList<>();
     static JPanel mainPanel = new JPanel();
     static Border borderDefault = BorderFactory.createLineBorder(Color.black, 1);
@@ -23,13 +21,32 @@ public class GUI {
     static JButton buttonTop = new JButton("Następna tura");
     static JButton buttonMid = new JButton("Zapisz stan planszy");
     static JButton buttonBot = new JButton("Wczytaj stan planszy");
+    static JButton buttonClose = new JButton("Zamknij program");
+    static JButton buttonNewSim = new JButton("Zacznij nową symulację");
+    static JPanel panelRight = new JPanel(new GridLayout(3, 1));
 
     static ImageIcon medkit = new ImageIcon("medpack.png");
     static JTextArea display = new JTextArea(16, 58);
 
+    static JFrame DataEntryFrame = new JFrame("User Input Window");
+
+
+
+    //all the code responsible for the window showing the simulation
     public static void SimulationGUI(JFrame frame) {
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        buttonClose.setVisible(false);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+        // Add window listener to print message on window closing
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Zamknięto okno symulacji!");
+                System.exit(0);
+            }
+        });
         frame.setSize(200 + cellSize * Controller.size, 150 + cellSize * Controller.size);
         frame.setTitle("Symulacja battle royale");
         //frame.setResizable(false);
@@ -39,13 +56,15 @@ public class GUI {
 
         mainPanel = resetLabelGrid(mainPanel);
 
-        JPanel panelRight = new JPanel(new GridLayout(4, 1));
-        panelRight.add(buttonTop);
-        panelRight.add(buttonMid);
-        buttonTop.setBorder(borderDefault);
-        buttonMid.setBorder(borderDefault);
+        buttonClose.setVisible(true);
+        panelRight.removeAll();
+        mainPanel.setVisible(false);
+
+
+        panelRight.add(buttonNewSim);
         panelRight.add(buttonBot);
-        panelRight.add(labelInfo);
+        panelRight.add(buttonClose);
+
         labelInfo.setBorder(borderDefault);
         display.setEditable(false);
         mainPanel.setBorder(borderDefault);
@@ -58,6 +77,50 @@ public class GUI {
         frame.add(bottomScrollPane, BorderLayout.PAGE_END);
         frame.add(mainPanel, BorderLayout.CENTER);
         frame.add(panelRight, BorderLayout.EAST);
+        panelRight.setVisible(true);
+
+        buttonNewSim.addActionListener(e -> {
+
+            //DataEntryFrame.setVisible(true);
+            //int[] newParams = getUserSimulationInput(DataEntryFrame);
+            //Controller.size = newParams[0];
+            //Controller.NPCcount = newParams[1];
+            mainPanel.setVisible(true);
+            //change buttons visible on the right side
+            GUI.panelRight.removeAll();
+            buttonClose.setVisible(false);
+            buttonClose.setVisible(false);
+
+            GUI.panelRight.removeAll();
+            GUI.panelRight.setLayout(new GridLayout(4,1));
+            buttonClose.setVisible(true);
+            GUI.panelRight.add(buttonTop);
+            GUI.panelRight.add(buttonMid);
+            GUI.panelRight.add(buttonBot);
+            GUI.panelRight.add(labelInfo);
+
+            //reset simulation
+            GUI.panelRight.revalidate();
+            GUI.panelRight.repaint();
+            Logic.map.clear();
+            Logic.npcList.clear();
+            Logic.weaponsList.clear();
+            Logic.medkitList.clear();
+
+            //create a new simulation
+            Logic.map = Spawning.createMap(Controller.size);
+            Spawning.spawnNPCs(Controller.size, Controller.NPCcount, Logic.map, Logic.npcList);//Logic required for spawning NPCClasses.NPC's
+            Spawning.spawnWeapons(Logic.map,Controller.size,Controller.NPCcount, Logic.weaponsList);//Spawning weapons on the map
+            Spawning.spawnMedkits(Logic.map,Controller.size, Controller.NPCcount, Logic.medkitList);
+            //refresh map and gui
+            Spawning.updateMap(Controller.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
+            refreshGUIMap();
+            synchronized (Logic.lock) {
+                Logic.buttonPressed = true;
+                Logic.lock.notify();
+            }
+        });
+        frame.setVisible(true);
 
         display.append("Wciśnij i przytrzymaj przycisk \"Nastepna tura\" aby aktywować automatyczne wykonywanie ruchów!\n");
 
@@ -106,13 +169,102 @@ public class GUI {
                     display.setText("");
                     display.append("Poprawnie wczytano stan symulacji z pliku.\nWznawiam wybraną symulację.\n");
                     refreshGUIMap();
+                    GUI.panelRight.removeAll();
+                    buttonClose.setVisible(false);
+                    buttonClose.setVisible(false);
+
+                    GUI.panelRight.removeAll();
+                    GUI.panelRight.setLayout(new GridLayout(4,1));
+                    buttonClose.setVisible(true);
+                    GUI.panelRight.add(buttonTop);
+                    GUI.panelRight.add(buttonMid);
+                    GUI.panelRight.add(buttonBot);
+                    GUI.panelRight.add(labelInfo);
+                    GUI.panelRight.revalidate();
+                    GUI.panelRight.repaint();
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
-                display.append("Anulowano proces zapisu pliku.\n");
+                display.append("Anulowano proces wczytu pliku.\n");
             }
         });
+        buttonClose.addActionListener(e -> {
+            System.out.println("zamkniecie");
+            System.exit(0);
+        });
+        frame.setVisible(true);
+    }
+
+    private static int[] getUserSimulationInput(Frame DataEntryFrame) { //todo: this fuckin' thing
+        int[] output = new int[2];
+
+        //DataEntryFrame.setLocation(JFrame.EXIT_ON_CLOSE);
+        DataEntryFrame.setSize(400, 200);
+        DataEntryFrame.setLayout(new GridLayout(4, 2));
+
+
+        JLabel labelSize = new JLabel("Rozmiar:");
+        JTextField textFieldSize = new JTextField();
+        JLabel labelNPC = new JLabel("Ilość NPC");
+        JTextField textFieldNPC = new JTextField();
+
+        // Create the button to submit inputs
+        JButton submitButton = new JButton("Kontyynuj");
+
+        DataEntryFrame.add(labelSize);
+        DataEntryFrame.add(textFieldSize);
+        DataEntryFrame.add(labelNPC);
+        DataEntryFrame.add(textFieldNPC);
+        DataEntryFrame.add(new JLabel()); // Placeholder for layout
+        DataEntryFrame.add(submitButton);
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Get user inputs
+                //String input1 = textFieldSize.getText();
+                try{
+                    output[0] = Integer.parseInt(textFieldSize.getText());
+                }catch (NumberFormatException ex) {
+                    System.out.println("to nie liczba kretynie");
+                    output[0] = -1;
+                }
+                try{
+                    output[1] = Integer.parseInt(textFieldSize.getText());
+                }catch (NumberFormatException ex) {
+                    System.out.println("to nie liczba kretynie");
+                    output[1] = -1;
+                }
+
+            }
+        });
+        //output[0] = 30; //size
+        //output[1] = 10; //npcamount
+        //DataEntryFrame.setVisible(false);
+        if(output[0]<20||output[0]>50){
+            System.out.println("niepoprawna liczba");
+        }else{
+            DataEntryFrame.setVisible(false);
+            return output;
+        }
+        return output;
+    }
+
+    public static void SimulationGUIEnd(Frame frame){
+        GUI.display.append("Wygrywa NPC o ID: "+ Logic.npcList.getFirst().index+"\n");
+        GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
+        GUI.buttonTop.setVisible(false);
+        GUI.buttonBot.setVisible(false);
+        GUI.buttonMid.setVisible(false);
+        GUI.panelRight.removeAll();
+        GUI.panelRight.setLayout(new GridLayout(2,1));
+        buttonClose.setVisible(true);
+        GUI.panelRight.add(buttonClose);
+        GUI.panelRight.add(labelInfo);
+        GUI.panelRight.revalidate();
+        GUI.panelRight.repaint();
+        GUI.labelGrid.get(Logic.npcList.getFirst().posX).get(Logic.npcList.getFirst().posY).setBackground(Color.yellow);
     }
 
     public static JPanel resetLabelGrid(JPanel panel) {
@@ -159,7 +311,7 @@ public class GUI {
                                 labelInfoText.add("Max. HP: "+Logic.npcList.get(i).maxHP);
                                 labelInfoText.add("Obecne HP: "+Logic.npcList.get(i).HP);
                                 labelInfoText.add("Broń: "+Logic.npcList.get(i).weapon.name);
-                                labelInfoText.add("Zadawane obrażenia: "+Logic.npcList.get(i).weapon.damage);
+                                labelInfoText.add("Obrażenia: "+Logic.npcList.get(i).weapon.damage);
                                 labelInfoText.add("Zasięg ataku: "+(Logic.npcList.get(i).weapon.range/sqrt(2)));
                                 break;
                             }
@@ -168,7 +320,7 @@ public class GUI {
                             if(Logic.weaponsList.get(i).posX==labelPosX && Logic.weaponsList.get(i).posY==labelPosY){
                                 labelInfoText.clear();
                                 labelInfoText.add("Broń: "+Logic.weaponsList.get(i).name);
-                                labelInfoText.add("Zadawane obrażenia: "+Logic.weaponsList.get(i).damage);
+                                labelInfoText.add("Obrażenia: "+Logic.weaponsList.get(i).damage);
                                 labelInfoText.add("Zasięg Broni: "+(Logic.weaponsList.get(i).range/sqrt(2)));
                                 break;
                             }
@@ -194,8 +346,8 @@ public class GUI {
             }
         }
         newpanel.setVisible(true);
-        Logic.frame.remove(panel);
-        Logic.frame.add(newpanel);
+        Controller.SimulationFrame.remove(panel);
+        Controller.SimulationFrame.add(newpanel);
         return newpanel;
     }
 

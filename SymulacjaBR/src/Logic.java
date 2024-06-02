@@ -2,6 +2,7 @@ import NPCClasses.*;
 import javax.swing.*;
 import java.awt.*;
 
+import WeaponClasses.Knife;
 import WeaponClasses.Weapon;
 
 import java.util.*;
@@ -18,7 +19,7 @@ public class Logic {
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
 
-    static JFrame frame = new JFrame();
+
     //required for pausing
     static boolean buttonPressed = false;
     static boolean buttonHeld = false;
@@ -27,26 +28,39 @@ public class Logic {
     //static String[][] map;
     static List<List<String>> map = new ArrayList<>();
 
-    static void Symulacja(int size, int NPCcount){
-        //required for gui
-        //JFrame frame = new JFrame();
+    static void Symulacja(){
+        GUI.SimulationGUI(Controller.SimulationFrame);
+        Controller.SimulationFrame.setVisible(true);
+
         int tura=0;
 
-        //code responsible for spawning NPC's,Medkits and weapons if we are not loading data from a saved file
-        map = Spawning.createMap(size);
-        Spawning.spawnNPCs(size, NPCcount, map, npcList);//Logic required for spawning NPCClasses.NPC's
-        Spawning.spawnWeapons(map,size,NPCcount, weaponsList);//Spawning weapons on the map
-        Spawning.spawnMedkits(map,size, NPCcount, medkitList);//Spawning medkits on the map
+        //po co te dwa npc? bo bez nic program się wywali - dlaczego? nie wiem
+        //jeśli umiessz je usunąć tak żeby program nadal działał, to to zrób
+        //życze powodzenia - xd update po 4h rozwiązałem problem
+        //npcList.add(new Scout(-1, 10, 10, 90, 3, new Knife("Knife", 15, 1,0, 10, 10), "Λ"));
+        //npcList.add(new Scout(-2, 11, 11, 90, 3, new Knife("Knife", 15, 1,0, 10, 10), "Λ"));
 
-        GUI.SimulationGUI(frame);
-        frame.setVisible(true);
-
+        synchronized (lock) {
+            while (!buttonPressed) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException ignored) {}
+            }
+            buttonPressed = false;
+        }
+        /*
+        //pod żadnym pozorem nie ussuwac tego sleepa ani nie zmniejszać jego wartości
+        //grozi wypierdoleniem programu
+        //jak chcesz wiedzieć co robi to pytaj Piotra
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException ignored) {}*/
 
         while (npcList.size() > 1){
             tura++;
 
             //update the map
-            Spawning.updateMap(size,npcList,weaponsList,medkitList);
+            Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
             GUI.refreshGUIMap();
 
             //================================================
@@ -69,14 +83,9 @@ public class Logic {
             }
 
         }
-        Spawning.updateMap(size,npcList,weaponsList,medkitList);
-        GUI.display.append("Wygrywa NPC o ID: "+ npcList.getFirst().index+"\n");
-        GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
-        GUI.buttonTop.setVisible(false);
-        GUI.buttonBot.setVisible(false);
-        GUI.buttonMid.setVisible(false); //todo: "zakończ"
-        GUI.labelGrid.get(npcList.getFirst().posX).get(npcList.getFirst().posY).setBackground(Color.yellow);
-
+        Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
+        GUI.refreshGUIMap();
+        GUI.SimulationGUIEnd(Controller.SimulationFrame);
     }
 
 
@@ -232,7 +241,6 @@ public class Logic {
     public static double distanceCalc(int targetX, int targetY, int x, int y) {
         return sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
     }
-    //TODO: prevent NPCClasses.NPC from moving to the space occupied by the other NPCClasses.NPC
     public static void movement(int targetX, int targetY, int x, int y, int npcIndex) {
         //TODO: zabezpieczyć przed wchodzeniem na NPCClasses.NPC
         //targets coordinates are saved as targetX, targetY
