@@ -85,23 +85,23 @@ public class Spawning {
         switch (npcToSpawn){
             case 0:
                 //Soldier
-                npcArray.add(new Soldier(index, posX, posY,150, 2, new Knife("Knife", 15, 1,0, posX, posY), "Σ"));
+                npcArray.add(new Soldier(index, posX, posY, new Knife("Knife", 15, 1,0, posX, posY)));
                 break;
             case 1:
                 //Medic
-                npcArray.add(new Medic(index, posX, posY, 100, 2, new Knife("Knife", 15, 1,0, posX, posY), "μ"));
+                npcArray.add(new Medic(index, posX, posY,  new Knife("Knife", 15, 1,0, posX, posY)));
                 break;
             case 2:
                 //Scout
-                npcArray.add(new Scout(index, posX, posY, 90, 3, new Knife("Knife", 15, 1,0, posX, posY), "Λ"));
+                npcArray.add(new Scout(index, posX, posY, new Knife("Knife", 15, 1,0, posX, posY)));
                 break;
             case 3:
                 //Sniper
-                npcArray.add(new Sniper(index, posX, posY, 100, 2, new Knife("Knife", 15, 1,0, posX, posY), "Θ"));
+                npcArray.add(new Sniper(index, posX, posY,  new Knife("Knife", 15, 1,0, posX, posY)));
                 break;
             case 4:
                 //Spy
-                npcArray.add(new Spy(index, posX, posY, 80, 2, new Knife("Knife", 15, 1,0, posX, posY), "Ω"));
+                npcArray.add(new Spy(index, posX, posY,  new Knife("Knife", 15, 1,0, posX, posY)));
                 break;
         }
         return npcArray;

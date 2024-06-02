@@ -11,8 +11,8 @@ public class Controller {
         //GUI.MenuGUI(MenuFrame);
 
         //TODO: Na koniec jak już będzie śmigać dodać input od użytkownika w GUI.
-        NPCcount = 10;
-        size=30;
+        NPCcount = 20;
+        size=50;
         //Scanner menu = new Scanner(System.in);
         Logic.Symulacja();//todo: kontrola ilości npc
     }

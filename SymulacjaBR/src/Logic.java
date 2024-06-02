@@ -100,6 +100,11 @@ public class Logic {
         double currentRange = npcList.get(npcIndex).weapon.range;
         int currentStamina = npcList.get(npcIndex).stamina;
 
+        //Using their abilities every turn
+        if(Objects.equals(npcList.get(npcIndex).symbol, "μ") || Objects.equals(npcList.get(npcIndex).symbol, "Θ")){
+            npcList.get(npcIndex).Ability();
+        }
+
         switch(currentTerrain) {
             case 1:
                 if(currentStamina > 1) {
@@ -308,8 +313,24 @@ public class Logic {
                 +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage+")"+
                 "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
-        npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage;
-        text = text + npcList.get(indexTarget).HP;
+        if(Objects.equals(npcList.get(indexTarget).symbol, "Ω") && (int) (Math.random() * (10)) > 6){
+            text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
+                    +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                    +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).index + " unika obrazen.";
+        }
+        else{
+            if(Objects.equals(npcList.get(indexAttacker).symbol, "Σ") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
+                text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
+                        +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                        +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage * 1.20 +")"+
+                        "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
+                npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage * 1.20;
+            }
+            else{
+                npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage;
+            }
+            text = text + npcList.get(indexTarget).HP;
+        }
         if (npcList.get(indexTarget).HP <= 0) {
             npcList.remove(indexTarget);
             text = text + " NPC "+indexTarget + " został zabity!\n";

@@ -117,11 +117,11 @@ public class FileReader {
                         }
                     }
                     switch (symbol) {
-                        case "Σ" -> Logic.npcList.add(new Soldier(index, posX, posY, 150, 2, wpn, "Σ"));
-                        case "μ" -> Logic.npcList.add(new Medic(index, posX, posY, 100, 2, wpn, "μ"));
-                        case "Λ" -> Logic.npcList.add(new Scout(index, posX, posY, 90, 3, wpn, "Λ"));
-                        case "Θ" -> Logic.npcList.add(new Sniper(index, posX, posY, 100, 2, wpn, "Θ"));
-                        case "Ω" -> Logic.npcList.add(new Spy(index, posX, posY, 80, 2, wpn, "Ω"));
+                        case "Σ" -> Logic.npcList.add(new Soldier(index, posX, posY,  wpn));
+                        case "μ" -> Logic.npcList.add(new Medic(index, posX, posY,  wpn));
+                        case "Λ" -> Logic.npcList.add(new Scout(index, posX, posY,  wpn));
+                        case "Θ" -> Logic.npcList.add(new Sniper(index, posX, posY,  wpn));
+                        case "Ω" -> Logic.npcList.add(new Spy(index, posX, posY,  wpn));
                         default -> System.out.println("Wrong symbol");
                     }
                     Logic.npcList.get(i).HP = HP;
