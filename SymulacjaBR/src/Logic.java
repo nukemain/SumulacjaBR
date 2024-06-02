@@ -96,6 +96,28 @@ public class Logic {
         double targetDistance = 999;
         int targetIndex = -1;
         boolean actionTaken = false;
+        int currentTerrain = TerrainGenerator.terrainMap.get(npcList.get(npcIndex).posY).get(npcList.get(npcIndex).posX);
+        double currentRange = npcList.get(npcIndex).weapon.range;
+        int currentStamina = npcList.get(npcIndex).stamina;
+
+        switch(currentTerrain) {
+            case 1:
+                if(currentStamina > 1) {
+                    currentStamina -= 1;
+                    //System.out.println(npcIndex + " ma zmniejszoną staminę");
+                }
+                break;
+            case 2:
+                currentRange = 1;
+                //System.out.println(npcIndex + " ma zmniejszony zasięg");
+                break;
+            case 3:
+                if(!npcList.get(npcIndex).weapon.name.equals("Knife")) {
+                    currentRange += 1;
+                    //System.out.println(npcIndex + " ma zwiększony zasięg");
+                }
+                break;
+        }
 
         //sprawdzam czy HP mniejsze od 50% i jeśli tak to szuka najbliższej apteczki
         if((( (double) npcList.get(npcIndex).HP / npcList.get(npcIndex).maxHP) < 0.5) && !medkitList.isEmpty()) {
@@ -110,7 +132,7 @@ public class Logic {
                 }
             }
             //calling the method to move the target in direction of target
-            for(int i = 1; i <= npcList.get(npcIndex).stamina; i++) {
+            for(int i = 1; i <= currentStamina; i++) {
                 movement(targetX, targetY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY, npcIndex);
                 if(npcList.get(npcIndex).posX == targetX && npcList.get(npcIndex).posY == targetY) {//if on target...
                     for(int j = 0; j < medkitList.size(); j++) {//...pick up the medkit
@@ -154,7 +176,7 @@ public class Logic {
             //loop checks if there's an enemy in range and saves the coordinates of the one with the list HP points
             for(int i = 0; i < npcList.size(); i++) {
                 double distance = distanceCalc(npcList.get(i).posX, npcList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
-                if(distance > 0 && npcList.get(i).HP < targetHP && distance <= npcList.get(npcIndex).weapon.range) {
+                if(distance > 0 && npcList.get(i).HP < targetHP && distance <= currentRange) {
                     targetDistance = distance;
                     targetHP = npcList.get(i).HP;
                     targetX = npcList.get(i).posX;
@@ -199,7 +221,7 @@ public class Logic {
                     }
                 }
                 //calling the method to move the NPCClasses.NPC in targets direction
-                for(int i = 1; i <= npcList.get(npcIndex).stamina; i++) {
+                for(int i = 1; i <= currentStamina; i++) {
                     movement(targetX, targetY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY, npcIndex);
                     for(int j = 0; j < weaponsList.size(); j++) {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {

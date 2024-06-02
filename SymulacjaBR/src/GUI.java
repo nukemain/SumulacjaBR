@@ -16,8 +16,8 @@ public class GUI {
     static JPanel mainPanel = new JPanel();
     static Border borderDefault = BorderFactory.createLineBorder(Color.black, 1);
     static Border borderNPC = BorderFactory.createLineBorder(Color.red, 1);
-    static Border borderWeapon = BorderFactory.createLineBorder(Color.yellow, 1);
-    static Border borderMedkit = BorderFactory.createLineBorder(Color.green , 1);
+    static Border borderWeapon = BorderFactory.createLineBorder(Color.orange, 1);
+    static Border borderMedkit = BorderFactory.createLineBorder(Color.green, 1);
     static JButton buttonTop = new JButton("Następna tura");
     static JButton buttonMid = new JButton("Zapisz stan planszy");
     static JButton buttonBot = new JButton("Wczytaj stan planszy");
@@ -109,6 +109,7 @@ public class GUI {
 
             //create a new simulation
             Logic.map = Spawning.createMap(Controller.size);
+            TerrainGenerator.terrainGenerator(Controller.size);
             Spawning.spawnNPCs(Controller.size, Controller.NPCcount, Logic.map, Logic.npcList);//Logic required for spawning NPCClasses.NPC's
             Spawning.spawnWeapons(Logic.map,Controller.size,Controller.NPCcount, Logic.weaponsList);//Spawning weapons on the map
             Spawning.spawnMedkits(Logic.map,Controller.size, Controller.NPCcount, Logic.medkitList);
@@ -264,7 +265,7 @@ public class GUI {
         GUI.panelRight.add(labelInfo);
         GUI.panelRight.revalidate();
         GUI.panelRight.repaint();
-        GUI.labelGrid.get(Logic.npcList.getFirst().posX).get(Logic.npcList.getFirst().posY).setBackground(Color.yellow);
+        GUI.labelGrid.get(Logic.npcList.getFirst().posX).get(Logic.npcList.getFirst().posY).setBackground(Color.pink);
     }
 
     public static JPanel resetLabelGrid(JPanel panel) {
@@ -312,7 +313,13 @@ public class GUI {
                                 labelInfoText.add("Obecne HP: "+Logic.npcList.get(i).HP);
                                 labelInfoText.add("Broń: "+Logic.npcList.get(i).weapon.name);
                                 labelInfoText.add("Obrażenia: "+Logic.npcList.get(i).weapon.damage);
-                                labelInfoText.add("Zasięg ataku: "+(Logic.npcList.get(i).weapon.range/sqrt(2)));
+                                if(Logic.npcList.get(i).weapon.range == sqrt(2)) {
+                                    labelInfoText.add("Zasięg ataku: "+(Logic.npcList.get(i).weapon.range / sqrt(2)));
+                                }
+                                else {
+                                    labelInfoText.add("Zasięg ataku: " + Logic.npcList.get(i).weapon.range);
+                                }
+                                //labelInfoText.add("Teren: "+TerrainGenerator.terrainMap.get(Logic.npcList.get(i).posY).get(Logic.npcList.get(i).posX));
                                 break;
                             }
                         }
@@ -321,7 +328,12 @@ public class GUI {
                                 labelInfoText.clear();
                                 labelInfoText.add("Broń: "+Logic.weaponsList.get(i).name);
                                 labelInfoText.add("Obrażenia: "+Logic.weaponsList.get(i).damage);
-                                labelInfoText.add("Zasięg Broni: "+(Logic.weaponsList.get(i).range/sqrt(2)));
+                                if(Logic.weaponsList.get(i).range == sqrt(2)) {
+                                    labelInfoText.add("Zasięg Broni: " + (Logic.weaponsList.get(i).range / sqrt(2)));
+                                }
+                                else {
+                                    labelInfoText.add("Zasięg Broni: " + Logic.weaponsList.get(i).range);
+                                }
                                 break;
                             }
                         }
@@ -363,7 +375,20 @@ public class GUI {
         for (int y = 0; y < Controller.size; y++) {
             for (int x = 0; x < Controller.size; x++) {
                 labelGrid.get(x).get(y).setIcon(null);
-                labelGrid.get(x).get(y).setBackground(Color.gray);
+                switch(TerrainGenerator.terrainMap.get(y).get(x)) {
+                    case 0:
+                        labelGrid.get(x).get(y).setBackground(Color.green.darker());
+                        break;
+                    case 1:
+                        labelGrid.get(x).get(y).setBackground(Color.yellow.brighter());
+                        break;
+                    case 2:
+                        labelGrid.get(x).get(y).setBackground(Color.green.darker().darker());
+                        break;
+                    case 3:
+                        labelGrid.get(x).get(y).setBackground(Color.gray);
+                        break;
+                }
                 labelGrid.get(x).get(y).setBorder(borderDefault);
             }
         }
