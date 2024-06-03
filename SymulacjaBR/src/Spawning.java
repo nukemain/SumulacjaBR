@@ -85,23 +85,23 @@ public class Spawning {
         switch (npcToSpawn){
             case 0:
                 //Soldier
-                npcArray.add(new Soldier(index, posX, posY, new Knife("Knife", 15, 1,0, posX, posY)));
+                npcArray.add(new Soldier(index, posX, posY, new Knife(posX, posY)));
                 break;
             case 1:
                 //Medic
-                npcArray.add(new Medic(index, posX, posY,  new Knife("Knife", 15, 1,0, posX, posY)));
+                npcArray.add(new Medic(index, posX, posY,  new Knife(posX, posY)));
                 break;
             case 2:
                 //Scout
-                npcArray.add(new Scout(index, posX, posY, new Knife("Knife", 15, 1,0, posX, posY)));
+                npcArray.add(new Scout(index, posX, posY, new Knife(posX, posY)));
                 break;
             case 3:
                 //Sniper
-                npcArray.add(new Sniper(index, posX, posY,  new Knife("Knife", 15, 1,0, posX, posY)));
+                npcArray.add(new Sniper(index, posX, posY,  new Knife(posX, posY)));
                 break;
             case 4:
                 //Spy
-                npcArray.add(new Spy(index, posX, posY,  new Knife("Knife", 15, 1,0, posX, posY)));
+                npcArray.add(new Spy(index, posX, posY,  new Knife(posX, posY)));
                 break;
         }
         return npcArray;
@@ -164,23 +164,23 @@ public class Spawning {
                     weaponToSpawn = (int) (Math.random() * (5));
                     switch (weaponToSpawn){
                         case 0:
-                            weaponsArray.add(new Handgun("Handgun", 25, 1,1, posX, posY));
+                            weaponsArray.add(new Handgun(posX, posY));
                             map.get(posY).set(posX, "[H]");
                             break;
                         case 1:
-                            weaponsArray.add(new Rifle("Rifle", 35, 2,2, posX, posY));
+                            weaponsArray.add(new Rifle(posX, posY));
                             map.get(posY).set(posX, "[R]");
                             break;
                         case 2:
-                            weaponsArray.add(new SMG("SMG", 50, 1,2, posX, posY));
+                            weaponsArray.add(new SMG(posX, posY));
                             map.get(posY).set(posX, "[U]");
                             break;
                         case 3:
-                            weaponsArray.add(new Shotgun("Shotgun", 50, 1,2, posX, posY));
+                            weaponsArray.add(new Shotgun(posX, posY));
                             map.get(posY).set(posX, "[B]");
                             break;
                         case 4:
-                            weaponsArray.add(new SniperRifle("SniperRifle", 40, 3,3, posX, posY));
+                            weaponsArray.add(new SniperRifle(posX, posY));
                             map.get(posY).set(posX, "[S]");
                             break;
                     }

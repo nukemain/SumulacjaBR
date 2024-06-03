@@ -93,27 +93,27 @@ public class FileReader {
                     switch (wpnName) {
                         case "Knife" -> {
                             //System.out.println(wpnName);
-                            wpn = new Knife(wpnName, 15, 1, 0, posX, posY);
+                            wpn = new Knife(posX, posY);
                         }
                         case "Handgun" -> {
                             //System.out.println(wpnName);
-                            wpn = new Handgun(wpnName, 25, 1, 1, posX, posY);
+                            wpn = new Handgun(posX, posY);
                         }
                         case "Rifle" -> {
                             //System.out.println(wpnName);
-                            wpn = new Rifle(wpnName, 35, 2, 2, posX, posY);
+                            wpn = new Rifle(posX, posY);
                         }
                         case "SniperRifle" -> {
                             //System.out.println(wpnName);
-                            wpn = new SniperRifle(wpnName, 40, 3, 3, posX, posY);
+                            wpn = new SniperRifle(posX, posY);
                         }
                         case "Shotgun" -> {
                             //System.out.println(wpnName);
-                            wpn = new Shotgun(wpnName, 50, 1, 2, posX, posY);
+                            wpn = new Shotgun(posX, posY);
                         }
                         case "SMG" -> {
                             //System.out.println(wpnName);
-                            wpn = new SMG(wpnName, 50, 1, 2, posX, posY);
+                            wpn = new SMG(posX, posY);
                         }
                     }
                     switch (symbol) {
@@ -152,23 +152,23 @@ public class FileReader {
                     }
                     switch (wpnName) {
                         case "Handgun":
-                            Logic.weaponsList.add(new Handgun("Handgun", 25, 1, 1, posX, posY));
+                            Logic.weaponsList.add(new Handgun(posX, posY));
                             Logic.map.get(posY).set(posX, "[H]");
                             break;
                         case "Rifle":
-                            Logic.weaponsList.add(new Rifle("Rifle", 35, 2, 2, posX, posY));
+                            Logic.weaponsList.add(new Rifle(posX, posY));
                             Logic.map.get(posY).set(posX, "[R]");
                             break;
                         case "SniperRifle":
-                            Logic.weaponsList.add(new SniperRifle("SniperRifle", 40, 3, 3, posX, posY));
+                            Logic.weaponsList.add(new SniperRifle(posX, posY));
                             Logic.map.get(posY).set(posX, "[S]");
                             break;
                         case "Shotgun":
-                            Logic.weaponsList.add(new Shotgun("Shotgun", 50, 1, 2, posX, posY));
+                            Logic.weaponsList.add(new Shotgun(posX, posY));
                             Logic.map.get(posY).set(posX, "[B]");
                             break;
                         case "SMG":
-                            Logic.weaponsList.add(new SMG("SMG", 50, 1, 2, posX, posY));
+                            Logic.weaponsList.add(new SMG(posX, posY));
                             Logic.map.get(posY).set(posX, "[U]");
                             break;
                     }

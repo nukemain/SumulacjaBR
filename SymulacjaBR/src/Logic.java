@@ -298,9 +298,10 @@ public class Logic {
         }
     }
     public static void damageDealer(int indexAttacker, int indexTarget) {
+        int damage = (int) (npcList.get(indexTarget).HP - npcList.get(indexAttacker).weapon.Attack(npcList.get(indexTarget).HP));
         String text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
                 +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
-                +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage+")"+
+                +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage+")"+
                 "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
         if(Objects.equals(npcList.get(indexTarget).symbol, "Ω") && (int) (Math.random() * (10)) > 6){
             text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
@@ -311,12 +312,13 @@ public class Logic {
             if(Objects.equals(npcList.get(indexAttacker).symbol, "Σ") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
                 text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
                         +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
-                        +npcList.get(indexAttacker).weapon.name+" (DMG:"+npcList.get(indexAttacker).weapon.damage * 1.20 +")"+
+                        +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage * 1.20 +")"+
                         "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
-                npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage * 1.20;
+                npcList.get(indexTarget).HP -= damage * 1.20;
             }
             else{
-                npcList.get(indexTarget).HP -= npcList.get(indexAttacker).weapon.damage;
+
+                npcList.get(indexTarget).HP -= damage;
             }
             text = text + npcList.get(indexTarget).HP;
         }

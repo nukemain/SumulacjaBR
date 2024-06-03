@@ -12,18 +12,12 @@ public abstract class Weapon {
     public int posX;
     public int posY;
     public ImageIcon icon;
-    Weapon(String name, int damage, int range, int quality, int posX, int posY) {
-        this.name = name;
-        this.damage = damage;
-        if(range == 1) {
-            this.range = range * sqrt(2);
-        }
-        else {
-            this.range = range;
-        }
-        this.quality = quality;
+    Weapon(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
         this.icon = new ImageIcon("default.png");
+    }
+    public int Attack(int targetHP){
+        return 0;
     }
 }

@@ -2,9 +2,19 @@ package WeaponClasses;
 
 import javax.swing.*;
 
+import static java.lang.Math.sqrt;
+
 public class Handgun extends Weapon {
-    public Handgun(String name, int damage, int range, int quality, int posX, int posY){
-        super(name, damage, range, quality, posX, posY);
+    public Handgun(int posX, int posY){
+        super(posX, posY);
+        this.name = "Handgun";
+        this.damage = 25;
+        this.range = sqrt(2);
+        this.quality = 1;
         this.icon = new ImageIcon("handgun.png");
+    }
+    public int Attack(int targetHP){
+        targetHP -= this.damage;
+        return targetHP;
     }
 }
