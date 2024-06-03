@@ -22,7 +22,7 @@ public class Controller {
 //TODO: teren -> zrobiony szumem perlina (pytać Piotra), myślę że tak z trzy rózne rodzaje terenu conajmniej, pełna współpraca z AI npc
 //done: wczytywanie plików
 //done: zapisywanie do plików
-//todo: input od użytkownika do gui
+//done: input od użytkownika do gui
 //todo: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
 //done: gui do innej klasy
 //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie

@@ -32,7 +32,7 @@ public class Logic {
         GUI.SimulationGUI(Controller.SimulationFrame);
         Controller.SimulationFrame.setVisible(true);
 
-        int tura=0;
+        int tura=0;//todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ DO TEGO CO ON TAM CHCIAŁ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
 
 
         synchronized (lock) {
@@ -46,7 +46,7 @@ public class Logic {
 
         GUI.refreshTerrain();
         while (npcList.size() > 1){
-            tura++;
+            tura++; //todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
 
             //update the map
             Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
