@@ -32,13 +32,8 @@ public class Logic {
         GUI.SimulationGUI(Controller.SimulationFrame);
         Controller.SimulationFrame.setVisible(true);
 
-        int tura=0;
+        int tura=0;//todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ DO TEGO CO ON TAM CHCIAŁ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
 
-        //po co te dwa npc? bo bez nic program się wywali - dlaczego? nie wiem
-        //jeśli umiessz je usunąć tak żeby program nadal działał, to to zrób
-        //życze powodzenia - xd update po 4h rozwiązałem problem
-        //npcList.add(new Scout(-1, 10, 10, 90, 3, new Knife("Knife", 15, 1,0, 10, 10), "Λ"));
-        //npcList.add(new Scout(-2, 11, 11, 90, 3, new Knife("Knife", 15, 1,0, 10, 10), "Λ"));
 
         synchronized (lock) {
             while (!buttonPressed) {
@@ -48,16 +43,10 @@ public class Logic {
             }
             buttonPressed = false;
         }
-        /*
-        //pod żadnym pozorem nie ussuwac tego sleepa ani nie zmniejszać jego wartości
-        //grozi wypierdoleniem programu
-        //jak chcesz wiedzieć co robi to pytaj Piotra
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException ignored) {}*/
 
+        GUI.refreshTerrain();
         while (npcList.size() > 1){
-            tura++;
+            tura++; //todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
 
             //update the map
             Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);

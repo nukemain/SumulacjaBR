@@ -62,6 +62,16 @@ public class FileSaver {
                 for(int i = 0; i < Logic.medkitList.size(); i++) {
                     myWriter.write(Logic.medkitList.get(i)[0] + " " + Logic.medkitList.get(i)[1] + "\n");
                 }
+                for(int y = 0; y < size; y++) {
+                    for( int x = 0; x < size; x++) {
+                        myWriter.write(TerrainGenerator.terrainMap.get(y).get(x).toString());
+                        System.out.println(TerrainGenerator.terrainMap.get(y).get(x));
+                        if(x != size - 1) {
+                            myWriter.write(" ");
+                        }
+                    }
+                    myWriter.write("\n");
+                }
                 myWriter.close();
                 System.out.println("Successfully wrote to the file.");
             } catch (IOException e) {
