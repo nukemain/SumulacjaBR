@@ -199,8 +199,22 @@ public class FileReader {
                     Logic.map.get(posY).set(posX, "[+]");
                     Logic.medkitList.add(new int[]{posX, posY});
                 }
-                TerrainGenerator.terrainMap.clear(); //TODO:POPRAWNE WCZYTYWANIE Z PLIKU
-                TerrainGenerator.terrainGenerator(Controller.size);//TODO: TO TU JEST TYLKO PO TO BYM MÓGŁ ROBIĆ GUI
+                TerrainGenerator.terrainMap.clear();
+                for (int y = 0; y < Controller.size; y++) {
+                    if (dataReader.hasNextLine()) {
+                        dataString = dataReader.nextLine();
+                        TerrainGenerator.terrainMap.add(new ArrayList<>());
+                        //System.out.println(dataString);
+                    }
+                    String[] terrainDataArray = dataString.split(" ", Controller.size);
+                    try {
+                        for(int x = 0; x < Controller.size; x++) {
+                            TerrainGenerator.terrainMap.get(y).add(Integer.valueOf(terrainDataArray[x]));
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid integer input");
+                    }
+                }
                 dataReader.close();
             } catch (FileNotFoundException e) {
                 //System.out.println("An error occurred.");
