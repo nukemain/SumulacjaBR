@@ -15,9 +15,9 @@ public class TerrainGenerator {
             terrainMap.add(new ArrayList<>());
             for(int x = 0; x < size; x++) {
                 terrainMap.get(y).add((int)(Math.random() * 4));
-                System.out.print(terrainMap.get(y).get(x) + " ");
+                //System.out.print(terrainMap.get(y).get(x) + " ");
             }
-            System.out.print("\n");
+            //System.out.print("\n");
         }
     }
 }

@@ -199,6 +199,8 @@ public class FileReader {
                     Logic.map.get(posY).set(posX, "[+]");
                     Logic.medkitList.add(new int[]{posX, posY});
                 }
+                TerrainGenerator.terrainMap.clear(); //TODO:POPRAWNE WCZYTYWANIE Z PLIKU
+                TerrainGenerator.terrainGenerator(Controller.size);//TODO: TO TU JEST TYLKO PO TO BYM MÓGŁ ROBIĆ GUI
                 dataReader.close();
             } catch (FileNotFoundException e) {
                 //System.out.println("An error occurred.");
