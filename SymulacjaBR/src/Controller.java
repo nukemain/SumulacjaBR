@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Controller {
@@ -7,7 +8,7 @@ public class Controller {
     static int NPCcount = 10;
     static JFrame SimulationFrame = new JFrame();
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
         //GUI.MenuGUI(MenuFrame);
 
         //NPCcount = 10;

@@ -159,6 +159,7 @@ public class GUI {
                 Spawning.updateMap(Controller.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
                 refreshGUIMap();
                 refreshTerrain();
+                CSVGenerator.dataReseter();
                 display.setText("Wciśnij i przytrzymaj przycisk \"Nastepna tura\" aby aktywować automatyczne wykonywanie ruchów!\n");
                 synchronized (Logic.lock) {
                     Logic.buttonPressed = true;
@@ -214,6 +215,7 @@ public class GUI {
                     display.setText("");
                     display.append("Poprawnie wczytano stan symulacji z pliku.\nWznawiam wybraną symulację.\n");
                     refreshGUIMap();
+                    refreshTerrain();
                     GUI.panelRight.removeAll();
                     buttonClose.setVisible(false);
                     buttonClose.setVisible(false);
@@ -227,6 +229,7 @@ public class GUI {
                     GUI.panelRight.add(labelInfo);
                     GUI.panelRight.revalidate();
                     GUI.panelRight.repaint();
+                    CSVGenerator.dataReseter();
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }

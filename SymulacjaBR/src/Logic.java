@@ -5,6 +5,7 @@ import java.awt.*;
 import WeaponClasses.Knife;
 import WeaponClasses.Weapon;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -28,12 +29,12 @@ public class Logic {
     //static String[][] map;
     static List<List<String>> map = new ArrayList<>();
 
-    static void Symulacja(){
+    static void Symulacja() throws IOException {
+        CSVGenerator csvObject = new CSVGenerator();
         GUI.SimulationGUI(Controller.SimulationFrame);
         Controller.SimulationFrame.setVisible(true);
 
         int tura=0;//todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ DO TEGO CO ON TAM CHCIAŁ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
-
 
         synchronized (lock) {
             while (!buttonPressed) {
@@ -45,7 +46,9 @@ public class Logic {
         }
 
         GUI.refreshTerrain();
+
         while (npcList.size() > 1){
+            csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
             tura++; //todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
 
             //update the map
@@ -74,6 +77,8 @@ public class Logic {
         }
         Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
         GUI.refreshGUIMap();
+        csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
+        csvObject.csvWriter();
         GUI.SimulationGUIEnd(Controller.SimulationFrame);
     }
 
@@ -102,7 +107,7 @@ public class Logic {
                 }
                 break;
             case 2:
-                currentRange = 1;
+                currentRange = sqrt(2);
                 //System.out.println(npcIndex + " ma zmniejszony zasięg");
                 break;
             case 3:

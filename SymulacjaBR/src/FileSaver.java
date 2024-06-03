@@ -37,10 +37,10 @@ public class FileSaver {
                 realFileName += ".txt";
             }
             try {
-                File testFile = new File(realFileName);
-                if (testFile.createNewFile()) {
-                    System.out.println("File created: " + testFile.getName());
-                    System.out.println("Absolute path: " + testFile.getAbsolutePath());
+                File file = new File(realFileName);
+                if (file.createNewFile()) {
+                    System.out.println("File created: " + file.getName());
+                    System.out.println("Absolute path: " + file.getAbsolutePath());
                 } else {
                     System.out.println("File already exists.");
                 }
