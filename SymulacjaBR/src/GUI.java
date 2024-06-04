@@ -148,6 +148,7 @@ public class GUI {
                 Logic.npcList.clear();
                 Logic.weaponsList.clear();
                 Logic.medkitList.clear();
+                TerrainGenerator.terrainMap.clear();
 
                 //create a new simulation
                 Logic.map = Spawning.createMap(Controller.size);
