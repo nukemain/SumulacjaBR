@@ -100,7 +100,7 @@ public class Logic {
         }
 
         switch(currentTerrain) {
-            case 1:
+            case 0:
                 if(currentStamina > 1) {
                     currentStamina -= 1;
                     //System.out.println(npcIndex + " ma zmniejszoną staminę");

@@ -466,10 +466,10 @@ public class GUI {
                 //labelGrid.get(x).get(y).repaint();
                 switch(TerrainGenerator.terrainMap.get(y).get(x)) {
                     case 0:
-                        labelGrid.get(x).get(y).setBackground(Color.green.darker());
+                        labelGrid.get(x).get(y).setBackground(Color.yellow.brighter());
                         break;
                     case 1:
-                        labelGrid.get(x).get(y).setBackground(Color.yellow.brighter());
+                        labelGrid.get(x).get(y).setBackground(Color.green.darker());
                         break;
                     case 2:
                         labelGrid.get(x).get(y).setBackground(Color.green.darker().darker());
