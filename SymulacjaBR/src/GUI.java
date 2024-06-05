@@ -319,7 +319,7 @@ public class GUI {
     }
 
     public static void SimulationGUIEnd(Frame frame){
-        GUI.display.append("Wygrywa NPC o ID: "+ Logic.npcList.getFirst().index+"\n");
+        GUI.display.append("Wygrywa NPC o ID: "+ Logic.npcList.get(0).index+"\n");
         GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
         GUI.buttonTop.setVisible(false);
         GUI.buttonBot.setVisible(false);
@@ -331,7 +331,7 @@ public class GUI {
         GUI.panelRight.add(labelInfo);
         GUI.panelRight.revalidate();
         GUI.panelRight.repaint();
-        GUI.labelGrid.get(Logic.npcList.getFirst().posX).get(Logic.npcList.getFirst().posY).setBackground(Color.pink);
+        GUI.labelGrid.get(Logic.npcList.get(0).posX).get(Logic.npcList.get(0).posY).setBackground(Color.pink);
     }
 
     public static JPanel resetLabelGrid(JPanel panel) {
@@ -478,6 +478,8 @@ public class GUI {
                     case 3:
                         labelGrid.get(x).get(y).setBackground(Color.gray);
                         break;
+                    case 4:
+                        labelGrid.get(x).get(y).setBackground(new Color(92, 1, 117)); //no set value for purple, so we create a new one
                 }
             }
         }

@@ -20,6 +20,8 @@ public class Logic {
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
 
+    public static int roundsCounter = 0;
+
 
     //required for pausing
     static boolean buttonPressed = false;
@@ -34,8 +36,6 @@ public class Logic {
         GUI.SimulationGUI(Controller.SimulationFrame);
         Controller.SimulationFrame.setVisible(true);
 
-        int tura=0;//todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ DO TEGO CO ON TAM CHCIAŁ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
-
         synchronized (lock) {
             while (!buttonPressed) {
                 try {
@@ -49,7 +49,6 @@ public class Logic {
 
         while (npcList.size() > 1){
             csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
-            tura++; //todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
 
             //update the map
             Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
@@ -67,11 +66,15 @@ public class Logic {
             }
             //================================================
             GUI.display.append("================================================================================================================================================================================================\n");
-            GUI.display.append("[Tura nr"+ tura +"]\n");
+            GUI.display.append("[Tura nr"+ roundsCounter +"]\n");
 
             // do "logic" for each npc in npcList
             for (int i=0;i<npcList.size();i++){
                 decisionMaker(i);
+            }
+            if(roundsCounter%3==0){
+            TerrainGenerator.ShrinkZone(Controller.size,Controller.size/2,Controller.size/2,roundsCounter);
+            GUI.refreshTerrain();
             }
 
         }
@@ -100,20 +103,28 @@ public class Logic {
         }
 
         switch(currentTerrain) {
-            case 0:
+            case 0://desert
                 if(currentStamina > 1) {
                     currentStamina -= 1;
                     //System.out.println(npcIndex + " ma zmniejszoną staminę");
                 }
                 break;
-            case 2:
+            case 2://forest
                 currentRange = sqrt(2);
                 //System.out.println(npcIndex + " ma zmniejszony zasięg");
                 break;
-            case 3:
+            case 3://mountains
                 if(!npcList.get(npcIndex).weapon.name.equals("Knife")) {
                     currentRange += 1;
                     //System.out.println(npcIndex + " ma zwiększony zasięg");
+                }
+                break;
+            case 4: //zone
+                npcList.get(npcIndex).HP -=10;
+                if(npcList.get(npcIndex).HP<=0){
+                    GUI.display.append(npcList.get(npcIndex).name+" umarł od strefy!\n");
+                    npcList.remove(npcIndex);
+                    return;
                 }
                 break;
         }

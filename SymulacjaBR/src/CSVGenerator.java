@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CSVGenerator {
-    public static int roundsCounter = 0;
+    //public static int roundsCounter = 0;
     private static List<String[]> dataLines = new ArrayList<>();
     File csvFile = new File("Data_Collected.csv");
 
@@ -41,12 +41,13 @@ public class CSVGenerator {
         if(dataLines.isEmpty()) {
             dataLines.add(new String[]{"Round", "Number of NPC", "Number of weapons", "Number of medkits"});
         }
-        dataLines.add(new String[]{ String.valueOf(roundsCounter), String.valueOf(npcCount), String.valueOf(weaponsCount), String.valueOf(medkitsCount)});
-        roundsCounter++;
+        dataLines.add(new String[]{ String.valueOf(Logic.roundsCounter), String.valueOf(npcCount), String.valueOf(weaponsCount), String.valueOf(medkitsCount)});
+        int roundsCounter;
+        Logic.roundsCounter++;
     }
 
     public static void dataReseter() {
         dataLines.clear();
-        roundsCounter = 0;
+        Logic.roundsCounter = 0;
     }
 }

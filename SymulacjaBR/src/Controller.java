@@ -19,13 +19,17 @@ public class Controller {
 }
 //WIELKA LISTA RZECZY DO ZROBIENIA
 //TĄ SEKCJĘ MUSIMY ZROBIĆ]
-//TODO: https://discord.com/channels/1236752666273775667/1236752666781290557/1246940156083310732
-//TODO: teren -> zrobiony szumem perlina (pytać Piotra), myślę że tak z trzy rózne rodzaje terenu conajmniej, pełna współpraca z AI npc
+//done: https://discord.com/channels/1236752666273775667/1236752666781290557/1246940156083310732
+//done: teren -> zrobiony szumem perlina (pytać Piotra), myślę że tak z trzy rózne rodzaje terenu conajmniej, pełna współpraca z AI npc
 //done: wczytywanie plików
 //done: zapisywanie do plików
 //done: input od użytkownika do gui
 //todo: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
 //done: gui do innej klasy
+//todo: nazwyy npc w printach na dole zamiast id
+//todo: statystyki terenu w tym małym okienku pod przyciskami
+//todo: ststystyki specjalne npc         -||-
+//todo:         -||-         broni       -||-
 //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
 
 

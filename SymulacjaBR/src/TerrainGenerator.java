@@ -106,7 +106,18 @@ public class TerrainGenerator {
                 }
                 //System.out.print(terrainMap.get(y).get(x) + " ");
             }
+            //System.out.println();
         }
         permutation.clear();
+    }
+    public static void ShrinkZone(int size,int centerX,int centerY,int turn) {
+        double radius = size - turn*1.5;
+        for(int y = 0; y < size; y++) {
+            for(int x = 0; x < size; x++) {
+                if(Logic.distanceCalc(x,y,centerX,centerY)>=radius){
+                    terrainMap.get(y).set(x,4);
+                }
+            }
+        }
     }
 }
