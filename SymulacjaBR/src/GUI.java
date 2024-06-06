@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static java.lang.Math.random;
@@ -319,7 +320,7 @@ public class GUI {
     }
 
     public static void SimulationGUIEnd(Frame frame){
-        GUI.display.append("Wygrywa NPC o ID: "+ Logic.npcList.get(0).index+"\n");
+        GUI.display.append("Wygrywa NPC  "+ Logic.npcList.get(0).name+"\n");
         GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
         GUI.buttonTop.setVisible(false);
         GUI.buttonBot.setVisible(false);
@@ -374,18 +375,37 @@ public class GUI {
                         for (int i = 0; i < Logic.npcList.size(); i++) {
                             if(Logic.npcList.get(i).posX==labelPosX && Logic.npcList.get(i).posY==labelPosY){
                                 labelInfoText.clear();
-                                labelInfoText.add("NPC ID: "+Logic.npcList.get(i).index);
-                                labelInfoText.add("Max. HP: "+Logic.npcList.get(i).maxHP);
-                                labelInfoText.add("Obecne HP: "+Logic.npcList.get(i).HP);
-                                labelInfoText.add("Broń: "+Logic.npcList.get(i).weapon.name);
-                                labelInfoText.add("Obrażenia: "+Logic.npcList.get(i).weapon.damage);
-                                if(Logic.npcList.get(i).weapon.range == sqrt(2)) {
+                                labelInfoText.add("Nazwa: "+Logic.npcList.get(i).name);
+                                labelInfoText.add("HP: "+Logic.npcList.get(i).HP+"(MAX:"+Logic.npcList.get(i).maxHP+")");
+                                labelInfoText.add("Broń: "+Logic.npcList.get(i).weapon.name+"(DMG:"+Logic.npcList.get(i).weapon.damage+")");
+                                if(Logic.npcList.get(i).weapon.range%sqrt(2)==0) {
                                     labelInfoText.add("Zasięg ataku: "+(Logic.npcList.get(i).weapon.range / sqrt(2)));
                                 }
                                 else {
                                     labelInfoText.add("Zasięg ataku: " + Logic.npcList.get(i).weapon.range);
                                 }
-                                //labelInfoText.add("Teren: "+TerrainGenerator.terrainMap.get(Logic.npcList.get(i).posY).get(Logic.npcList.get(i).posX));
+                                if(Logic.npcList.get(i).symbol == "μ")//medic
+                                {
+                                    labelInfoText.add("HP +=4 co turę");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Λ")//scout
+                                {
+                                    labelInfoText.add("Więcej staminy");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Θ")//sniper
+                                {
+                                    labelInfoText.add("+=1 do zasięgu");
+                                    labelInfoText.add("(poza nożem)");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Σ")//solidier
+                                {
+                                    labelInfoText.add("DMG 1.2x jeśli");
+                                    labelInfoText.add("dystans do celu=1");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Ω")//spy
+                                {
+                                    labelInfoText.add("30% szansy na unik");
+                                }
                                 break;
                             }
                         }
@@ -400,6 +420,20 @@ public class GUI {
                                 else {
                                     labelInfoText.add("Zasięg Broni: " + Logic.weaponsList.get(i).range);
                                 }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "Knife")){
+                                    labelInfoText.add("5% sznasy na oneshota");
+                                }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "Rifle")){
+                                    labelInfoText.add("30% szansy na +5 DMG");
+                                }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "SniperRifle")){
+                                    labelInfoText.add("50% szansy na 1.5x DMG");
+                                }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "Shotgun")){
+                                    labelInfoText.add("8 strzałów");
+                                    labelInfoText.add("50% szansy na trafienie");
+                                }
+
                                 break;
                             }
                         }
@@ -411,9 +445,29 @@ public class GUI {
                             }
                         }
 
+                        labelInfoText.add("==========");
+                        switch(TerrainGenerator.terrainMap.get(labelPosY).get(labelPosX)) {
+                            case 0://desert
+                                labelInfoText.add("Pustynia (Stamina -=1)");
+                                break;
+                            case 1:
+                                labelInfoText.add("Polana (Brak zmian)");
+                                break;
+                            case 2://forest
+                                labelInfoText.add("Las (Zasięg =1)");
+                                break;
+                            case 3://mountains
+                                labelInfoText.add("Góry (Zasięg +=1)");
+                                break;
+                            case 4: //zone
+                                labelInfoText.add("Strefa");
+                                labelInfoText.add("HP -=10 na ture");
+                                break;
+                        }
+                        labelInfoText.add("("+labelPosX+","+labelPosY+")");
+
                         labelInfo.setText(labelTextWrapper(labelInfoText));
                     }
-
                     @Override
                     public void mouseExited(MouseEvent e) {
                         labelInfoText.clear();

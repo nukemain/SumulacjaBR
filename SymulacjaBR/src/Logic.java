@@ -43,12 +43,12 @@ public class Logic {
         //done: wczytywanie plików
         //done: zapisywanie do plików
         //done: input od użytkownika do gui
-        //todo: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
+        //done: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
         //done: gui do innej klasy
-        //todo: nazwy npc w printach na dole zamiast id
-        //todo: statystyki terenu w tym małym okienku pod przyciskami
-        //todo: ststystyki specjalne npc         -||-
-        //todo:         -||-         broni       -||-
+        //done: nazwy npc w printach na dole zamiast id
+        //done: statystyki terenu w tym małym okienku pod przyciskami
+        //done: statystyki specjalne npc         -||-
+        //done:         -||-         broni       -||-
         //todo: rewrite spawningu (większa kontrola nad ilością respionej broni i medkitów - zamiast "losowa" liczba jak jest teraz)
         //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
     }
@@ -197,7 +197,7 @@ public class Logic {
                 if(npcList.get(npcIndex).posX == targetX && npcList.get(npcIndex).posY == targetY) {//if on target...
                     for(int j = 0; j < medkitList.size(); j++) {//...pick up the medkit
                         if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
@@ -216,7 +216,7 @@ public class Logic {
                     for(int j = 0; j < weaponsList.size(); j++) {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
                             GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
@@ -290,7 +290,7 @@ public class Logic {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             //podniesienie broni
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
                             GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
@@ -302,7 +302,7 @@ public class Logic {
                     }
                     for(int j = 0; j < medkitList.size(); j++) {
                         if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
@@ -373,19 +373,19 @@ public class Logic {
     }
     public static void damageDealer(int indexAttacker, int indexTarget) {
         int damage = (int) (npcList.get(indexTarget).HP - npcList.get(indexAttacker).weapon.Attack(npcList.get(indexTarget).HP));
-        String text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
-                +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+        String text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
+                +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage+")"+
                 "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
         if(Objects.equals(npcList.get(indexTarget).symbol, "Ω") && (int) (Math.random() * (10)) > 6){
-            text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
-                    +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
-                    +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).index + " unika obrazen.";
+            text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
+                    +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                    +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).name + " unika obrazen.";
         }
         else{
             if(Objects.equals(npcList.get(indexAttacker).symbol, "Σ") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
-                text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
-                        +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
+                        +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                         +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage * 1.20 +")"+
                         "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
                 npcList.get(indexTarget).HP -= damage * 1.20;
