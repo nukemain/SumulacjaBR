@@ -15,6 +15,10 @@ import static java.lang.Math.sqrt;
 
 
 public class Logic {
+
+    static int size = 1;
+    static int NPCcount = 10;
+    static JFrame SimulationFrame = new JFrame();
     //Lists required for logic to function
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
@@ -30,11 +34,29 @@ public class Logic {
 
     //static String[][] map;
     static List<List<String>> map = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        Symulacja();
+        //WIELKA LISTA RZECZY DO ZROBIENIA
+        //[TĄ SEKCJĘ MUSIMY ZROBIĆ]
+        //done: https://discord.com/channels/1236752666273775667/1236752666781290557/1246940156083310732
+        //done: teren -> zrobiony szumem perlina (pytać Piotra), myślę że tak z trzy rózne rodzaje terenu conajmniej, pełna współpraca z AI npc
+        //done: wczytywanie plików
+        //done: zapisywanie do plików
+        //done: input od użytkownika do gui
+        //todo: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
+        //done: gui do innej klasy
+        //todo: nazwy npc w printach na dole zamiast id
+        //todo: statystyki terenu w tym małym okienku pod przyciskami
+        //todo: ststystyki specjalne npc         -||-
+        //todo:         -||-         broni       -||-
+        //todo: rewrite spawningu (większa kontrola nad ilością respionej broni i medkitów - zamiast "losowa" liczba jak jest teraz)
+        //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
+    }
 
     static void Symulacja() throws IOException {
         CSVGenerator csvObject = new CSVGenerator();
-        GUI.SimulationGUI(Controller.SimulationFrame);
-        Controller.SimulationFrame.setVisible(true);
+        GUI.SimulationGUI(Logic.SimulationFrame);
+        Logic.SimulationFrame.setVisible(true);
 
         synchronized (lock) {
             while (!buttonPressed) {
@@ -51,8 +73,8 @@ public class Logic {
             csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
 
             //update the map
-            Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
-            GUI.refreshGUIMap();
+            //Spawning.updateMap(Logic.size,npcList,weaponsList,medkitList);
+            //GUI.refreshGUIMap();
 
             //================================================
             //locking the loop's execution until the "Następna tura" buttonTop is pressed
@@ -72,17 +94,21 @@ public class Logic {
             for (int i=0;i<npcList.size();i++){
                 decisionMaker(i);
             }
-            if(roundsCounter%3==0){
-            TerrainGenerator.ShrinkZone(Controller.size,Controller.size/2,Controller.size/2,roundsCounter);
+            //GUI.mainPanel.setVisible(false);
+            Spawning.updateMap(Logic.size,npcList,weaponsList,medkitList);
+            GUI.refreshGUIMap();
+            if(roundsCounter%2==0){
+            TerrainGenerator.ShrinkZone(Logic.size,Logic.size/2,Logic.size/2,roundsCounter);
             GUI.refreshTerrain();
             }
+            //GUI.mainPanel.setVisible(true);
 
         }
-        Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
+        Spawning.updateMap(Logic.size,npcList,weaponsList,medkitList);
         GUI.refreshGUIMap();
         csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
         csvObject.csvWriter();
-        GUI.SimulationGUIEnd(Controller.SimulationFrame);
+        GUI.SimulationGUIEnd(Logic.SimulationFrame);
     }
 
 
@@ -96,6 +122,11 @@ public class Logic {
         int currentTerrain = TerrainGenerator.terrainMap.get(npcList.get(npcIndex).posY).get(npcList.get(npcIndex).posX);
         double currentRange = npcList.get(npcIndex).weapon.range;
         int currentStamina = npcList.get(npcIndex).stamina;
+        for(int i=0; i<medkitList.size();i++){
+            if(TerrainGenerator.terrainMap.get(medkitList.get(i)[0]).get(medkitList.get(i)[1])==4){
+                medkitList.remove(i);
+            }
+        }
 
         //Using their abilities every turn
         if(Objects.equals(npcList.get(npcIndex).symbol, "μ") || Objects.equals(npcList.get(npcIndex).symbol, "Θ")){
@@ -126,6 +157,22 @@ public class Logic {
                     npcList.remove(npcIndex);
                     return;
                 }
+                //próba dorobienia uciekania od strefy
+                for(int y=0;y<Logic.size;y++){
+                    for(int x=0;x<Logic.size;x++){
+                        if(TerrainGenerator.terrainMap.get(y).get(x)!=4){
+                            double distance = distanceCalc(y,x,npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
+                            if(distance<targetDistance){
+                                targetDistance=distance;
+                                targetX = x;
+                                targetY = y;
+                            }
+                        }
+                    }
+                }
+                for(int i = 1; i <= currentStamina; i++) {
+                    movement(targetX, targetY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY, npcIndex); //ucieczka ze strefy zawsze priorytetem
+                }
                 break;
         }
 
@@ -133,6 +180,9 @@ public class Logic {
         if((( (double) npcList.get(npcIndex).HP / npcList.get(npcIndex).maxHP) < 0.5) && !medkitList.isEmpty()) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
             for(int i = 0; i < medkitList.size(); i++) {
+                if(TerrainGenerator.terrainMap.get(medkitList.get(i)[0]).get(medkitList.get(i)[1])==4){
+                    break; //if medkit is in the zone, dont go for it
+                }
                 double distance = distanceCalc(medkitList.get(i)[0],medkitList.get(i)[1], npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
                 if(distance > 0 && distance < targetDistance) {
                     targetDistance = distance;
@@ -214,6 +264,9 @@ public class Logic {
                 //TODO: it could also be prevent from going through the loop if there's no weapon or no better weapon is present
                 int tempQuality = 0;
                 for(int i = 0; i < weaponsList.size(); i++) {//szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
+                    if(TerrainGenerator.terrainMap.get(weaponsList.get(i).posX).get(weaponsList.get(i).posY)==4){
+                        break; //if wpn is in the zone, dont go for it
+                    }
                     if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
                         double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
                         if (distance > 0 && distance < targetDistance) {
@@ -279,6 +332,9 @@ public class Logic {
         //proponuje, żeby NPCClasses.NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
+        if(targetX<0||targetY<0){
+            return; 
+        }
         boolean isEmpty = true;
         //System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index + " porusza się z ("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+") na ");
         if(targetX > x) {
@@ -304,6 +360,8 @@ public class Logic {
             //System.out.print("("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+")");
         }
         else{
+            //do nothing
+
             //System.out.print("do nikąd -> docelowe pole ruchu jest już zajęte!");
             //System.out.println("Space occupied");
             //Potencjalnie sprawdzimy czy ma więcej staminy, jak nie to musi go zaatakować, bo inaczej sam zostanie zaatakowany po następnym ruchu

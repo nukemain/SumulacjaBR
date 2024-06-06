@@ -23,9 +23,9 @@ public class Spawning {
     public static List<List<String>> updateMap(int size, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
         List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
-        for(int y=0;y<Controller.size;y++){
+        for(int y=0;y<Logic.size;y++){
             map.add(new ArrayList<>());
-            for(int x=0;x<Controller.size;x++){
+            for(int x=0;x<Logic.size;x++){
                 map.get(y).add("[ ]");
             }
         }

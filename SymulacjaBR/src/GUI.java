@@ -61,7 +61,7 @@ public class GUI {
                         break;
                     case 1:
                         try {
-                            FileSaver.fileSaver(Controller.size);
+                            FileSaver.fileSaver(Logic.size);
                             System.exit(0);
                         } catch (FileNotFoundException ex) {
                             JOptionPane.showMessageDialog(null, "Wystąpił błąd przy zapisywaniu - czy wybrano poprawny plik do zapisu?", "Błąd", JOptionPane.ERROR_MESSAGE);
@@ -78,7 +78,7 @@ public class GUI {
         frame.setTitle("Symulacja battle royale");
         frame.setResizable(false);
         ImageIcon logo = new ImageIcon("logo.png");
-        mainPanel = new JPanel(new GridLayout(Controller.size, Controller.size));
+        mainPanel = new JPanel(new GridLayout(Logic.size, Logic.size));
         frame.setIconImage(logo.getImage());
 
         mainPanel = resetLabelGrid(mainPanel);
@@ -121,8 +121,8 @@ public class GUI {
 
 
                 int[] newParams = getUserSimulationInput();
-                Controller.size = newParams[0];
-                Controller.NPCcount = newParams[1];
+                Logic.size = newParams[0];
+                Logic.NPCcount = newParams[1];
                 mainPanel = resetLabelGrid(mainPanel);
                 mainPanel.setVisible(true);
 
@@ -151,13 +151,13 @@ public class GUI {
                 TerrainGenerator.terrainMap.clear();
 
                 //create a new simulation
-                Logic.map = Spawning.createMap(Controller.size);
-                TerrainGenerator.terrainGenerator(Controller.size);
-                Spawning.spawnNPCs(Controller.size, Controller.NPCcount, Logic.map, Logic.npcList);//Logic required for spawning NPCClasses.NPC's
-                Spawning.spawnWeapons(Logic.map, Controller.size, Controller.NPCcount, Logic.weaponsList);//Spawning weapons on the map
-                Spawning.spawnMedkits(Logic.map, Controller.size, Controller.NPCcount, Logic.medkitList);
+                Logic.map = Spawning.createMap(Logic.size);
+                TerrainGenerator.terrainGenerator(Logic.size);
+                Spawning.spawnNPCs(Logic.size, Logic.NPCcount, Logic.map, Logic.npcList);//Logic required for spawning NPCClasses.NPC's
+                Spawning.spawnWeapons(Logic.map, Logic.size, Logic.NPCcount, Logic.weaponsList);//Spawning weapons on the map
+                Spawning.spawnMedkits(Logic.map, Logic.size, Logic.NPCcount, Logic.medkitList);
                 //refresh map and gui
-                Spawning.updateMap(Controller.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
+                Spawning.updateMap(Logic.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
                 refreshGUIMap();
                 refreshTerrain();
                 CSVGenerator.dataReseter();
@@ -200,7 +200,7 @@ public class GUI {
 
         buttonMid.addActionListener(e -> {
             try {
-                FileSaver.fileSaver(Controller.size);
+                FileSaver.fileSaver(Logic.size);
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
@@ -212,7 +212,7 @@ public class GUI {
             if (returnValue == JOptionPane.OK_OPTION) {
                 try {
                     FileReader.fileReader();
-                    Spawning.updateMap(Controller.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
+                    Spawning.updateMap(Logic.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
                     display.setText("");
                     display.append("Poprawnie wczytano stan symulacji z pliku.\nWznawiam wybraną symulację.\n");
                     refreshGUIMap();
@@ -249,7 +249,7 @@ public class GUI {
         final boolean[] gotDataFromUser = {false}; 
         //JFrame DataEntryFrame = new JFrame();
         // Creating a dialog for input
-        JDialog inputDialog = new JDialog(Controller.SimulationFrame, "Wpisz dane początkowe symulacji", true);
+        JDialog inputDialog = new JDialog(Logic.SimulationFrame, "Wpisz dane początkowe symulacji", true);
         inputDialog.setSize(300, 200);
         inputDialog.setLayout(new GridLayout(3, 2));
 
@@ -307,7 +307,7 @@ public class GUI {
         });
 
         // Show the dialog and wait for user input
-        inputDialog.setLocationRelativeTo(Controller.SimulationFrame); // Center the dialog
+        inputDialog.setLocationRelativeTo(Logic.SimulationFrame); // Center the dialog
         inputDialog.setVisible(true);
 
         if (!gotDataFromUser[0]) {
@@ -335,7 +335,7 @@ public class GUI {
     }
 
     public static JPanel resetLabelGrid(JPanel panel) {
-        JPanel newpanel = new JPanel(new GridLayout(Controller.size, Controller.size));
+        JPanel newpanel = new JPanel(new GridLayout(Logic.size, Logic.size));
         for (int x = 0; x < labelGrid.size(); x++) {
             for (int y = 0; y < labelGrid.get(x).size(); y++) {
                 labelGrid.get(x).get(y).setVisible(false);
@@ -343,11 +343,11 @@ public class GUI {
             }
         }
         labelGrid.clear();
-        for (int x = 0; x < Controller.size; x++) {
+        for (int x = 0; x < Logic.size; x++) {
             labelGrid.add(new ArrayList<>());
         }
-        for (int x = 0; x < Controller.size; x++) {
-            for (int y = 0; y < Controller.size; y++) {
+        for (int x = 0; x < Logic.size; x++) {
+            for (int y = 0; y < Logic.size; y++) {
                 JLabel label = new JLabel();
                 label.setOpaque(true);
                 label.setBorder(borderDefault);
@@ -361,8 +361,8 @@ public class GUI {
                         //getting the X and Y coordinates of the label on the grid -> coordinates correspond to values being used in the rest of the simulation's logic
                         int labelPosX=-1;
                         int labelPosY=-1;
-                        for (int i = 0; i < Controller.size; i++) {
-                            for (int j = 0; j < Controller.size; j++) {
+                        for (int i = 0; i < Logic.size; i++) {
+                            for (int j = 0; j < Logic.size; j++) {
                                 if (labelGrid.get(i).get(j) == label) {
                                     labelPosX = i;
                                     labelPosY = j;
@@ -424,8 +424,8 @@ public class GUI {
             }
         }
         newpanel.setVisible(true);
-        Controller.SimulationFrame.remove(panel);
-        Controller.SimulationFrame.add(newpanel);
+        Logic.SimulationFrame.remove(panel);
+        Logic.SimulationFrame.add(newpanel);
         return newpanel;
     }
 
@@ -439,22 +439,22 @@ public class GUI {
 
     //this method DOES NOT refresh the terrain shown as colors under the items and npcs on the map
     public static void refreshGUIMap() {
-        for (int y = 0; y < Controller.size; y++) {
-            for (int x = 0; x < Controller.size; x++) {
+        for (int y = 0; y < Logic.size; y++) {
+            for (int x = 0; x < Logic.size; x++) {
                 labelGrid.get(x).get(y).setBorder(borderDefault);
                 labelGrid.get(x).get(y).setIcon(null);
             }
         }
         for (int i = 0; i < Logic.npcList.size(); i++) {
-            labelGrid.get(Logic.npcList.get(i).posX).get(Logic.npcList.get(i).posY).setIcon(resizeImg(Logic.npcList.get(i).icon, (cellSize*25)/Controller.size, (cellSize*25)/Controller.size));
+            labelGrid.get(Logic.npcList.get(i).posX).get(Logic.npcList.get(i).posY).setIcon(resizeImg(Logic.npcList.get(i).icon, (cellSize*25)/Logic.size, (cellSize*25)/Logic.size));
             labelGrid.get(Logic.npcList.get(i).posX).get(Logic.npcList.get(i).posY).setBorder(borderNPC);
         }
         for (int i = 0; i < Logic.weaponsList.size(); i++) {
-            labelGrid.get(Logic.weaponsList.get(i).posX).get(Logic.weaponsList.get(i).posY).setIcon(resizeImg(Logic.weaponsList.get(i).icon, (cellSize*25)/Controller.size, (cellSize*25)/Controller.size));
+            labelGrid.get(Logic.weaponsList.get(i).posX).get(Logic.weaponsList.get(i).posY).setIcon(resizeImg(Logic.weaponsList.get(i).icon, (cellSize*25)/Logic.size, (cellSize*25)/Logic.size));
             labelGrid.get(Logic.weaponsList.get(i).posX).get(Logic.weaponsList.get(i).posY).setBorder(borderWeapon);
         }
         for (int i = 0; i < Logic.medkitList.size(); i++) {
-            labelGrid.get(Logic.medkitList.get(i)[0]).get(Logic.medkitList.get(i)[1]).setIcon(resizeImg(medkit, (cellSize*25)/Controller.size, (cellSize*25)/Controller.size));
+            labelGrid.get(Logic.medkitList.get(i)[0]).get(Logic.medkitList.get(i)[1]).setIcon(resizeImg(medkit, (cellSize*25)/Logic.size, (cellSize*25)/Logic.size));
             labelGrid.get(Logic.medkitList.get(i)[0]).get(Logic.medkitList.get(i)[1]).setBorder(borderMedkit);
         }
     }
@@ -462,8 +462,8 @@ public class GUI {
     //teren w osobnej metodzie bo bardzo spowalnia program
     //a wywoływany musi być tylko raz
     public static void refreshTerrain(){
-        for (int y = 0; y < Controller.size; y++) {
-            for (int x = 0; x < Controller.size; x++) {
+        for (int y = 0; y < Logic.size; y++) {
+            for (int x = 0; x < Logic.size; x++) {
                 //labelGrid.get(x).get(y).repaint();
                 switch(TerrainGenerator.terrainMap.get(y).get(x)) {
                     case 0:
