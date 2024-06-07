@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static java.lang.Math.random;
@@ -61,7 +62,7 @@ public class GUI {
                         break;
                     case 1:
                         try {
-                            FileSaver.fileSaver(Controller.size);
+                            FileSaver.fileSaver(Logic.size);
                             System.exit(0);
                         } catch (FileNotFoundException ex) {
                             JOptionPane.showMessageDialog(null, "Wystąpił błąd przy zapisywaniu - czy wybrano poprawny plik do zapisu?", "Błąd", JOptionPane.ERROR_MESSAGE);
@@ -78,7 +79,7 @@ public class GUI {
         frame.setTitle("Symulacja battle royale");
         frame.setResizable(false);
         ImageIcon logo = new ImageIcon("logo.png");
-        mainPanel = new JPanel(new GridLayout(Controller.size, Controller.size));
+        mainPanel = new JPanel(new GridLayout(Logic.size, Logic.size));
         frame.setIconImage(logo.getImage());
 
         mainPanel = resetLabelGrid(mainPanel);
@@ -121,8 +122,8 @@ public class GUI {
 
 
                 int[] newParams = getUserSimulationInput();
-                Controller.size = newParams[0];
-                Controller.NPCcount = newParams[1];
+                Logic.size = newParams[0];
+                Logic.NPCcount = newParams[1];
                 mainPanel = resetLabelGrid(mainPanel);
                 mainPanel.setVisible(true);
 
@@ -148,17 +149,19 @@ public class GUI {
                 Logic.npcList.clear();
                 Logic.weaponsList.clear();
                 Logic.medkitList.clear();
+                TerrainGenerator.terrainMap.clear();
 
                 //create a new simulation
-                Logic.map = Spawning.createMap(Controller.size);
-                TerrainGenerator.terrainGenerator(Controller.size);
-                Spawning.spawnNPCs(Controller.size, Controller.NPCcount, Logic.map, Logic.npcList);//Logic required for spawning NPCClasses.NPC's
-                Spawning.spawnWeapons(Logic.map, Controller.size, Controller.NPCcount, Logic.weaponsList);//Spawning weapons on the map
-                Spawning.spawnMedkits(Logic.map, Controller.size, Controller.NPCcount, Logic.medkitList);
+                Logic.map = Spawning.createMap(Logic.size);
+                TerrainGenerator.terrainGenerator(Logic.size);
+                Spawning.spawnNPCs(Logic.size, Logic.NPCcount, Logic.map, Logic.npcList);//Logic required for spawning NPCClasses.NPC's
+                Spawning.spawnWeapons(Logic.map, Logic.size, Logic.NPCcount, Logic.weaponsList);//Spawning weapons on the map
+                Spawning.spawnMedkits(Logic.map, Logic.size, Logic.NPCcount, Logic.medkitList);
                 //refresh map and gui
-                Spawning.updateMap(Controller.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
+                Spawning.updateMap(Logic.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
                 refreshGUIMap();
                 refreshTerrain();
+                CSVGenerator.dataReseter();
                 display.setText("Wciśnij i przytrzymaj przycisk \"Nastepna tura\" aby aktywować automatyczne wykonywanie ruchów!\n");
                 synchronized (Logic.lock) {
                     Logic.buttonPressed = true;
@@ -198,7 +201,7 @@ public class GUI {
 
         buttonMid.addActionListener(e -> {
             try {
-                FileSaver.fileSaver(Controller.size);
+                FileSaver.fileSaver(Logic.size);
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
@@ -210,10 +213,11 @@ public class GUI {
             if (returnValue == JOptionPane.OK_OPTION) {
                 try {
                     FileReader.fileReader();
-                    Spawning.updateMap(Controller.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
+                    Spawning.updateMap(Logic.size, Logic.npcList, Logic.weaponsList, Logic.medkitList);
                     display.setText("");
                     display.append("Poprawnie wczytano stan symulacji z pliku.\nWznawiam wybraną symulację.\n");
                     refreshGUIMap();
+                    refreshTerrain();
                     GUI.panelRight.removeAll();
                     buttonClose.setVisible(false);
                     buttonClose.setVisible(false);
@@ -227,6 +231,7 @@ public class GUI {
                     GUI.panelRight.add(labelInfo);
                     GUI.panelRight.revalidate();
                     GUI.panelRight.repaint();
+                    CSVGenerator.dataReseter();
                 } catch (FileNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -245,7 +250,7 @@ public class GUI {
         final boolean[] gotDataFromUser = {false}; 
         //JFrame DataEntryFrame = new JFrame();
         // Creating a dialog for input
-        JDialog inputDialog = new JDialog(Controller.SimulationFrame, "Wpisz dane początkowe symulacji", true);
+        JDialog inputDialog = new JDialog(Logic.SimulationFrame, "Wpisz dane początkowe symulacji", true);
         inputDialog.setSize(300, 200);
         inputDialog.setLayout(new GridLayout(3, 2));
 
@@ -303,7 +308,7 @@ public class GUI {
         });
 
         // Show the dialog and wait for user input
-        inputDialog.setLocationRelativeTo(Controller.SimulationFrame); // Center the dialog
+        inputDialog.setLocationRelativeTo(Logic.SimulationFrame); // Center the dialog
         inputDialog.setVisible(true);
 
         if (!gotDataFromUser[0]) {
@@ -315,7 +320,7 @@ public class GUI {
     }
 
     public static void SimulationGUIEnd(Frame frame){
-        GUI.display.append("Wygrywa NPC o ID: "+ Logic.npcList.getFirst().index+"\n");
+        GUI.display.append("Wygrywa NPC  "+ Logic.npcList.get(0).name+"\n");
         GUI.display.append("Zamknij okienko aby zakończyc symulację!\n");
         GUI.buttonTop.setVisible(false);
         GUI.buttonBot.setVisible(false);
@@ -327,11 +332,11 @@ public class GUI {
         GUI.panelRight.add(labelInfo);
         GUI.panelRight.revalidate();
         GUI.panelRight.repaint();
-        GUI.labelGrid.get(Logic.npcList.getFirst().posX).get(Logic.npcList.getFirst().posY).setBackground(Color.pink);
+        GUI.labelGrid.get(Logic.npcList.get(0).posX).get(Logic.npcList.get(0).posY).setBackground(Color.pink);
     }
 
     public static JPanel resetLabelGrid(JPanel panel) {
-        JPanel newpanel = new JPanel(new GridLayout(Controller.size, Controller.size));
+        JPanel newpanel = new JPanel(new GridLayout(Logic.size, Logic.size));
         for (int x = 0; x < labelGrid.size(); x++) {
             for (int y = 0; y < labelGrid.get(x).size(); y++) {
                 labelGrid.get(x).get(y).setVisible(false);
@@ -339,11 +344,11 @@ public class GUI {
             }
         }
         labelGrid.clear();
-        for (int x = 0; x < Controller.size; x++) {
+        for (int x = 0; x < Logic.size; x++) {
             labelGrid.add(new ArrayList<>());
         }
-        for (int x = 0; x < Controller.size; x++) {
-            for (int y = 0; y < Controller.size; y++) {
+        for (int x = 0; x < Logic.size; x++) {
+            for (int y = 0; y < Logic.size; y++) {
                 JLabel label = new JLabel();
                 label.setOpaque(true);
                 label.setBorder(borderDefault);
@@ -357,8 +362,8 @@ public class GUI {
                         //getting the X and Y coordinates of the label on the grid -> coordinates correspond to values being used in the rest of the simulation's logic
                         int labelPosX=-1;
                         int labelPosY=-1;
-                        for (int i = 0; i < Controller.size; i++) {
-                            for (int j = 0; j < Controller.size; j++) {
+                        for (int i = 0; i < Logic.size; i++) {
+                            for (int j = 0; j < Logic.size; j++) {
                                 if (labelGrid.get(i).get(j) == label) {
                                     labelPosX = i;
                                     labelPosY = j;
@@ -370,18 +375,37 @@ public class GUI {
                         for (int i = 0; i < Logic.npcList.size(); i++) {
                             if(Logic.npcList.get(i).posX==labelPosX && Logic.npcList.get(i).posY==labelPosY){
                                 labelInfoText.clear();
-                                labelInfoText.add("NPC ID: "+Logic.npcList.get(i).index);
-                                labelInfoText.add("Max. HP: "+Logic.npcList.get(i).maxHP);
-                                labelInfoText.add("Obecne HP: "+Logic.npcList.get(i).HP);
-                                labelInfoText.add("Broń: "+Logic.npcList.get(i).weapon.name);
-                                labelInfoText.add("Obrażenia: "+Logic.npcList.get(i).weapon.damage);
-                                if(Logic.npcList.get(i).weapon.range == sqrt(2)) {
+                                labelInfoText.add("Nazwa: "+Logic.npcList.get(i).name);
+                                labelInfoText.add("HP: "+Logic.npcList.get(i).HP+"(MAX:"+Logic.npcList.get(i).maxHP+")");
+                                labelInfoText.add("Broń: "+Logic.npcList.get(i).weapon.name+"(DMG:"+Logic.npcList.get(i).weapon.damage+")");
+                                if(Logic.npcList.get(i).weapon.range%sqrt(2)==0) {
                                     labelInfoText.add("Zasięg ataku: "+(Logic.npcList.get(i).weapon.range / sqrt(2)));
                                 }
                                 else {
                                     labelInfoText.add("Zasięg ataku: " + Logic.npcList.get(i).weapon.range);
                                 }
-                                //labelInfoText.add("Teren: "+TerrainGenerator.terrainMap.get(Logic.npcList.get(i).posY).get(Logic.npcList.get(i).posX));
+                                if(Logic.npcList.get(i).symbol == "μ")//medic
+                                {
+                                    labelInfoText.add("HP +=4 co turę");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Λ")//scout
+                                {
+                                    labelInfoText.add("Więcej staminy");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Θ")//sniper
+                                {
+                                    labelInfoText.add("+=1 do zasięgu");
+                                    labelInfoText.add("(poza nożem)");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Σ")//solidier
+                                {
+                                    labelInfoText.add("DMG 1.2x jeśli");
+                                    labelInfoText.add("dystans do celu=1");
+                                }
+                                if(Logic.npcList.get(i).symbol == "Ω")//spy
+                                {
+                                    labelInfoText.add("30% szansy na unik");
+                                }
                                 break;
                             }
                         }
@@ -396,6 +420,20 @@ public class GUI {
                                 else {
                                     labelInfoText.add("Zasięg Broni: " + Logic.weaponsList.get(i).range);
                                 }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "Knife")){
+                                    labelInfoText.add("5% sznasy na oneshota");
+                                }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "Rifle")){
+                                    labelInfoText.add("30% szansy na +5 DMG");
+                                }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "SniperRifle")){
+                                    labelInfoText.add("50% szansy na 1.5x DMG");
+                                }
+                                if(Objects.equals(Logic.weaponsList.get(i).name, "Shotgun")){
+                                    labelInfoText.add("8 strzałów");
+                                    labelInfoText.add("50% szansy na trafienie");
+                                }
+
                                 break;
                             }
                         }
@@ -407,9 +445,29 @@ public class GUI {
                             }
                         }
 
+                        labelInfoText.add("==========");
+                        switch(TerrainGenerator.terrainMap.get(labelPosY).get(labelPosX)) {
+                            case 0://desert
+                                labelInfoText.add("Pustynia (Stamina -=1)");
+                                break;
+                            case 1:
+                                labelInfoText.add("Polana (Brak zmian)");
+                                break;
+                            case 2://forest
+                                labelInfoText.add("Las (Zasięg =1)");
+                                break;
+                            case 3://mountains
+                                labelInfoText.add("Góry (Zasięg +=1)");
+                                break;
+                            case 4: //zone
+                                labelInfoText.add("Strefa");
+                                labelInfoText.add("HP -=10 na ture");
+                                break;
+                        }
+                        labelInfoText.add("("+labelPosX+","+labelPosY+")");
+
                         labelInfo.setText(labelTextWrapper(labelInfoText));
                     }
-
                     @Override
                     public void mouseExited(MouseEvent e) {
                         labelInfoText.clear();
@@ -420,8 +478,8 @@ public class GUI {
             }
         }
         newpanel.setVisible(true);
-        Controller.SimulationFrame.remove(panel);
-        Controller.SimulationFrame.add(newpanel);
+        Logic.SimulationFrame.remove(panel);
+        Logic.SimulationFrame.add(newpanel);
         return newpanel;
     }
 
@@ -435,22 +493,22 @@ public class GUI {
 
     //this method DOES NOT refresh the terrain shown as colors under the items and npcs on the map
     public static void refreshGUIMap() {
-        for (int y = 0; y < Controller.size; y++) {
-            for (int x = 0; x < Controller.size; x++) {
+        for (int y = 0; y < Logic.size; y++) {
+            for (int x = 0; x < Logic.size; x++) {
                 labelGrid.get(x).get(y).setBorder(borderDefault);
                 labelGrid.get(x).get(y).setIcon(null);
             }
         }
         for (int i = 0; i < Logic.npcList.size(); i++) {
-            labelGrid.get(Logic.npcList.get(i).posX).get(Logic.npcList.get(i).posY).setIcon(resizeImg(Logic.npcList.get(i).icon, (cellSize*25)/Controller.size, (cellSize*25)/Controller.size));
+            labelGrid.get(Logic.npcList.get(i).posX).get(Logic.npcList.get(i).posY).setIcon(resizeImg(Logic.npcList.get(i).icon, (cellSize*25)/Logic.size, (cellSize*25)/Logic.size));
             labelGrid.get(Logic.npcList.get(i).posX).get(Logic.npcList.get(i).posY).setBorder(borderNPC);
         }
         for (int i = 0; i < Logic.weaponsList.size(); i++) {
-            labelGrid.get(Logic.weaponsList.get(i).posX).get(Logic.weaponsList.get(i).posY).setIcon(resizeImg(Logic.weaponsList.get(i).icon, (cellSize*25)/Controller.size, (cellSize*25)/Controller.size));
+            labelGrid.get(Logic.weaponsList.get(i).posX).get(Logic.weaponsList.get(i).posY).setIcon(resizeImg(Logic.weaponsList.get(i).icon, (cellSize*25)/Logic.size, (cellSize*25)/Logic.size));
             labelGrid.get(Logic.weaponsList.get(i).posX).get(Logic.weaponsList.get(i).posY).setBorder(borderWeapon);
         }
         for (int i = 0; i < Logic.medkitList.size(); i++) {
-            labelGrid.get(Logic.medkitList.get(i)[0]).get(Logic.medkitList.get(i)[1]).setIcon(resizeImg(medkit, (cellSize*25)/Controller.size, (cellSize*25)/Controller.size));
+            labelGrid.get(Logic.medkitList.get(i)[0]).get(Logic.medkitList.get(i)[1]).setIcon(resizeImg(medkit, (cellSize*25)/Logic.size, (cellSize*25)/Logic.size));
             labelGrid.get(Logic.medkitList.get(i)[0]).get(Logic.medkitList.get(i)[1]).setBorder(borderMedkit);
         }
     }
@@ -458,15 +516,15 @@ public class GUI {
     //teren w osobnej metodzie bo bardzo spowalnia program
     //a wywoływany musi być tylko raz
     public static void refreshTerrain(){
-        for (int y = 0; y < Controller.size; y++) {
-            for (int x = 0; x < Controller.size; x++) {
+        for (int y = 0; y < Logic.size; y++) {
+            for (int x = 0; x < Logic.size; x++) {
                 //labelGrid.get(x).get(y).repaint();
                 switch(TerrainGenerator.terrainMap.get(y).get(x)) {
                     case 0:
-                        labelGrid.get(x).get(y).setBackground(Color.green.darker());
+                        labelGrid.get(x).get(y).setBackground(Color.yellow.brighter());
                         break;
                     case 1:
-                        labelGrid.get(x).get(y).setBackground(Color.yellow.brighter());
+                        labelGrid.get(x).get(y).setBackground(Color.green.darker());
                         break;
                     case 2:
                         labelGrid.get(x).get(y).setBackground(Color.green.darker().darker());
@@ -474,6 +532,8 @@ public class GUI {
                     case 3:
                         labelGrid.get(x).get(y).setBackground(Color.gray);
                         break;
+                    case 4:
+                        labelGrid.get(x).get(y).setBackground(new Color(92, 1, 117)); //no set value for purple, so we create a new one
                 }
             }
         }

@@ -5,6 +5,7 @@ import java.awt.*;
 import WeaponClasses.Knife;
 import WeaponClasses.Weapon;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -14,10 +15,16 @@ import static java.lang.Math.sqrt;
 
 
 public class Logic {
+
+    static int size = 1;
+    static int NPCcount = 10;
+    static JFrame SimulationFrame = new JFrame();
     //Lists required for logic to function
     static List<NPC> npcList = new ArrayList<>();
     static List<Weapon> weaponsList = new ArrayList<>();
     static List<int[]> medkitList = new ArrayList<>();
+
+    public static int roundsCounter = 0;
 
 
     //required for pausing
@@ -27,13 +34,29 @@ public class Logic {
 
     //static String[][] map;
     static List<List<String>> map = new ArrayList<>();
+    public static void main(String[] args) throws IOException {
+        Symulacja();
+        //WIELKA LISTA RZECZY DO ZROBIENIA
+        //[TĄ SEKCJĘ MUSIMY ZROBIĆ]
+        //done: https://discord.com/channels/1236752666273775667/1236752666781290557/1246940156083310732
+        //done: teren -> zrobiony szumem perlina (pytać Piotra), myślę że tak z trzy rózne rodzaje terenu conajmniej, pełna współpraca z AI npc
+        //done: wczytywanie plików
+        //done: zapisywanie do plików
+        //done: input od użytkownika do gui
+        //done: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
+        //done: gui do innej klasy
+        //done: nazwy npc w printach na dole zamiast id
+        //done: statystyki terenu w tym małym okienku pod przyciskami
+        //done: statystyki specjalne npc         -||-
+        //done:         -||-         broni       -||-
+        //todo: rewrite spawningu (większa kontrola nad ilością respionej broni i medkitów - zamiast "losowa" liczba jak jest teraz)
+        //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
+    }
 
-    static void Symulacja(){
-        GUI.SimulationGUI(Controller.SimulationFrame);
-        Controller.SimulationFrame.setVisible(true);
-
-        int tura=0;//todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ DO TEGO CO ON TAM CHCIAŁ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
-
+    static void Symulacja() throws IOException {
+        CSVGenerator csvObject = new CSVGenerator();
+        GUI.SimulationGUI(Logic.SimulationFrame);
+        Logic.SimulationFrame.setVisible(true);
 
         synchronized (lock) {
             while (!buttonPressed) {
@@ -45,12 +68,13 @@ public class Logic {
         }
 
         GUI.refreshTerrain();
+
         while (npcList.size() > 1){
-            tura++; //todo: FILIP NIE ZAPISUJ TEJ ZMIENNEJ - ONA SIĘ NIE ZMIENIA JESLI KTOŚ WCZYTA PLIK/ODPALI NOWĄ SYMULACJĘ TYLKO LECI DALEJ
+            csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
 
             //update the map
-            Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
-            GUI.refreshGUIMap();
+            //Spawning.updateMap(Logic.size,npcList,weaponsList,medkitList);
+            //GUI.refreshGUIMap();
 
             //================================================
             //locking the loop's execution until the "Następna tura" buttonTop is pressed
@@ -64,17 +88,27 @@ public class Logic {
             }
             //================================================
             GUI.display.append("================================================================================================================================================================================================\n");
-            GUI.display.append("[Tura nr"+ tura +"]\n");
+            GUI.display.append("[Tura nr"+ roundsCounter +"]\n");
 
             // do "logic" for each npc in npcList
             for (int i=0;i<npcList.size();i++){
                 decisionMaker(i);
             }
+            //GUI.mainPanel.setVisible(false);
+            Spawning.updateMap(Logic.size,npcList,weaponsList,medkitList);
+            GUI.refreshGUIMap();
+            if(roundsCounter%2==0){
+            TerrainGenerator.ShrinkZone(Logic.size,Logic.size/2,Logic.size/2,roundsCounter);
+            GUI.refreshTerrain();
+            }
+            //GUI.mainPanel.setVisible(true);
 
         }
-        Spawning.updateMap(Controller.size,npcList,weaponsList,medkitList);
+        Spawning.updateMap(Logic.size,npcList,weaponsList,medkitList);
         GUI.refreshGUIMap();
-        GUI.SimulationGUIEnd(Controller.SimulationFrame);
+        csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
+        csvObject.csvWriter();
+        GUI.SimulationGUIEnd(Logic.SimulationFrame);
     }
 
 
@@ -88,6 +122,11 @@ public class Logic {
         int currentTerrain = TerrainGenerator.terrainMap.get(npcList.get(npcIndex).posY).get(npcList.get(npcIndex).posX);
         double currentRange = npcList.get(npcIndex).weapon.range;
         int currentStamina = npcList.get(npcIndex).stamina;
+        for(int i=0; i<medkitList.size();i++){
+            if(TerrainGenerator.terrainMap.get(medkitList.get(i)[0]).get(medkitList.get(i)[1])==4){
+                medkitList.remove(i);
+            }
+        }
 
         //Using their abilities every turn
         if(Objects.equals(npcList.get(npcIndex).symbol, "μ") || Objects.equals(npcList.get(npcIndex).symbol, "Θ")){
@@ -95,20 +134,44 @@ public class Logic {
         }
 
         switch(currentTerrain) {
-            case 1:
+            case 0://desert
                 if(currentStamina > 1) {
                     currentStamina -= 1;
                     //System.out.println(npcIndex + " ma zmniejszoną staminę");
                 }
                 break;
-            case 2:
-                currentRange = 1;
+            case 2://forest
+                currentRange = sqrt(2);
                 //System.out.println(npcIndex + " ma zmniejszony zasięg");
                 break;
-            case 3:
+            case 3://mountains
                 if(!npcList.get(npcIndex).weapon.name.equals("Knife")) {
                     currentRange += 1;
                     //System.out.println(npcIndex + " ma zwiększony zasięg");
+                }
+                break;
+            case 4: //zone
+                npcList.get(npcIndex).HP -=10;
+                if(npcList.get(npcIndex).HP<=0){
+                    GUI.display.append(npcList.get(npcIndex).name+" umarł od strefy!\n");
+                    npcList.remove(npcIndex);
+                    return;
+                }
+                //próba dorobienia uciekania od strefy
+                for(int y=0;y<Logic.size;y++){
+                    for(int x=0;x<Logic.size;x++){
+                        if(TerrainGenerator.terrainMap.get(y).get(x)!=4){
+                            double distance = distanceCalc(y,x,npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
+                            if(distance<targetDistance){
+                                targetDistance=distance;
+                                targetX = x;
+                                targetY = y;
+                            }
+                        }
+                    }
+                }
+                for(int i = 1; i <= currentStamina; i++) {
+                    movement(targetX, targetY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY, npcIndex); //ucieczka ze strefy zawsze priorytetem
                 }
                 break;
         }
@@ -117,6 +180,9 @@ public class Logic {
         if((( (double) npcList.get(npcIndex).HP / npcList.get(npcIndex).maxHP) < 0.5) && !medkitList.isEmpty()) {
             //the loop finding the closest aid kit if HP under 50% and saving its coordinates
             for(int i = 0; i < medkitList.size(); i++) {
+                if(TerrainGenerator.terrainMap.get(medkitList.get(i)[0]).get(medkitList.get(i)[1])==4){
+                    break; //if medkit is in the zone, dont go for it
+                }
                 double distance = distanceCalc(medkitList.get(i)[0],medkitList.get(i)[1], npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
                 if(distance > 0 && distance < targetDistance) {
                     targetDistance = distance;
@@ -131,7 +197,7 @@ public class Logic {
                 if(npcList.get(npcIndex).posX == targetX && npcList.get(npcIndex).posY == targetY) {//if on target...
                     for(int j = 0; j < medkitList.size(); j++) {//...pick up the medkit
                         if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
@@ -150,7 +216,7 @@ public class Logic {
                     for(int j = 0; j < weaponsList.size(); j++) {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
                             GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
@@ -198,6 +264,9 @@ public class Logic {
                 //TODO: it could also be prevent from going through the loop if there's no weapon or no better weapon is present
                 int tempQuality = 0;
                 for(int i = 0; i < weaponsList.size(); i++) {//szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
+                    if(TerrainGenerator.terrainMap.get(weaponsList.get(i).posX).get(weaponsList.get(i).posY)==4){
+                        break; //if wpn is in the zone, dont go for it
+                    }
                     if (weaponsList.get(i).quality > npcList.get(npcIndex).weapon.quality) {
                         double distance = distanceCalc(weaponsList.get(i).posX, weaponsList.get(i).posY, npcList.get(npcIndex).posX, npcList.get(npcIndex).posY);
                         if (distance > 0 && distance < targetDistance) {
@@ -221,7 +290,7 @@ public class Logic {
                         if (npcList.get(npcIndex).posX == weaponsList.get(j).posX && npcList.get(npcIndex).posY == weaponsList.get(j).posY) {
                             //podniesienie broni
                             npcList.get(npcIndex).weapon = weaponsList.get(j);
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł broń "+weaponsList.get(j).name+" "+"("+weaponsList.get(j).posX+","+weaponsList.get(j).posY+").";
                             GUI.display.append(text+"\n");
                             weaponsList.remove(j);
                             actionTaken = true;
@@ -233,7 +302,7 @@ public class Logic {
                     }
                     for(int j = 0; j < medkitList.size(); j++) {
                         if (npcList.get(npcIndex).posX == medkitList.get(j)[0] && npcList.get(npcIndex).posY == medkitList.get(j)[1]) {
-                            String text = "NPC "+npcList.get(npcIndex).index+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
+                            String text = "NPC "+npcList.get(npcIndex).name+" podniósł apteczkę! HP "+npcList.get(npcIndex).HP+"->";
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
@@ -263,6 +332,9 @@ public class Logic {
         //proponuje, żeby NPCClasses.NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
+        if(targetX<0||targetY<0){
+            return; 
+        }
         boolean isEmpty = true;
         //System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index + " porusza się z ("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+") na ");
         if(targetX > x) {
@@ -288,6 +360,8 @@ public class Logic {
             //System.out.print("("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+")");
         }
         else{
+            //do nothing
+
             //System.out.print("do nikąd -> docelowe pole ruchu jest już zajęte!");
             //System.out.println("Space occupied");
             //Potencjalnie sprawdzimy czy ma więcej staminy, jak nie to musi go zaatakować, bo inaczej sam zostanie zaatakowany po następnym ruchu
@@ -299,19 +373,19 @@ public class Logic {
     }
     public static void damageDealer(int indexAttacker, int indexTarget) {
         int damage = (int) (npcList.get(indexTarget).HP - npcList.get(indexAttacker).weapon.Attack(npcList.get(indexTarget).HP));
-        String text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
-                +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+        String text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
+                +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage+")"+
                 "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
         if(Objects.equals(npcList.get(indexTarget).symbol, "Ω") && (int) (Math.random() * (10)) > 6){
-            text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
-                    +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
-                    +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).index + " unika obrazen.";
+            text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
+                    +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                    +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).name + " unika obrazen.";
         }
         else{
             if(Objects.equals(npcList.get(indexAttacker).symbol, "Σ") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
-                text = "NPC "+npcList.get(indexAttacker).index+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
-                        +npcList.get(indexTarget).index+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
+                text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
+                        +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                         +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage * 1.20 +")"+
                         "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
                 npcList.get(indexTarget).HP -= damage * 1.20;

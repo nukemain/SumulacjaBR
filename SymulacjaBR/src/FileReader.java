@@ -59,8 +59,8 @@ public class FileReader {
                 }
                 String[] dataArray = dataString.split(" ", 2);
                 try {
-                    if(Controller.size !=Integer.valueOf(dataArray[1])){
-                        Controller.size = Integer.valueOf(dataArray[1]);
+                    if(Logic.size !=Integer.valueOf(dataArray[1])){
+                        Logic.size = Integer.valueOf(dataArray[1]);
                         GUI.mainPanel = GUI.resetLabelGrid(GUI.mainPanel);
                     }
                     npcCount = Integer.valueOf(dataArray[0]);
@@ -72,7 +72,7 @@ public class FileReader {
                 }
                 //System.out.println(dataString);
                 Logic.npcList.clear();
-                Logic.map = Spawning.createMap(Controller.size);
+                Logic.map = Spawning.createMap(Logic.size);
                 Logic.npcList.clear();
                 for (int i = 0; i < npcCount; i++) {
                     if (dataReader.hasNextLine()) {
@@ -200,15 +200,15 @@ public class FileReader {
                     Logic.medkitList.add(new int[]{posX, posY});
                 }
                 TerrainGenerator.terrainMap.clear();
-                for (int y = 0; y < Controller.size; y++) {
+                for (int y = 0; y < Logic.size; y++) {
                     if (dataReader.hasNextLine()) {
                         dataString = dataReader.nextLine();
                         TerrainGenerator.terrainMap.add(new ArrayList<>());
                         //System.out.println(dataString);
                     }
-                    String[] terrainDataArray = dataString.split(" ", Controller.size);
+                    String[] terrainDataArray = dataString.split(" ", Logic.size);
                     try {
-                        for(int x = 0; x < Controller.size; x++) {
+                        for(int x = 0; x < Logic.size; x++) {
                             TerrainGenerator.terrainMap.get(y).add(Integer.valueOf(terrainDataArray[x]));
                         }
                     } catch (NumberFormatException e) {
