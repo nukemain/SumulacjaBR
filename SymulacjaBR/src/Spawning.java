@@ -161,28 +161,26 @@ public class Spawning {
                         Objects.equals(map.get(posY - 1).get(posX - 1), "[ ]") &&
                         Objects.equals(map.get(posY).get(posX - 1), "[ ]") &&
                         Objects.equals(map.get(posY + 1).get(posX - 1), "[ ]")) {
-                    weaponToSpawn = (int) (Math.random() * (5));
-                    switch (weaponToSpawn){
-                        case 0:
-                            weaponsArray.add(new Handgun(posX, posY));
-                            map.get(posY).set(posX, "[H]");
-                            break;
-                        case 1:
-                            weaponsArray.add(new Rifle(posX, posY));
-                            map.get(posY).set(posX, "[R]");
-                            break;
-                        case 2:
-                            weaponsArray.add(new SMG(posX, posY));
-                            map.get(posY).set(posX, "[U]");
-                            break;
-                        case 3:
-                            weaponsArray.add(new Shotgun(posX, posY));
-                            map.get(posY).set(posX, "[B]");
-                            break;
-                        case 4:
-                            weaponsArray.add(new SniperRifle(posX, posY));
-                            map.get(posY).set(posX, "[S]");
-                            break;
+                    weaponToSpawn = (int) (Math.random() * (100));
+                    if(weaponToSpawn < 40){
+                        weaponsArray.add(new Handgun(posX, posY));
+                        map.get(posY).set(posX, "[H]");
+                    }
+                    else if(weaponToSpawn >= 40 && weaponToSpawn <70){
+                        weaponsArray.add(new Shotgun(posX, posY));
+                        map.get(posY).set(posX, "[B]");
+                    }
+                    else if(weaponToSpawn >= 70 && weaponToSpawn <80){
+                        weaponsArray.add(new Rifle(posX, posY));
+                        map.get(posY).set(posX, "[R]");
+                    }
+                    else if(weaponToSpawn >= 80 && weaponToSpawn <90){
+                        weaponsArray.add(new SMG(posX, posY));
+                        map.get(posY).set(posX, "[U]");
+                    }
+                    else if(weaponToSpawn >= 90){
+                        weaponsArray.add(new SniperRifle(posX, posY));
+                        map.get(posY).set(posX, "[S]");
                     }
                     WPN++;
                 }

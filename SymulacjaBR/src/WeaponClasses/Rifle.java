@@ -1,5 +1,4 @@
 package WeaponClasses;
-
 import javax.swing.*;
 
 import static java.lang.Math.sqrt;
