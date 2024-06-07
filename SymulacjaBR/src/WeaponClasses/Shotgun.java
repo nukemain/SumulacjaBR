@@ -9,7 +9,7 @@ public class Shotgun extends Weapon {
         this.damage = 10;
         this.range = sqrt(2);
         this.quality = 2;
-        this.icon = new ImageIcon("shotgun.png");
+        this.icon = new ImageIcon("images/shotgun.png");
     }
     public int Attack(int targetHP){
         for(int x=0; x<8; x++){

@@ -11,7 +11,7 @@ public class Medic extends NPC{
         this.stamina = 2;
         this.symbol = "μ";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("medic.png");
+        this.icon = new ImageIcon("images/medic.png");
     }
     public void Ability(){
         if(this.HP <= 70){

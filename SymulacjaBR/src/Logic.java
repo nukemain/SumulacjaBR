@@ -36,21 +36,6 @@ public class Logic {
     static List<List<String>> map = new ArrayList<>();
     public static void main(String[] args) throws IOException {
         Symulacja();
-        //WIELKA LISTA RZECZY DO ZROBIENIA
-        //[TĄ SEKCJĘ MUSIMY ZROBIĆ]
-        //done: https://discord.com/channels/1236752666273775667/1236752666781290557/1246940156083310732
-        //done: teren -> zrobiony szumem perlina (pytać Piotra), myślę że tak z trzy rózne rodzaje terenu conajmniej, pełna współpraca z AI npc
-        //done: wczytywanie plików
-        //done: zapisywanie do plików
-        //done: input od użytkownika do gui
-        //done: zmniejszanie sie strefy - to do zrobienia po terenie - strefa jako rodzaj terenu który bije dmg temu co na tym stoi
-        //done: gui do innej klasy
-        //done: nazwy npc w printach na dole zamiast id
-        //done: statystyki terenu w tym małym okienku pod przyciskami
-        //done: statystyki specjalne npc         -||-
-        //done:         -||-         broni       -||-
-        //todo: rewrite spawningu (większa kontrola nad ilością respionej broni i medkitów - zamiast "losowa" liczba jak jest teraz)
-        //imo jak rzeczy wyżej będą gotowe to mozna mówić o gotowym projekcie
     }
 
     static void Symulacja() throws IOException {
@@ -201,7 +186,7 @@ public class Logic {
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
-                                npcList.get(npcIndex).HP += 30; //todo: zwiększyć wartość 30 ustawione tak o narazie
+                                npcList.get(npcIndex).HP += 30;
                             }
                             text = text + npcList.get(npcIndex).HP;
                             GUI.display.append(text+"\n");
@@ -261,7 +246,6 @@ public class Logic {
                 }
                 //this loop tries to find a weapon that is better than the one wielded by NPCClasses.NPC and is closer than the closest enemy
                 //if it finds such weapon it saves its coordinates
-                //TODO: it could also be prevent from going through the loop if there's no weapon or no better weapon is present
                 int tempQuality = 0;
                 for(int i = 0; i < weaponsList.size(); i++) {//szuka broni o najwyższej jakości (jęsli dystans do pistoletu i snajperki jest ten sam-> pójdzie po snajperkę)
                     if(TerrainGenerator.terrainMap.get(weaponsList.get(i).posX).get(weaponsList.get(i).posY)==4){
@@ -306,7 +290,7 @@ public class Logic {
                             if((npcList.get(npcIndex).HP += 30)>npcList.get(npcIndex).maxHP){
                                 npcList.get(npcIndex).HP=npcList.get(npcIndex).maxHP;
                             }else{
-                                npcList.get(npcIndex).HP += 30; //todo: zwiększyć wartość 30 ustawione tak o narazie
+                                npcList.get(npcIndex).HP += 30;
                             }
                             text = text + npcList.get(npcIndex).HP;
                             GUI.display.append(text+"\n");
@@ -327,16 +311,13 @@ public class Logic {
         return sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
     }
     public static void movement(int targetX, int targetY, int x, int y, int npcIndex) {
-        //TODO: zabezpieczyć przed wchodzeniem na NPCClasses.NPC
         //targets coordinates are saved as targetX, targetY
-        //proponuje, żeby NPCClasses.NPC mogli się poruszać po skosie, bo wtedy ścieżki, po których się będą poruszać będą bardziej naturalne
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
         if(targetX<0||targetY<0){
             return; 
         }
         boolean isEmpty = true;
-        //System.out.print("\nNPCClasses.NPC "+npcList.get(npcIndex).index + " porusza się z ("+ npcList.get(npcIndex).posX+","+npcList.get(npcIndex).posY+") na ");
         if(targetX > x) {
             moveX++;
         }
@@ -361,14 +342,9 @@ public class Logic {
         }
         else{
             //do nothing
-
-            //System.out.print("do nikąd -> docelowe pole ruchu jest już zajęte!");
-            //System.out.println("Space occupied");
             //Potencjalnie sprawdzimy czy ma więcej staminy, jak nie to musi go zaatakować, bo inaczej sam zostanie zaatakowany po następnym ruchu
             //Jeżeli jednak ma więcej staminy to powinien próbować uciec po przekątnej w stronę w którą się kierował
             //Bez znaczenia czy w góre po przekątnej czy w dół
-            //TODO: co chcemy robić, gdy na drodze NPCClasses.NPC stanie przeciwnik?
-            // odp: stoi w miejscu, w następnej "turze" będą sie napierdalać
         }
     }
     public static void damageDealer(int indexAttacker, int indexTarget) {

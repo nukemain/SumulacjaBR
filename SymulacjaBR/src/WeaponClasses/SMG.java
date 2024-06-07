@@ -11,6 +11,6 @@ public class SMG extends Weapon {
         this.damage = 35;
         this.range = sqrt(2);
         this.quality = 3;
-        this.icon = new ImageIcon("smg.png");
+        this.icon = new ImageIcon("images/smg.png");
     }
 }

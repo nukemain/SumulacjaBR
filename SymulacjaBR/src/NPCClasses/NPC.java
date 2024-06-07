@@ -19,7 +19,7 @@ public abstract class NPC {
         this.posX = posX;
         this.posY = posY;
         this.weapon = weapon;
-        this.icon = new ImageIcon("default.png");
+        this.icon = new ImageIcon("images/default.png");
     }
 
     public void Ability() {

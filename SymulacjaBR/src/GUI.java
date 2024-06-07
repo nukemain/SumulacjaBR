@@ -28,7 +28,7 @@ public class GUI {
     static JButton buttonNewSim = new JButton("Zacznij nową symulację");
     static JPanel panelRight = new JPanel(new GridLayout(3, 1));
 
-    static private ImageIcon medkit = new ImageIcon("medpack.png");
+    static private ImageIcon medkit = new ImageIcon("images/medpack.png");
     static JTextArea display = new JTextArea(16, 58);
 
     //static  JFrame DataEntryFrame = new JFrame("User Input Window");
@@ -78,7 +78,7 @@ public class GUI {
         frame.setSize(200 + cellSize * 25, 150 + cellSize * 25);
         frame.setTitle("Symulacja battle royale");
         frame.setResizable(false);
-        ImageIcon logo = new ImageIcon("logo.png");
+        ImageIcon logo = new ImageIcon("images/logo.png");
         mainPanel = new JPanel(new GridLayout(Logic.size, Logic.size));
         frame.setIconImage(logo.getImage());
 
