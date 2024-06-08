@@ -13,8 +13,9 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class FileReader {
-    public static int npcCount;
-    //public static int size;
+    public static int npcCount; //the number of the NPCs stored in the loaded file
+
+    //method that reads the data needed to recreate a saved simulation from .txt file
     public static void fileReader() throws FileNotFoundException {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
@@ -26,7 +27,6 @@ public class FileReader {
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
         UIManager.put("FileChooser.saveButtonToolTipText", "Zapisz plik");
-        //UIManager.put("FileChooser.cancelButtonToolTipText", "Anuluj v2");
         UIManager.put("FileChooser.fileNameLabelText", "Nazwa pliku:");
         UIManager.put("FileChooser.filesOfTypeLabelText", "Rozszerzenie pliku:");
         UIManager.put("FileChooser.lookInLabelText", "Szukaj w:");
@@ -37,25 +37,22 @@ public class FileReader {
         SwingUtilities.updateComponentTreeUI(fileChooser);
         int pickedOption = fileChooser.showOpenDialog(null);
         if (pickedOption == JFileChooser.APPROVE_OPTION) {
-            String dataString = null;
-            int index = -1;
-            int posX = -1;
-            int posY = -1;
-            int HP = -1;
-            String wpnName = null;
-            String symbol = null;
+            String dataString = null; //stores the String taken from .txt file using .nextLine() method
+            int index = -1; //the index number of the NPC loaded from the file
+            int posX = -1; //the x coordinates of the NPC loaded from the file
+            int posY = -1; //the y coordinates of the NPC loaded from the file
+            int HP = -1; //number of HP points that the loaded NPC currently should have
+            String wpnName = null; //the name of the weapon loaded from the file
+            String symbol = null; //symbol used to distinguish the class of the NPC loaded from the file
             Weapon wpn = null;
-            int itemCount = -1;
+            int itemCount = -1; //number of the items of the given type (weapons or medkits) that should be spawned in the simulation
             Scanner fileNameReader = new Scanner(System.in);
-            //System.out.println("Enter the name of the file to read: ");
-            //String fileName = fileNameReader.nextLine();
-            //String realFileName = "SBR_Save_" + fileName + ".txt";
             try {
                 File dataFile = fileChooser.getSelectedFile();
                 Scanner dataReader = new Scanner(dataFile);
+                //part of code that reads the size of the map and number of NPCs from the file
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
-                    //System.out.println(dataString);
                 }
                 String[] dataArray = dataString.split(" ", 2);
                 try {
@@ -64,20 +61,16 @@ public class FileReader {
                         GUI.mainPanel = GUI.resetLabelGrid(GUI.mainPanel);
                     }
                     npcCount = Integer.valueOf(dataArray[0]);
-                    //System.out.println("Converted integer: " + npcCount);
-                    //size = Integer.valueOf(dataArray[1]);
-                    //System.out.println("Converted integer: " + size);
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid integer input");
                 }
-                //System.out.println(dataString);
                 Logic.npcList.clear();
                 Logic.map = Spawning.createMap(Logic.size);
                 Logic.npcList.clear();
+                //the part of code that reads NPCs stats from the file
                 for (int i = 0; i < npcCount; i++) {
                     if (dataReader.hasNextLine()) {
                         dataString = dataReader.nextLine();
-                        //System.out.println(dataString);
                     }
                     String[] npcDataArray = dataString.split(" ", 6);
                     try {
@@ -90,32 +83,28 @@ public class FileReader {
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid integer input");
                     }
+                    //the part of code used to create the objects of weapon subclasses
                     switch (wpnName) {
                         case "Knife" -> {
-                            //System.out.println(wpnName);
                             wpn = new Knife(posX, posY);
                         }
                         case "Handgun" -> {
-                            //System.out.println(wpnName);
                             wpn = new Handgun(posX, posY);
                         }
                         case "Rifle" -> {
-                            //System.out.println(wpnName);
                             wpn = new Rifle(posX, posY);
                         }
                         case "SniperRifle" -> {
-                            //System.out.println(wpnName);
                             wpn = new SniperRifle(posX, posY);
                         }
                         case "Shotgun" -> {
-                            //System.out.println(wpnName);
                             wpn = new Shotgun(posX, posY);
                         }
                         case "SMG" -> {
-                            //System.out.println(wpnName);
                             wpn = new SMG(posX, posY);
                         }
                     }
+                    //the part of code used to create the objects of NPC subclasses and add them to the npcList
                     switch (symbol) {
                         case "Σ" -> Logic.npcList.add(new Soldier(index, posX, posY,  wpn));
                         case "μ" -> Logic.npcList.add(new Medic(index, posX, posY,  wpn));
@@ -126,21 +115,20 @@ public class FileReader {
                     }
                     Logic.npcList.get(i).HP = HP;
                 }
+                //the part of code that reads the number of weapons to spawn
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
-                    //System.out.println(dataString);
                 }
                 try {
                     itemCount = Integer.valueOf(dataString);
-                    //System.out.println("Converted integer: " + itemCount);
                 } catch (NumberFormatException e) {
-                    //System.out.println("Invalid integer input");
                 }
                 Logic.weaponsList.clear();
+                //the part of code that reads the stats of the weapons to spawn
+                //then creates the objects of weapon subclasses and adds them to the weaponsList
                 for (int i = 0; i < itemCount; i++) {
                     if (dataReader.hasNextLine()) {
                         dataString = dataReader.nextLine();
-                        //System.out.println(dataString);
                     }
                     String[] wpnDataArray = dataString.split(" ", 3);
                     try {
@@ -173,21 +161,21 @@ public class FileReader {
                             break;
                     }
                 }
+                //the part of the code that reads the number of medkits to spawn
                 if (dataReader.hasNextLine()) {
                     dataString = dataReader.nextLine();
-                    //System.out.println(dataString);
                 }
                 try {
                     itemCount = Integer.valueOf(dataString);
-                    //System.out.println("Converted integer: " + itemCount);
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid integer input");
                 }
                 Logic.medkitList.clear();
+                //the part of the code that reads the positions of medkits to spawn
+                //then adds those positons to the medkitList
                 for (int i = 0; i < itemCount; i++) {
                     if (dataReader.hasNextLine()) {
                         dataString = dataReader.nextLine();
-                        //System.out.println(dataString);
                     }
                     String[] medDataArray = dataString.split(" ", 2);
                     try {
@@ -200,11 +188,11 @@ public class FileReader {
                     Logic.medkitList.add(new int[]{posX, posY});
                 }
                 TerrainGenerator.terrainMap.clear();
+                //the part of the code used to read and set the type of terrain for every square on the map
                 for (int y = 0; y < Logic.size; y++) {
                     if (dataReader.hasNextLine()) {
                         dataString = dataReader.nextLine();
                         TerrainGenerator.terrainMap.add(new ArrayList<>());
-                        //System.out.println(dataString);
                     }
                     String[] terrainDataArray = dataString.split(" ", Logic.size);
                     try {
@@ -217,20 +205,10 @@ public class FileReader {
                 }
                 dataReader.close();
             } catch (FileNotFoundException e) {
-                //System.out.println("An error occurred.");
                 e.printStackTrace();
             }
-        /*File fileDeleter = new File("Test_File.txt");
-        if (fileDeleter.delete()) {
-            System.out.println("Deleted the file: " + fileDeleter.getName());
-        } else {
-            System.out.println("Failed to delete the file.");
-        }*/
         }else{
             GUI.display.append("Anulowano proces wczytu pliku.\n");
         }
-    }
-    public static void main(String[] args) throws FileNotFoundException {
-        fileReader();
     }
 }

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class FileSaver {
+    //method used to save the simulation in .txt file
     public static void fileSaver(int size) throws FileNotFoundException{
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
@@ -18,7 +19,6 @@ public class FileSaver {
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
         UIManager.put("FileChooser.saveButtonToolTipText", "Zapisz plik");
-        //UIManager.put("FileChooser.cancelButtonToolTipText", "Anuluj v2");
         UIManager.put("FileChooser.fileNameLabelText", "Nazwa pliku:");
         UIManager.put("FileChooser.filesOfTypeLabelText", "Rozszerzenie pliku:");
         UIManager.put("FileChooser.lookInLabelText", "Szukaj w:");
@@ -48,6 +48,7 @@ public class FileSaver {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
+            //saves all the data needed to recreate the simulation
             try {
                 FileWriter myWriter = new FileWriter(realFileName);
                 myWriter.write(Logic.npcList.size() + " " + size + "\n");

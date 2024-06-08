@@ -7,7 +7,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Spawning {
-
+    //method used to create an empty map
     public static List<List<String>> createMap(int size){
         List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
@@ -20,6 +20,7 @@ public class Spawning {
         return map;
     }
 
+    //method used to update the map
     public static List<List<String>> updateMap(int size, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
         List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
@@ -41,9 +42,9 @@ public class Spawning {
         return map;
     }
 
+    //Method used to choose the coordinates to spawn NPCs
+    //NOTE: this method purposefully prevents spawns on the edges of the board
     public static List<NPC> spawnNPCs(int size, int NPCcount, List<List<String>> board, List<NPC> npcArray){
-        //Logic required for spawning NPCClasses.NPC's
-        //NOTE: this logic purposefully prevents spawns on the edges of the board
         Random rand = new Random();
 
         int NPC=0; //counter for how many NPCClasses.NPC have been spawned
@@ -73,15 +74,14 @@ public class Spawning {
                         NPC++;
                     }
                 }
-            } catch(Exception e){/*po prostu zrespić ziutka gdzieś indziej*/}
+            } catch(Exception e){}
         }
         return npcArray;
     }
 
-    //Moja propozycja na spawny npc, potem można je przenieść do osobnych plików jak już będą się czymś wyróżniać np. Passive Regen
+    //method used to create the objects of NPC subclasses
     public static List<NPC> spawnRandomNPC(int index, int posX, int posY, List<NPC> npcArray){
         int npcToSpawn = (int) (Math.random() * (5));
-        //int npcToSpawn = 0;
         switch (npcToSpawn){
             case 0:
                 //Soldier
@@ -107,6 +107,7 @@ public class Spawning {
         return npcArray;
     }
 
+    //Method counts how many tiles on the map do not neighbour any NPC
     public static int checkNeighbours(List<List<String>> map, int size){
         //Loop below counts how many non NPCClasses.NPC neighbouring tiles are on the board.
         //The found value is then used to decide the amount of weapons and medkits to spawn
@@ -131,6 +132,7 @@ public class Spawning {
         return NoNeighbours;
     }
 
+    //method used to choose the coordinates for weapons to spawn and then create the objects of Weapons subclasses
     public static List<Weapon> spawnWeapons(List<List<String>> map, int size, int NPCcount, List<Weapon> weaponsArray){
         int WPNcount=0;
         int NoNeighbours=checkNeighbours(map, size);
@@ -188,6 +190,8 @@ public class Spawning {
         }
         return weaponsArray;
     }
+
+    //method used to choose the coordinates for medkits to spawn
     public static List<int[]> spawnMedkits(List<List<String>> map, int size, int NPCcount, List<int[]> medpackArray){
         int MDPcount=0;
         int NoNeighbours=checkNeighbours(map, size);
