@@ -351,12 +351,14 @@ public class Logic {
                 +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage+")"+
                 "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
+        //Special ability of spy
         if(Objects.equals(npcList.get(indexTarget).symbol, "Ω") && (int) (Math.random() * (10)) > 6){
             text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
                     +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                     +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).name + " unika obrazen.";
         }
         else{
+            //Special ability of soldier
             if(Objects.equals(npcList.get(indexAttacker).symbol, "Σ") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
                 text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
                         +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
@@ -364,6 +366,7 @@ public class Logic {
                         "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
                 npcList.get(indexTarget).HP -= damage * 1.20;
             }
+            //default attack
             else{
 
                 npcList.get(indexTarget).HP -= damage;
