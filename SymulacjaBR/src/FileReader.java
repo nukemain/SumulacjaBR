@@ -17,12 +17,14 @@ public class FileReader {
 
     //method that reads the data needed to recreate a saved simulation from .txt file
     public static void fileReader() throws FileNotFoundException {
+        //create a fileChooser window
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter extfilter = new FileNameExtensionFilter("Pliki .txt", "txt");
         fileChooser.setFileFilter(extfilter);
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        //edit the UI of fileCooser
         UIManager.put("FileChooser.openButtonText", "Otwórz plik");
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
@@ -33,8 +35,8 @@ public class FileReader {
         UIManager.put("FileChooser.saveInLabelText", "Zapisz w:");
         UIManager.put("FileChooser.folderNameLabelText", "Folder:");
         UIManager.put("FileChooser.cancelButtonToolTipText", "Zapisz w");
-
         SwingUtilities.updateComponentTreeUI(fileChooser);
+        
         int pickedOption = fileChooser.showOpenDialog(null);
         if (pickedOption == JFileChooser.APPROVE_OPTION) {
             String dataString = null; //stores the String taken from .txt file using .nextLine() method

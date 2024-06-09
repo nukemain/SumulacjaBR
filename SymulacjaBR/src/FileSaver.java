@@ -9,12 +9,14 @@ import java.io.IOException;
 public class FileSaver {
     //method used to save the simulation in .txt file
     public static void fileSaver(int size) throws FileNotFoundException{
+        //create a fileChooser window
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter extfilter = new FileNameExtensionFilter("Pliki .txt", "txt");
         fileChooser.setFileFilter(extfilter);
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        //edit the UI of fileCooser
         UIManager.put("FileChooser.openButtonText", "Otwórz plik");
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
@@ -25,8 +27,8 @@ public class FileSaver {
         UIManager.put("FileChooser.saveInLabelText", "Zapisz w:");
         UIManager.put("FileChooser.folderNameLabelText", "Folder:");
         UIManager.put("FileChooser.cancelButtonToolTipText", "Zapisz w");
-
         SwingUtilities.updateComponentTreeUI(fileChooser);
+
         int pickedOption = fileChooser.showSaveDialog(null);
 
         if (pickedOption == JFileChooser.APPROVE_OPTION) {

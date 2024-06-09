@@ -90,7 +90,7 @@ public class Logic {
         GUI.refreshGUIMap();
         csvObject.dataAdder(npcList.size(), weaponsList.size(), medkitList.size());
         csvObject.csvWriter();
-        GUI.SimulationGUIEnd(Logic.SimulationFrame);
+        GUI.SimulationGUIEnd();
     }
 
     //method used for NPCs to make decisions and implement them
@@ -306,6 +306,7 @@ public class Logic {
     }
 
     //method used to calculate the distance between points on the map
+    //simple euclidean distance
     public static double distanceCalc(int targetX, int targetY, int x, int y) {
         return sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
     }
@@ -315,6 +316,7 @@ public class Logic {
         //targets coordinates are saved as targetX, targetY
         int moveX = npcList.get(npcIndex).posX;
         int moveY = npcList.get(npcIndex).posY;
+
         if(targetX<0||targetY<0){
             return; 
         }
