@@ -7,26 +7,28 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class FileSaver {
+    //method used to save the simulation in .txt file
     public static void fileSaver(int size) throws FileNotFoundException{
+        //create a fileChooser window
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
         FileNameExtensionFilter extfilter = new FileNameExtensionFilter("Pliki .txt", "txt");
         fileChooser.setFileFilter(extfilter);
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+        //edit the UI of fileCooser
         UIManager.put("FileChooser.openButtonText", "Otwórz plik");
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
         UIManager.put("FileChooser.saveButtonToolTipText", "Zapisz plik");
-        //UIManager.put("FileChooser.cancelButtonToolTipText", "Anuluj v2");
         UIManager.put("FileChooser.fileNameLabelText", "Nazwa pliku:");
         UIManager.put("FileChooser.filesOfTypeLabelText", "Rozszerzenie pliku:");
         UIManager.put("FileChooser.lookInLabelText", "Szukaj w:");
         UIManager.put("FileChooser.saveInLabelText", "Zapisz w:");
         UIManager.put("FileChooser.folderNameLabelText", "Folder:");
         UIManager.put("FileChooser.cancelButtonToolTipText", "Zapisz w");
-
         SwingUtilities.updateComponentTreeUI(fileChooser);
+
         int pickedOption = fileChooser.showSaveDialog(null);
 
         if (pickedOption == JFileChooser.APPROVE_OPTION) {
@@ -48,6 +50,7 @@ public class FileSaver {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
+            //saves all the data needed to recreate the simulation
             try {
                 FileWriter myWriter = new FileWriter(realFileName);
                 myWriter.write(Logic.npcList.size() + " " + size + "\n");

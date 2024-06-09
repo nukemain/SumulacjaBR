@@ -12,7 +12,7 @@ public class Soldier extends NPC{
         this.stamina = 2;
         this.symbol = "Σ";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("zolnierz.png");
+        this.icon = new ImageIcon("images/zolnierz.png");
     }
     //If target is in '1' range hit for 120%
 }

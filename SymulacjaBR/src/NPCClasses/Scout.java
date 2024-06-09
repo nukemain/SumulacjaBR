@@ -12,6 +12,6 @@ public class Scout extends NPC{
         this.stamina = 3;
         this.symbol = "Λ";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("scout.png");
+        this.icon = new ImageIcon("images/scout.png");
     }
 }

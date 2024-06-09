@@ -11,7 +11,7 @@ public class Handgun extends Weapon {
         this.damage = 25;
         this.range = sqrt(2);
         this.quality = 1;
-        this.icon = new ImageIcon("handgun.png");
+        this.icon = new ImageIcon("images/handgun.png");
     }
     public int Attack(int targetHP){
         targetHP -= this.damage;

@@ -14,7 +14,7 @@ public class Sniper extends NPC{
         this.stamina = 2;
         this.symbol = "Θ";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("sniper.png");
+        this.icon = new ImageIcon("images/sniper.png");
     }
     public void Ability(){
         if(!Objects.equals(this.weapon.name, "Knife") && !Objects.equals(this.weapon.name, this.boostedWeapon)) this.weapon.range += 1;

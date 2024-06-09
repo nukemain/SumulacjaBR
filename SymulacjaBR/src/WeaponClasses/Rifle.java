@@ -10,7 +10,7 @@ public class Rifle extends Weapon {
         this.damage = 10;
         this.range = 2;
         this.quality = 3;
-        this.icon = new ImageIcon("rifle.png");
+        this.icon = new ImageIcon("images/rifle.png");
     }
     public int Attack(int targetHP){
         for(int x=0; x<4; x++){
