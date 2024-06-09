@@ -16,7 +16,7 @@ public class FileSaver {
         FileNameExtensionFilter extfilter = new FileNameExtensionFilter("Pliki .txt", "txt");
         fileChooser.setFileFilter(extfilter);
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        //edit the UI of fileCooser
+        //edit the UI of fileChooser
         UIManager.put("FileChooser.openButtonText", "Otwórz plik");
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
@@ -34,20 +34,20 @@ public class FileSaver {
         if (pickedOption == JFileChooser.APPROVE_OPTION) {
             File fileToSave = fileChooser.getSelectedFile();
             String realFileName = fileToSave.getAbsolutePath();
-            // Ensure the file has the correct extension
+            //make sure the picked file has the correct extension
             if (!realFileName.endsWith(".txt")) {
                 realFileName += ".txt";
             }
             try {
                 File file = new File(realFileName);
                 if (file.createNewFile()) {
-                    System.out.println("File created: " + file.getName());
-                    System.out.println("Absolute path: " + file.getAbsolutePath());
+                    GUI.display.append("Stworzono plik: " + file.getName());
+                    GUI.display.append("Znajduje się on w: " + file.getAbsolutePath());
                 } else {
                     System.out.println("File already exists.");
                 }
             } catch (IOException e) {
-                System.out.println("An error occurred.");
+                GUI.display.append("Wystąpił błąd przy zapisie symulacji. Operacja nie powiodła się.");
                 e.printStackTrace();
             }
             //saves all the data needed to recreate the simulation
@@ -76,9 +76,9 @@ public class FileSaver {
                     myWriter.write("\n");
                 }
                 myWriter.close();
-                System.out.println("Successfully wrote to the file.");
+                GUI.display.append("Poprawnie zapisano stan symulacji.");
             } catch (IOException e) {
-                System.out.println("An error occurred.");
+                GUI.display.append("Wystąpił błąd przy zapisie symulacji. Operacja nie powiodła się.");
                 e.printStackTrace();
             }
         } else {

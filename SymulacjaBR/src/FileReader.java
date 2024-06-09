@@ -5,11 +5,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class FileReader {
@@ -24,7 +20,7 @@ public class FileReader {
         FileNameExtensionFilter extfilter = new FileNameExtensionFilter("Pliki .txt", "txt");
         fileChooser.setFileFilter(extfilter);
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
-        //edit the UI of fileCooser
+        //edit the UI of fileChooser
         UIManager.put("FileChooser.openButtonText", "Otwórz plik");
         UIManager.put("FileChooser.cancelButtonText", "Anuluj");
         UIManager.put("FileChooser.saveButtonText", "Zapisz");
@@ -64,7 +60,7 @@ public class FileReader {
                     }
                     npcCount = Integer.valueOf(dataArray[0]);
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid integer input");
+                    GUI.display.append("Podczas wczytywania pliku doszło do błędu związanego z wczytem liczb!");
                 }
                 Logic.npcList.clear();
                 Logic.map = Spawning.createMap(Logic.size);
@@ -83,7 +79,7 @@ public class FileReader {
                         wpnName = npcDataArray[4];
                         symbol = npcDataArray[5];
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid integer input");
+                        GUI.display.append("Podczas wczytywania pliku doszło do błędu związanego z wczytem liczb!");
                     }
                     //the part of code used to create the objects of weapon subclasses
                     switch (wpnName) {
@@ -113,7 +109,7 @@ public class FileReader {
                         case "Λ" -> Logic.npcList.add(new Scout(index, posX, posY,  wpn));
                         case "Θ" -> Logic.npcList.add(new Sniper(index, posX, posY,  wpn));
                         case "Ω" -> Logic.npcList.add(new Spy(index, posX, posY,  wpn));
-                        default -> System.out.println("Wrong symbol");
+                        default -> GUI.display.append("System wczytu otrzymał niepoprawny symbol!");
                     }
                     Logic.npcList.get(i).HP = HP;
                 }
@@ -138,7 +134,7 @@ public class FileReader {
                         posX = Integer.valueOf(wpnDataArray[1]);
                         posY = Integer.valueOf(wpnDataArray[2]);
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid integer input");
+                        GUI.display.append("Podczas wczytywania pliku doszło do błędu związanego z wczytem liczb!");
                     }
                     switch (wpnName) {
                         case "Handgun":
@@ -170,11 +166,11 @@ public class FileReader {
                 try {
                     itemCount = Integer.valueOf(dataString);
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid integer input");
+                    GUI.display.append("Podczas wczytywania pliku doszło do błędu związanego z wczytem liczb!");
                 }
                 Logic.medkitList.clear();
                 //the part of the code that reads the positions of medkits to spawn
-                //then adds those positons to the medkitList
+                //then adds those positions to the medkitList
                 for (int i = 0; i < itemCount; i++) {
                     if (dataReader.hasNextLine()) {
                         dataString = dataReader.nextLine();
@@ -184,7 +180,7 @@ public class FileReader {
                         posX = Integer.valueOf(medDataArray[0]);
                         posY = Integer.valueOf(medDataArray[1]);
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid integer input");
+                        GUI.display.append("Podczas wczytywania pliku doszło do błędu związanego z wczytem liczb!");
                     }
                     Logic.map.get(posY).set(posX, "[+]");
                     Logic.medkitList.add(new int[]{posX, posY});
@@ -202,7 +198,7 @@ public class FileReader {
                             TerrainGenerator.terrainMap.get(y).add(Integer.valueOf(terrainDataArray[x]));
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid integer input");
+                        GUI.display.append("Podczas wczytywania pliku doszło do błędu związanego z wczytem liczb!");
                     }
                 }
                 dataReader.close();

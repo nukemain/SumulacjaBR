@@ -1,5 +1,4 @@
 package WeaponClasses;
-
 import static java.lang.Math.sqrt;
 
 public class Knife extends Weapon {
@@ -9,6 +8,7 @@ public class Knife extends Weapon {
         this.damage = 15;
         this.range = sqrt(2);
         this.quality = 0;
+        //knife has no icon as it will never be shown as an item on the ground
     }
     public int Attack(int targetHP){
         if((int) (Math.random() * 100) > 94) targetHP = -1; //5% to one-shot enemy

@@ -1,7 +1,5 @@
 package WeaponClasses;
-
 import javax.swing.*;
-
 import static java.lang.Math.sqrt;
 
 public class Handgun extends Weapon {

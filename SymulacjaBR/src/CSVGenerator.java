@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class CSVGenerator {
         }
     }
 
-    //method that adds the data from the current round of simiulation to dataLines list
+    //method that adds the data from the current round of simulation to dataLines list
     public void dataAdder(int npcCount, int weaponsCount, int medkitsCount) {
         //if it is the first line of data then the String containing names of the columns is also added to the dataLines line
         if(dataLines.isEmpty()) {

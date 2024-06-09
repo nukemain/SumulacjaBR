@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.lang.Math.pow;
 
 public class TerrainGenerator {
@@ -127,6 +126,7 @@ public class TerrainGenerator {
     //method used to create and change the size of the closing zone that will deal damage to NPCs
     public static void ShrinkZone(int size,int centerX,int centerY,int turn) {
         double radius = size - (turn-1);
+        //if a tile is outside a circular area with the above radius set it's terrain value to 4 - zone
         for(int y = 0; y < size; y++) {
             for(int x = 0; x < size; x++) {
                 if(Logic.distanceCalc(x,y,centerX,centerY)>=radius){

@@ -24,17 +24,17 @@ public class Spawning {
     public static List<List<String>> updateMap(int size, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
         List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
-        for(int y=0;y<Logic.size;y++){
+        for(int y=0;y<size;y++){
             map.add(new ArrayList<>());
-            for(int x=0;x<Logic.size;x++){
+            for(int x=0;x<size;x++){
                 map.get(y).add("[ ]");
             }
         }
         for(int i=0;i<npcList.size();i++){
-            map.get(npcList.get(i).posY).set(npcList.get(i).posX, "[" + npcList.get(i).symbol + "]"); //symbol NPC'ta w przyszłości będzie to ikonka w gui
+            map.get(npcList.get(i).posY).set(npcList.get(i).posX, "[" + npcList.get(i).symbol + "]");
         }
         for(int i=0;i<weaponsList.size();i++){
-            map.get(weaponsList.get(i).posY).set(weaponsList.get(i).posX, "[" + weaponsList.get(i).name.charAt(0) + "]"); //pierwszy znak z nzwy itemu
+            map.get(weaponsList.get(i).posY).set(weaponsList.get(i).posX, "[" + weaponsList.get(i).name.charAt(0) + "]");
         }
         for(int i=0;i<medkitList.size();i++){
             map.get(medkitList.get(i)[1]).set(medkitList.get(i)[0], "[+]");
