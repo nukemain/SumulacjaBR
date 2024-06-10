@@ -479,24 +479,26 @@ public class GUI {
                         }
 
                         //add terrain specific text to labelInfoText List
-                        labelInfoText.add("==========");
-                        switch(TerrainGenerator.terrainMap.get(labelPosY).get(labelPosX)) {
-                            case 0://desert
-                                labelInfoText.add("Pustynia (Stamina -=1)");
-                                break;
-                            case 1://field
-                                labelInfoText.add("Polana (Brak zmian)");
-                                break;
-                            case 2://forest
-                                labelInfoText.add("Las (Zasięg =1)");
-                                break;
-                            case 3://mountains
-                                labelInfoText.add("Góry (Zasięg +=1)");
-                                break;
-                            case 4: //zone
-                                labelInfoText.add("Strefa");
-                                labelInfoText.add("HP -=10 na ture");
-                                break;
+                        if(!TerrainGenerator.terrainMap.isEmpty()) {
+                            labelInfoText.add("==========");
+                            switch (TerrainGenerator.terrainMap.get(labelPosY).get(labelPosX)) {
+                                case 0://desert
+                                    labelInfoText.add("Pustynia (Stamina -=1)");
+                                    break;
+                                case 1://field
+                                    labelInfoText.add("Polana (Brak zmian)");
+                                    break;
+                                case 2://forest
+                                    labelInfoText.add("Las (Zasięg =1)");
+                                    break;
+                                case 3://mountains
+                                    labelInfoText.add("Góry (Zasięg +=1)");
+                                    break;
+                                case 4: //zone
+                                    labelInfoText.add("Strefa");
+                                    labelInfoText.add("HP -=10 na ture");
+                                    break;
+                            }
                         }
                         //add coordinates of cutrrent tile to labelInfoText List
                         labelInfoText.add("("+labelPosX+","+labelPosY+")");
