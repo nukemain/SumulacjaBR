@@ -14,6 +14,7 @@ public class Medic extends NPC{
         this.icon = new ImageIcon(getClass().getResource("/medic.png"));
     }
     public void Ability(){
+        //heal 4 HP on turn
         if(this.HP <= 70){
             this.HP += 4;
         }

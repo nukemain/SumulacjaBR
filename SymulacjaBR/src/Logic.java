@@ -1,8 +1,5 @@
 import NPCClasses.*;
 import javax.swing.*;
-import java.awt.*;
-
-import WeaponClasses.Knife;
 import WeaponClasses.Weapon;
 
 import java.io.IOException;
@@ -13,37 +10,75 @@ import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
 
-
+/**
+ * Class responsible for all logic used inside the Simulation.
+ */
 public class Logic {
 
-    static int size = 1; //size of the map
-    static int NPCcount = 10; //number of the NPCs to be spawned
+    /**
+     * Size of the simulation's map
+     */
+    static int size = 1;
+    /**
+     * Amount of NPCs on the map
+     */
+    static int NPCcount = 10;
+    /**
+     * Main JFrame object to which GUI is bound to
+     */
     static JFrame SimulationFrame = new JFrame();
     //Lists required for logic to function
-    static List<NPC> npcList = new ArrayList<>(); //list of all NPC objects
-    static List<Weapon> weaponsList = new ArrayList<>(); //list of all Weapon objects
-    static List<int[]> medkitList = new ArrayList<>(); //list of coordinates of all medkits
-
-    public static int roundsCounter = 0; //number of rounds in current simulation
 
 
+    /**
+     * List of all NPC objects present in the simulation
+     */
+    static List<NPC> npcList = new ArrayList<>();
+    /**
+     * List of all weapon objects present in the simulation
+     */
+    static List<Weapon> weaponsList = new ArrayList<>();
+    /**
+     * List of all medkits present in the simulation
+     */
+    static List<int[]> medkitList = new ArrayList<>();
+
+    /**
+     * Number of rounds in current simulation
+     */
+    public static int roundsCounter = 0;
+
+
+    /**
+     * Boolean needed to pause main simulation's loop when a button is pressed
+     */
     //required for pausing
     static boolean buttonPressed = false;
+    /**
+     * Boolean needed to pause main simulation's loop when a button is pressed and held
+     */
     static boolean buttonHeld = false;
+    /**
+     * Object needed to work as a lock pausing the execution of simulation's loop
+     */
     static final Object lock = new Object();
+    /**
+     * String representation of the two-dimensional simulation's map
+     */
     static List<List<String>> map = new ArrayList<>(); //list used to spawn NPCs, weapon and medkits
 
 
     /**
-     * @param args
-     * @throws IOException
-     * yada yada
-     * jakiś tekst
+     * Main function of the program, is used only to call Simulation()
      */
     //method used to begin the simulation
     public static void main(String[] args) throws IOException {
         Simulation();
     }
+
+    /**
+     * Function containing the main loop of the simulation, called only from main()
+     */
     static void Simulation() throws IOException {
         CSVGenerator csvObject = new CSVGenerator();
         GUI.SimulationGUI(Logic.SimulationFrame);
@@ -97,7 +132,11 @@ public class Logic {
         GUI.SimulationGUIEnd();
     }
 
-    //method used for NPCs to make decisions and implement them
+
+    /**
+     * Method used for NPCs to make decisions and implement them
+     * @param npcIndex index of NPC from npcList for which we do logic decisions
+     */
     public static void decisionMaker(int npcIndex) {
         int targetX = -1; //x coordinate of NPC's target
         int targetY = -1; //y coordinate of NPC's target
@@ -309,13 +348,26 @@ public class Logic {
         }
     }
 
-    //method used to calculate the distance between points on the map
-    //simple euclidean distance
+    /**
+     * Method used to calculate the distance between points on the map using simple Euclidean distance
+     * @param targetX X coordinate of the target
+     * @param targetY Y coordinate of the target
+     * @param x x coordinate of the point from which we are calculating the distance
+     * @param y y coordinate of the point from which we are calculating the distance
+     * @return returns the distance calculated in double format
+     */
     public static double distanceCalc(int targetX, int targetY, int x, int y) {
         return sqrt(abs(x - targetX) * abs(x - targetX) + abs(y - targetY) * abs(y - targetY));
     }
 
-    //method used to change the coordinates of the NPC
+    /**
+     * Method used to change the coordinates of the NPC
+     * @param targetX X coordinate of NPC's destination
+     * @param targetY Y coordinate of NPC's destination
+     * @param x X coordinate of NPC's position
+     * @param y Y coordinate of NPC's position
+     * @param npcIndex index of NPC from npcList for which we do movement decisions
+     */
     public static void movement(int targetX, int targetY, int x, int y, int npcIndex) {
         //targets coordinates are saved as targetX, targetY
         int moveX = npcList.get(npcIndex).posX;
@@ -348,7 +400,11 @@ public class Logic {
         }
     }
 
-    //method used to deal damage to another NPC
+    /**
+     * Method used to deal damage to another NPC
+     * @param indexAttacker index of NPC from npcList which attacks the other NPC
+     * @param indexTarget index of NPC from npcList which is getting attacked by the other NPC
+     */
     public static void damageDealer(int indexAttacker, int indexTarget) {
         int damage = (int) (npcList.get(indexTarget).HP - npcList.get(indexAttacker).weapon.Attack(npcList.get(indexTarget).HP));
         String text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "

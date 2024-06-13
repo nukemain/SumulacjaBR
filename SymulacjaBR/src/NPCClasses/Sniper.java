@@ -17,6 +17,7 @@ public class Sniper extends NPC{
         this.icon = new ImageIcon(getClass().getResource("/sniper.png"));
     }
     public void Ability(){
+        //gain 1 range (except when using a knife)
         if(!Objects.equals(this.weapon.name, "Knife") && !Objects.equals(this.weapon.name, this.boostedWeapon)) this.weapon.range += 1;
         this.boostedWeapon = this.weapon.name;
     }

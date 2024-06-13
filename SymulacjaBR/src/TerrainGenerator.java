@@ -2,22 +2,34 @@ import java.util.ArrayList;
 import java.util.List;
 import static java.lang.Math.pow;
 
+/**
+ * Class responsible for generating the simulation's terrain
+ */
 public class TerrainGenerator {
 
-    // terrain types:
-    // 0 - plain, no effects
-    // 1 - desert, stamina -= 1 (min 1)
-    // 2 - forest, range = 1
-    // 3 - mountains, range += 1 (not applied for knife)
-    static List<List<Integer>> terrainMap = new ArrayList<>(); //list containing the numbers used to distinguish the type of terrain
+    /**
+     * List containing the numbers used to distinguish the type of terrain. <br>
+     * terrain types:<br>
+     * 0 - plain, no effects<br>
+     * 1 - desert, stamina -= 1 (min 1)<br>
+     * 2 - forest, range = 1<br>
+     * 3 - mountains, range += 1 (not applied for knife)<br>
+     */
+
+    static List<List<Integer>> terrainMap = new ArrayList<>();
 
     private static final double scaler = 0.04; //number used to scale the coordinates so that they create a better perlin noise
 
-    //list containing randomly arranged numbers from 0 to 255
-    //it is used to make random gradients used to generate the perlin noise
+    /**
+     * list containing randomly arranged numbers from 0 to 255, used to make random gradients used to generate the perlin noise
+     */
     private static ArrayList<Integer> permutation = new ArrayList<>();
 
-    //method returning the value used to determine what type of the terrain should be at given coordinates
+    /**
+     * Method returning the value used to determine what type of the terrain should be at given coordinates
+     * @param x given x coordinate
+     * @param y given y coordinate
+     */
     private static double perlinNoise(double x, double y) {
         permutationGenerator();
         //x0 and y0 are the coordinates of the square in which are given coordinates
@@ -44,7 +56,9 @@ public class TerrainGenerator {
         return interpolate(i1, i2, v);
     }
 
-    //method used to generate the random gradients
+    /**
+     * Method used to generate the random gradients
+     */
     private static int[] gradientGenerator(int x, int y) {
         int[] gradient = new int[2];
         //number from the permutation list is chosen based on given coordinates and one of the four possible gradients is chosen
@@ -70,24 +84,32 @@ public class TerrainGenerator {
         return gradient;
     }
 
-    //method used to calculate the dot product of the given vector and gradient
+    /**
+     * Method used to calculate the dot product of the given vector and gradient
+     */
     private static double dotProductCalc(int xi, int yi, double x, double y, int[] gradient) {
         double dx = x - xi;
         double dy = y - yi;
         return dx * gradient[0] + dy * gradient[1];
     }
 
-    //method used to apply the fade function to the weight for interpolation
+    /**
+     * Method used to apply the fade function to the weight for interpolation
+     */
     private static double fade(double x) {
         return pow(x, 3) * (6 * x * x - 15 * x + 10);
     }
 
-    //method used to calculate the interpolation of two dot products
+    /**
+     * Method used to calculate the interpolation of two dot products
+     */
     private static double interpolate(double dot1, double dot2, double weight) {
         return (dot2 - dot1) * weight + dot1;
     }
 
-    //method used to generate the random permutation
+    /**
+     * method used to generate the random permutation
+     */
     private static void permutationGenerator() {
         ArrayList<Integer> numbersList = new ArrayList<>();
         for(int i = 0; i < 256; i++) {
@@ -100,7 +122,10 @@ public class TerrainGenerator {
         }
     }
 
-    //method used to fill the terrainMap list with numbers used to distinguish terrain types
+    /**
+     * Method used to fill the terrainMap list with numbers used to distinguish terrain types
+     * @param size size of the simulation's board
+     */
     public static void terrainGenerator(int size) {
         for(int y = 0; y < size; y++) {
             terrainMap.add(new ArrayList<>());
@@ -123,7 +148,13 @@ public class TerrainGenerator {
         permutation.clear();
     }
 
-    //method used to create and change the size of the closing zone that will deal damage to NPCs
+    /**
+     * Method used to create and change the size of the closing zone that will deal damage to NPCs
+     * @param size size of the simulation's board
+     * @param centerX X coordinate of the closing zone's center
+     * @param centerY Y coordinate of the closing zone's center
+     * @param turn numbered turn of the simulation
+     */
     public static void ShrinkZone(int size,int centerX,int centerY,int turn) {
         double radius = size - (turn-1);
         //if a tile is outside a circular area with the above radius set it's terrain value to 4 - zone

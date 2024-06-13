@@ -1,13 +1,21 @@
 import NPCClasses.*;
 import WeaponClasses.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+/**
+ * Class responsible for placing NPC's, weapons, and medkits on the map
+ */
 public class Spawning {
-    //method used to create an empty map
+
+    /**
+     * Method used to create an empty map. First used in the console version of the program, the text implementation of the map stayed in our code as we were planning to write simulation's state after each turn to Data_collected.csv. This idea however did not come to fruition.<br>
+     * The variable returned here is also used in spawning all elements of the simulation.
+     * @param size size of the simulation's board
+     * @return returns a List of Lists of Strings representing the simulation's empty map
+     */
     public static List<List<String>> createMap(int size){
         List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
@@ -20,7 +28,14 @@ public class Spawning {
         return map;
     }
 
-    //method used to update the map
+    /**
+     * Method used to update the map with current positions of each element inside the simulation.
+     * @param medkitList List of medkits  
+     * @param npcList List of npc's
+     * @param weaponsList list of weapon's
+     * @param size size of the simulation's board
+     * @return returns a List of Lists of Strings representing the simulation's empty map
+     */
     public static List<List<String>> updateMap(int size, List<NPC> npcList, List<Weapon> weaponsList, List<int[]> medkitList){
         List<List<String>> map = new ArrayList<>();
         //loop to fill the board with empty spaces ("[ ]")
@@ -42,8 +57,15 @@ public class Spawning {
         return map;
     }
 
-    //Method used to choose the coordinates to spawn NPCs
-    //NOTE: this method purposefully prevents spawns on the edges of the board
+    /**
+     * Method used to choose the coordinates to spawn NPCs<br>
+     * NOTE: this method purposefully prevents spawns on the edges of the board
+     * @param size size of simulation's board
+     * @param NPCcount amount of NPC's to be spawned
+     * @param board variable containing the string representation of the board
+     * @param npcArray list of NPC's inside the simulation
+     * @return List of newly created NPC objects to be used inside the simulation
+     */
     public static List<NPC> spawnNPCs(int size, int NPCcount, List<List<String>> board, List<NPC> npcArray){
         Random rand = new Random();
 
@@ -79,7 +101,14 @@ public class Spawning {
         return npcArray;
     }
 
-    //method used to create the objects of NPC subclasses
+    /**
+     * Method used to create the objects of NPC subclasses.
+     * @param index index of the spawned NPC
+     * @param posX X position of the spawned NPC
+     * @param posY Y position of the spawned NPC
+     * @param npcArray List of NPC's which the NPC will be added to.
+     * @return updated List of NPC's containing the new NPC.
+     */
     public static List<NPC> spawnRandomNPC(int index, int posX, int posY, List<NPC> npcArray){
         int npcToSpawn = (int) (Math.random() * (5));
         switch (npcToSpawn){
@@ -107,8 +136,13 @@ public class Spawning {
         return npcArray;
     }
 
-    //Method counts how many tiles on the map do not neighbour any NPC
-    public static int checkNeighbours(List<List<String>> map, int size){
+    /**
+     * Method counts how many tiles on the map do not neighbour any NPC
+     * @param map string representation of the simulation's map
+     * @param size size of simulation's board
+     * @return returns the amount of tiles on the map with no neighbours (including diagonally)
+     */
+    private static int checkNeighbours(List<List<String>> map, int size){
         //Loop below counts how many non NPCClasses.NPC neighbouring tiles are on the board.
         //The found value is then used to decide the amount of weapons and medkits to spawn
         int NoNeighbours=0;
@@ -132,7 +166,14 @@ public class Spawning {
         return NoNeighbours;
     }
 
-    //method used to choose the coordinates for weapons to spawn and then create the objects of Weapons subclasses
+    /**
+     * Method used to choose the coordinates for weapons to spawn and then create the objects of Weapons subclasses
+     * @param map string representation of the simulation's map
+     * @param size size of simulation's board
+     * @param NPCcount amount of NPC's present in the simulation
+     * @param weaponsArray List of existing weapon objects
+     * @return updated List containing the newly spawned weapon
+     */
     public static List<Weapon> spawnWeapons(List<List<String>> map, int size, int NPCcount, List<Weapon> weaponsArray){
         int WPNcount=0;
         int NoNeighbours=checkNeighbours(map, size);
@@ -191,8 +232,15 @@ public class Spawning {
         return weaponsArray;
     }
 
-    //method used to choose the coordinates for medkits to spawn
-    public static List<int[]> spawnMedkits(List<List<String>> map, int size, int NPCcount, List<int[]> medpackArray){
+    /**
+     * Method used to spawn medkits in the simulation
+     * @param map string representation of the simulation's map
+     * @param size size of simulation's board
+     * @param NPCcount amount of NPC's present in the simulation
+     * @param medpackList List of existing medkits
+     * @return updated List containing the newly spawned medkit
+     */
+    public static List<int[]> spawnMedkits(List<List<String>> map, int size, int NPCcount, List<int[]> medpackList){
         int MDPcount=0;
         int NoNeighbours=checkNeighbours(map, size);
         Random rand = new Random();
@@ -216,11 +264,11 @@ public class Spawning {
                         Objects.equals(map.get(posY).get(posX - 1), "[ ]") &&
                         Objects.equals(map.get(posY + 1).get(posX - 1), "[ ]")) {
                     map.get(posY).set(posX, "[+]");
-                    medpackArray.add(new int[]{posX, posY});
+                    medpackList.add(new int[]{posX, posY});
                     MDP++;
                 }
             } catch(Exception ignored){}
         }
-        return medpackArray;
+        return medpackList;
     }
 }

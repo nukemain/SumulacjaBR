@@ -8,12 +8,21 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Class responsible for reading Simulation's data from a .txt file.
+ */
 public class FileReader {
-    public static int npcCount; //the number of the NPCs stored in the loaded file
+    /**
+     * the number of the NPCs stored in the loaded file
+     */
+    public static int npcCount;
 
-    //method that reads the data needed to recreate a saved simulation from .txt file
+    /**
+     * Method that reads the data needed to recreate a saved simulation from .txt file. Asks the user to pick (or create a new) file for the data to be read from using a GUI window.
+     * @throws FileNotFoundException
+     */
     public static void fileReader() throws FileNotFoundException {
-        //create a fileChooser window
+        //create a fileChooser window for the user to pick the file from
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Wybierz (lub stwórz) plik .txt do zapisu stanu symulacji");
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);

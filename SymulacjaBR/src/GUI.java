@@ -8,33 +8,92 @@ import java.util.List;
 import java.util.Objects;
 import static java.lang.Math.sqrt;
 
+/**
+ * Class responsible for all code related to GUI of the simulation.
+ */
 public class GUI {
+    /**
+     * Size of each individual cell of the simulation's map in pixels
+     */
     static private final int cellSize = 30;
+    /**
+     * JLabel object placed bellow GUI's buttons used to display information about the simulation's objects
+     */
     static private JLabel labelInfo = new JLabel();
+    /**
+     * List of sttrings to be added to infoLabel
+     */
     static List<String> labelInfoText = new ArrayList<>();
+    /**
+     * Grid of JLabel objects used to create the map visible in program's GUI
+     */
     static List<List<JLabel>> labelGrid = new ArrayList<>();
+    /**
+     * Panel to which labelGrid's labels are bound to
+     */
     static JPanel mainPanel = new JPanel();
 
+    /**
+     * Default border used in the simulation's map
+     */
     //borders used for accents around NPC, weapon and medkit icons
     static private Border borderDefault = BorderFactory.createLineBorder(Color.black, 1);
+    /**
+     * Red border used in the simulation's map for highlighting NPCs
+     */
     static private Border borderNPC = BorderFactory.createLineBorder(Color.red, 1);
+    /**
+     * Yellow border used in the simulation's map for highlighting weapons
+     */
     static private Border borderWeapon = BorderFactory.createLineBorder(Color.orange, 1);
+    /**
+     * Green border used in the simulation's map for highlighting medkits
+     */
     static private Border borderMedkit = BorderFactory.createLineBorder(Color.green, 1);
 
 
+    /**
+     * Button used in simulation's GUI
+     */
     static private JButton buttonTop = new JButton("Następna tura");
+    /**
+     * Button used in simulation's GUI
+     */
     static private JButton buttonMid = new JButton("Zapisz stan planszy");
+    /**
+     * Button used in simulation's GUI
+     */
     static private JButton buttonBot = new JButton("Wczytaj stan planszy");
+    /**
+     * Button used in simulation's GUI
+     */
     static private JButton buttonClose = new JButton("Zamknij program");
+    /**
+     * Button used in simulation's GUI
+     */
     static private JButton buttonNewSim = new JButton("Zacznij nową symulację");
+    /**
+     * JPanel object containing buttons visible to the user
+     */
     static private JPanel panelRight = new JPanel(new GridLayout(3, 1));
 
-    //NPC's and weapons already have a defined icon,but medkits do not, so we create a new ImageIcon here
+    /**
+     * Medkit Icon<br>NPC's and weapons already have a defined icon,but medkits do not, so we create a new ImageIcon here.
+     */
     static private ImageIcon medkit = new ImageIcon(GUI.class.getResource("/medpack.png"));
+    /**
+     * Text display placed at the bottom of simulation's GUI. Used to display turn-by-turn data bout the events happening inside the simulation.
+     */
     static JTextArea display = new JTextArea(16, 58);
 
 
-    //code responsible for the window showing the simulation
+    /**
+     * Code responsible for the window showing the simulation and all its interactive and noninteractive elements including:
+     * <li>Buttons</li>
+     * <li>Main simulation display</li>
+     * <li>Text info windows</li>
+     * @param frame JFrame on which te GUI is placed upon
+     */
     public static void SimulationGUI(JFrame frame) {
 
         //code for closing the main window
@@ -77,7 +136,7 @@ public class GUI {
         frame.setSize(200 + cellSize * 25, 150 + cellSize * 25);
         frame.setTitle("Symulacja battle royale");
         frame.setResizable(false);
-        ImageIcon logo = new ImageIcon(GUI.class.getResource("/logo.png"));
+        ImageIcon logo = new ImageIcon(GUI.class.getResource("/logo.png")); //
         frame.setIconImage(logo.getImage());
 
         //create the main panel showing the simulation's status
@@ -261,7 +320,11 @@ public class GUI {
         frame.setVisible(true);
     }
 
-    //method used for getting user input in form of a dialog box
+
+    /**
+     * Method used for getting user input in form of a dialog box consisting of two inputs and two buttons. Alternatively, the user can choose the "pick random starting" parameters option.
+     * @return Returns a type int array with two elements (in order): number of NPC's, size of the board. Returned parameters are always in required range.
+     */
     private static int[] getUserSimulationInput() {
         final int[] output = new int[2]; //output is array consisting of two integers
         final boolean[] gotDataFromUser = {false};
@@ -336,7 +399,9 @@ public class GUI {
         return output;
     }
 
-    //method called when the simulation ends
+    /**
+     * Method called upon the end of the simulation. Removes "new simulation", "read simulation from file" and "write simulation to file" buttons. Adds "close program button". highlights the winning NPC.
+     */
     public static void SimulationGUIEnd(){
         //display winner data
         GUI.display.append("Wygrywa NPC  "+ Logic.npcList.get(0).name+"\n"); //using get(0) instead of getFirst() due to technical issue
@@ -358,6 +423,11 @@ public class GUI {
         GUI.labelGrid.get(Logic.npcList.get(0).posX).get(Logic.npcList.get(0).posY).setBackground(Color.pink);
     }
 
+    /**
+     * Method used to create the main display of simulation's GUI. The grind display consists of labels which iconText is set to the icon of the agent existing in corresponding coordinates. The backgroundColor parameter is used to convey information about that tile's terrain.
+     * @param panel The panel to which the labelGrid will be bound to
+     * @return returns a new grid of labels of size required for the display of simulation's current state
+     */
     //method used to reset the grid of labels used to display the simulation's map
     public static JPanel resetLabelGrid(JPanel panel) {
         //Simulation's map works as a grid of Label objects with an ImageIcon used as a way to display NPCs, weapons and medkits
@@ -521,10 +591,12 @@ public class GUI {
         return newpanel;
     }
 
-    //method used to format text shown inside labelInfo
+    /**
+     * Method used to format text shown inside labelInfo. JLabels do not have any built in text wrapping, but they use html tags in their text formatting.To prevent text incorrectly displaying (running off the screen) we insert a "<br>" between lines to break up the text. This method is currently only used to update infoLabel object from inside mouseListeners bound to each individual JLabel inside labelGrid.
+     * @param text List of Strings to be formatted to be displayed on a JLabel object
+     * @return returns all lines from "text" param as one long line with HTML line break codes between them.
+     */
     private static String labelTextWrapper(List<String> text){
-        //labels do not have any built in text wrapping, but they use html tags in their text formatting,
-        //so we insert a "<br>" between lines to break up the text
 
         String out = "<html>";
         for (int i = 0; i < text.size(); i++) {
@@ -533,8 +605,9 @@ public class GUI {
         return out + "</html>";
     }
 
-    //method used to refresh NPCs, medkits and weapons shown in the GUI
-    //this method DOES NOT refresh the terrain shown as colors under the items and NPCs on the map
+    /**
+     * Method used to refresh NPCs, medkits and weapons shown in the GUI. This method DOES NOT refresh the terrain shown as colors under the items and NPCs on the map.
+     */
     public static void refreshGUIMap() {
         for (int y = 0; y < Logic.size; y++) {
             for (int x = 0; x < Logic.size; x++) {
@@ -556,8 +629,9 @@ public class GUI {
         }
     }
 
-    //method used to refresh terrain shown in the GUI
-    //this method DOES NOT refresh NPCs, medkits and weapons shown on the map
+    /**
+     * Method used to refresh terrain shown in the GUI. This method DOES NOT refresh NPCs, medkits and weapons shown on the map
+     */
     public static void refreshTerrain(){
         //iterate through the map and set each label's background color
         for (int y = 0; y < Logic.size; y++) {
@@ -582,9 +656,13 @@ public class GUI {
         }
     }
 
-    //method used for ImageIcon resizing
-    //ImageIcons cannot be resized, but images can,
-    //so we convert an ImageIcon into an Image,resize it, and convert back
+    /**
+     * Meethod used for ImageIcon resizing. ImageIcons cannot be resized, but images can,so we convert an ImageIcon into an Image,resize it, and convert back
+     * @param img ImageIcon object to be resized
+     * @param width desired width of ImageIcon after the resize
+     * @param height desired height of ImageIcon after the resize
+     * @return returns resized ImageIcon
+     */
     public static ImageIcon resizeImg(ImageIcon img, int width, int height) {
         Image newImg = img.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
         return new ImageIcon(newImg);

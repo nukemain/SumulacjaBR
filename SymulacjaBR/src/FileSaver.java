@@ -6,7 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Class responsible for saving data on Simulation's state.
+ */
 public class FileSaver {
+    /**
+     * Method that saves the data needed to recreate a saved simulation from .txt file. Asks the user to pick (or create a new) file for the data to be saved into using a GUI window.
+     * @param size size of the simulation's board
+     * @throws FileNotFoundException
+     */
     //method used to save the simulation in .txt file
     public static void fileSaver(int size) throws FileNotFoundException{
         //create a fileChooser window
