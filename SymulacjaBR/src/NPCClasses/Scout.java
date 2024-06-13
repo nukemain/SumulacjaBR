@@ -10,8 +10,8 @@ public class Scout extends NPC{
         this.maxHP = 90;
         this.HP = this.maxHP;
         this.stamina = 3;
-        this.symbol = "Λ";
+        this.symbol = "R";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("images/scout.png");
+        this.icon = new ImageIcon(getClass().getResource("/scout.png"));
     }
 }

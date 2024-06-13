@@ -34,12 +34,16 @@ public class Logic {
     static List<List<String>> map = new ArrayList<>(); //list used to spawn NPCs, weapon and medkits
 
 
+    /**
+     * @param args
+     * @throws IOException
+     * yada yada
+     * jakiś tekst
+     */
     //method used to begin the simulation
     public static void main(String[] args) throws IOException {
         Simulation();
     }
-
-    //
     static void Simulation() throws IOException {
         CSVGenerator csvObject = new CSVGenerator();
         GUI.SimulationGUI(Logic.SimulationFrame);
@@ -113,7 +117,7 @@ public class Logic {
             }
         }
         //NPC uses its ability every turn
-        if(Objects.equals(npcList.get(npcIndex).symbol, "μ") || Objects.equals(npcList.get(npcIndex).symbol, "Θ")){
+        if(Objects.equals(npcList.get(npcIndex).symbol, "M") || Objects.equals(npcList.get(npcIndex).symbol, "S")){
             npcList.get(npcIndex).Ability();
         }
         //applying effects on NPC based on its currentTerrain
@@ -352,14 +356,14 @@ public class Logic {
                 +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage+")"+
                 "HP celu spada z "+npcList.get(indexTarget).HP+" na: ";
         //Special ability of spy
-        if(Objects.equals(npcList.get(indexTarget).symbol, "Ω") && (int) (Math.random() * (10)) > 6){
+        if(Objects.equals(npcList.get(indexTarget).symbol, "A") && (int) (Math.random() * (10)) > 6){
             text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje NPC "
                     +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                     +npcList.get(indexAttacker).weapon.name+ "; NPC " + npcList.get(indexTarget).name + " unika obrazen.";
         }
         else{
             //Special ability of soldier
-            if(Objects.equals(npcList.get(indexAttacker).symbol, "Σ") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
+            if(Objects.equals(npcList.get(indexAttacker).symbol, "G") && distanceCalc(npcList.get(indexAttacker).posX, npcList.get(indexAttacker).posY, npcList.get(indexTarget).posX, npcList.get(indexTarget).posY) < 2){
                 text = "NPC "+npcList.get(indexAttacker).name+"("+npcList.get(indexAttacker).posX+","+npcList.get(indexAttacker).posY+") atakuje krytycznie NPC "
                         +npcList.get(indexTarget).name+"("+npcList.get(indexTarget).posX+","+npcList.get(indexTarget).posY+") używając "
                         +npcList.get(indexAttacker).weapon.name+" (DMG:"+damage * 1.20 +")"+

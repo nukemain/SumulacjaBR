@@ -1,7 +1,6 @@
 package NPCClasses;
 import WeaponClasses.*;
 import javax.swing.ImageIcon;
-import java.util.Objects;
 
 public class Soldier extends NPC{
     String[] names = {"Slick", "Twister", "Fuzzy", "Gusher", "Slinky", "Scooter", "Looper", "Bender", "Flex", "Slinky"};
@@ -10,9 +9,9 @@ public class Soldier extends NPC{
         this.maxHP = 140;
         this.HP = this.maxHP;
         this.stamina = 2;
-        this.symbol = "Σ";
+        this.symbol = "G";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("images/soldier.png");
+        this.icon = new ImageIcon(getClass().getResource("/soldier.png"));
     }
     //If target is in '1' range hit for 120%
 }

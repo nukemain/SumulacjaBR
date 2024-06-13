@@ -12,9 +12,9 @@ public class Sniper extends NPC{
         this.maxHP = 100;
         this.HP = this.maxHP;
         this.stamina = 2;
-        this.symbol = "Θ";
+        this.symbol = "S";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("images/sniper.png");
+        this.icon = new ImageIcon(getClass().getResource("/sniper.png"));
     }
     public void Ability(){
         if(!Objects.equals(this.weapon.name, "Knife") && !Objects.equals(this.weapon.name, this.boostedWeapon)) this.weapon.range += 1;

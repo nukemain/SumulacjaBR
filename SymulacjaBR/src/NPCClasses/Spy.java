@@ -10,9 +10,9 @@ public class Spy extends NPC{
         this.maxHP = 80;
         this.HP = this.maxHP;
         this.stamina = 2;
-        this.symbol = "Ω";
+        this.symbol = "A";
         this.name = names[(int) (Math.random() * (10))];
-        this.icon = new ImageIcon("images/spy.png");
+        this.icon = new ImageIcon(getClass().getResource("/spy.png"));
     }
     //Has 30% chance to evade hit
 }

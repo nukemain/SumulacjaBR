@@ -104,11 +104,11 @@ public class FileReader {
                     }
                     //the part of code used to create the objects of NPC subclasses and add them to the npcList
                     switch (symbol) {
-                        case "Σ" -> Logic.npcList.add(new Soldier(index, posX, posY,  wpn));
-                        case "μ" -> Logic.npcList.add(new Medic(index, posX, posY,  wpn));
-                        case "Λ" -> Logic.npcList.add(new Scout(index, posX, posY,  wpn));
-                        case "Θ" -> Logic.npcList.add(new Sniper(index, posX, posY,  wpn));
-                        case "Ω" -> Logic.npcList.add(new Spy(index, posX, posY,  wpn));
+                        case "G" -> Logic.npcList.add(new Soldier(index, posX, posY,  wpn));
+                        case "M" -> Logic.npcList.add(new Medic(index, posX, posY,  wpn));
+                        case "R" -> Logic.npcList.add(new Scout(index, posX, posY,  wpn));
+                        case "S" -> Logic.npcList.add(new Sniper(index, posX, posY,  wpn));
+                        case "A" -> Logic.npcList.add(new Spy(index, posX, posY,  wpn));
                         default -> GUI.display.append("System wczytu otrzymał niepoprawny symbol!");
                     }
                     Logic.npcList.get(i).HP = HP;

@@ -13,7 +13,7 @@ public abstract class Weapon {
     Weapon(int posX, int posY) {
         this.posX = posX;
         this.posY = posY;
-        this.icon = new ImageIcon("default.png");
+        this.icon = new ImageIcon(getClass().getResource("/default.png"));
     }
     public int Attack(int targetHP){
         return 0;

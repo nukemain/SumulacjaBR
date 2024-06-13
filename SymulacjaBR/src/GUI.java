@@ -30,7 +30,7 @@ public class GUI {
     static private JPanel panelRight = new JPanel(new GridLayout(3, 1));
 
     //NPC's and weapons already have a defined icon,but medkits do not, so we create a new ImageIcon here
-    static private ImageIcon medkit = new ImageIcon("images/medpack.png");
+    static private ImageIcon medkit = new ImageIcon(GUI.class.getResource("/medpack.png"));
     static JTextArea display = new JTextArea(16, 58);
 
 
@@ -77,7 +77,7 @@ public class GUI {
         frame.setSize(200 + cellSize * 25, 150 + cellSize * 25);
         frame.setTitle("Symulacja battle royale");
         frame.setResizable(false);
-        ImageIcon logo = new ImageIcon("images/logo.png");
+        ImageIcon logo = new ImageIcon(GUI.class.getResource("/logo.png"));
         frame.setIconImage(logo.getImage());
 
         //create the main panel showing the simulation's status
@@ -415,25 +415,25 @@ public class GUI {
                                 else {
                                     labelInfoText.add("Zasięg ataku: " + Logic.npcList.get(i).weapon.range);
                                 }
-                                if(Logic.npcList.get(i).symbol == "μ")//medic
+                                if(Logic.npcList.get(i).symbol == "M")//medic
                                 {
                                     labelInfoText.add("HP +=4 co turę");
                                 }
-                                if(Logic.npcList.get(i).symbol == "Λ")//scout
+                                if(Logic.npcList.get(i).symbol == "R")//scout
                                 {
                                     labelInfoText.add("Więcej staminy");
                                 }
-                                if(Logic.npcList.get(i).symbol == "Θ")//sniper
+                                if(Logic.npcList.get(i).symbol == "S")//sniper
                                 {
                                     labelInfoText.add("+=1 do zasięgu");
                                     labelInfoText.add("(poza nożem)");
                                 }
-                                if(Logic.npcList.get(i).symbol == "Σ")//solidier
+                                if(Logic.npcList.get(i).symbol == "G")//solidier
                                 {
                                     labelInfoText.add("DMG 1.2x jeśli");
                                     labelInfoText.add("dystans do celu=1");
                                 }
-                                if(Logic.npcList.get(i).symbol == "Ω")//spy
+                                if(Logic.npcList.get(i).symbol == "A")//spy
                                 {
                                     labelInfoText.add("30% szansy na unik");
                                 }
